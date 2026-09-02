@@ -5,7 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 
-// 1. Prepare writable storage directories in /tmp for Vercel Serverless
+// Prepare writable storage directories in /tmp for Vercel Serverless
 $storageDirs = [
     '/tmp/storage/app/public',
     '/tmp/storage/framework/cache/data',
@@ -36,6 +36,5 @@ $app = Application::configure(basePath: dirname(__DIR__))
     })->create();
 
 $app->useStoragePath('/tmp/storage');
-$app->register(Illuminate\View\ViewServiceProvider::class);
 
 return $app;
