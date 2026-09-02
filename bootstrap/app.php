@@ -30,17 +30,9 @@ $app = Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->render(function (\Throwable $e, Request $request) {
-            return response()->make(
-                '<!DOCTYPE html><html><head><title>Debug Error Catcher</title><style>body{font-family:sans-serif;background:#0f172a;color:#f8fafc;padding:2rem;}pre{background:#1e293b;padding:1rem;border-radius:0.5rem;overflow-x:auto;color:#f43f5e;}</style></head><body>' .
-                '<h1>⚠️ DEBUG ERROR CATCHER</h1>' .
-                '<p><strong>Message:</strong> ' . htmlspecialchars($e->getMessage()) . '</p>' .
-                '<p><strong>File:</strong> ' . htmlspecialchars($e->getFile()) . ':' . $e->getLine() . '</p>' .
-                '<h2>Stack Trace:</h2><pre>' . htmlspecialchars($e->getTraceAsString()) . '</pre>' .
-                '</body></html>',
-                500
-            );
-        });
+        $exceptions->shouldRenderJsonWhen(
+            fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
+        );
     })->create();
 
 $app->useStoragePath('/tmp/storage');
