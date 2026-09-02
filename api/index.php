@@ -5,7 +5,6 @@ $storageDirs = [
     '/tmp/storage/app/public',
     '/tmp/storage/framework/cache/data',
     '/tmp/storage/framework/sessions',
-    '/tmp/storage/framework/testing',
     '/tmp/storage/framework/views',
     '/tmp/storage/logs',
     '/tmp/bootstrap/cache',
@@ -17,27 +16,39 @@ foreach ($storageDirs as $dir) {
     }
 }
 
-// 2. Set serverless environment variables
+// 2. Set environment variables for Vercel
 putenv('APP_STORAGE=/tmp/storage');
-putenv('VIEW_COMPILED_PATH=/tmp/storage/framework/views');
-putenv('SESSION_DRIVER=array');
-putenv('CACHE_STORE=array');
+putenv('VIEW_COMPILED_PATH=/tmp');
+putenv('APP_CONFIG_CACHE=/tmp/config.php');
+putenv('APP_EVENTS_CACHE=/tmp/events.php');
+putenv('APP_PACKAGES_CACHE=/tmp/packages.php');
+putenv('APP_ROUTES_CACHE=/tmp/routes.php');
+putenv('APP_SERVICES_CACHE=/tmp/services.php');
+putenv('CACHE_DRIVER=array');
+putenv('SESSION_DRIVER=cookie');
 putenv('LOG_CHANNEL=stderr');
-putenv('APP_DEBUG=true');
 
 $_ENV['APP_STORAGE'] = '/tmp/storage';
-$_ENV['VIEW_COMPILED_PATH'] = '/tmp/storage/framework/views';
-$_ENV['SESSION_DRIVER'] = 'array';
-$_ENV['CACHE_STORE'] = 'array';
+$_ENV['VIEW_COMPILED_PATH'] = '/tmp';
+$_ENV['APP_CONFIG_CACHE'] = '/tmp/config.php';
+$_ENV['APP_EVENTS_CACHE'] = '/tmp/events.php';
+$_ENV['APP_PACKAGES_CACHE'] = '/tmp/packages.php';
+$_ENV['APP_ROUTES_CACHE'] = '/tmp/routes.php';
+$_ENV['APP_SERVICES_CACHE'] = '/tmp/services.php';
+$_ENV['CACHE_DRIVER'] = 'array';
+$_ENV['SESSION_DRIVER'] = 'cookie';
 $_ENV['LOG_CHANNEL'] = 'stderr';
-$_ENV['APP_DEBUG'] = 'true';
 
 $_SERVER['APP_STORAGE'] = '/tmp/storage';
-$_SERVER['VIEW_COMPILED_PATH'] = '/tmp/storage/framework/views';
-$_SERVER['SESSION_DRIVER'] = 'array';
-$_SERVER['CACHE_STORE'] = 'array';
+$_SERVER['VIEW_COMPILED_PATH'] = '/tmp';
+$_SERVER['APP_CONFIG_CACHE'] = '/tmp/config.php';
+$_SERVER['APP_EVENTS_CACHE'] = '/tmp/events.php';
+$_SERVER['APP_PACKAGES_CACHE'] = '/tmp/packages.php';
+$_SERVER['APP_ROUTES_CACHE'] = '/tmp/routes.php';
+$_SERVER['APP_SERVICES_CACHE'] = '/tmp/services.php';
+$_SERVER['CACHE_DRIVER'] = 'array';
+$_SERVER['SESSION_DRIVER'] = 'cookie';
 $_SERVER['LOG_CHANNEL'] = 'stderr';
-$_SERVER['APP_DEBUG'] = 'true';
 
 if (empty(getenv('APP_KEY')) && empty($_ENV['APP_KEY'])) {
     $appKey = 'base64:nIETmmyRblG5BQ2BRzwFSvkt3STBSxh6/D1bH2ovjTs=';
@@ -46,17 +57,5 @@ if (empty(getenv('APP_KEY')) && empty($_ENV['APP_KEY'])) {
     $_SERVER['APP_KEY'] = $appKey;
 }
 
-// 3. Register global exception handler to output true error message
-set_exception_handler(function (\Throwable $e) {
-    http_response_code(500);
-    echo '<!DOCTYPE html><html><head><title>Vercel Error Diagnostic</title><style>body{font-family:sans-serif;background:#0f172a;color:#f8fafc;padding:2rem;}pre{background:#1e293b;padding:1rem;border-radius:0.5rem;overflow-x:auto;color:#38bdf8;}</style></head><body>';
-    echo '<h1>⚠️ Serverless Diagnostic Output</h1>';
-    echo '<p style="color:#f43f5e;font-weight:bold;font-size:1.2rem;">Message: ' . htmlspecialchars($e->getMessage()) . '</p>';
-    echo '<p><strong>File:</strong> ' . htmlspecialchars($e->getFile()) . ':' . $e->getLine() . '</p>';
-    echo '<h2>Stack Trace:</h2><pre>' . htmlspecialchars($e->getTraceAsString()) . '</pre>';
-    echo '</body></html>';
-    exit(1);
-});
-
-// 4. Forward to Laravel public/index.php
+// 3. Forward request directly to Laravel entry point
 require __DIR__ . '/../public/index.php';
