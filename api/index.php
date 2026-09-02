@@ -5,6 +5,7 @@ $storageDirs = [
     '/tmp/storage/app/public',
     '/tmp/storage/framework/cache/data',
     '/tmp/storage/framework/sessions',
+    '/tmp/storage/framework/testing',
     '/tmp/storage/framework/views',
     '/tmp/storage/logs',
     '/tmp/bootstrap/cache',
@@ -24,6 +25,7 @@ putenv('APP_EVENTS_CACHE=/tmp/events.php');
 putenv('APP_PACKAGES_CACHE=/tmp/packages.php');
 putenv('APP_ROUTES_CACHE=/tmp/routes.php');
 putenv('APP_SERVICES_CACHE=/tmp/services.php');
+putenv('APP_MAINTENANCE_STORE=array');
 putenv('CACHE_DRIVER=array');
 putenv('SESSION_DRIVER=cookie');
 putenv('LOG_CHANNEL=stderr');
@@ -35,6 +37,7 @@ $_ENV['APP_EVENTS_CACHE'] = '/tmp/events.php';
 $_ENV['APP_PACKAGES_CACHE'] = '/tmp/packages.php';
 $_ENV['APP_ROUTES_CACHE'] = '/tmp/routes.php';
 $_ENV['APP_SERVICES_CACHE'] = '/tmp/services.php';
+$_ENV['APP_MAINTENANCE_STORE'] = 'array';
 $_ENV['CACHE_DRIVER'] = 'array';
 $_ENV['SESSION_DRIVER'] = 'cookie';
 $_ENV['LOG_CHANNEL'] = 'stderr';
@@ -46,6 +49,7 @@ $_SERVER['APP_EVENTS_CACHE'] = '/tmp/events.php';
 $_SERVER['APP_PACKAGES_CACHE'] = '/tmp/packages.php';
 $_SERVER['APP_ROUTES_CACHE'] = '/tmp/routes.php';
 $_SERVER['APP_SERVICES_CACHE'] = '/tmp/services.php';
+$_SERVER['APP_MAINTENANCE_STORE'] = 'array';
 $_SERVER['CACHE_DRIVER'] = 'array';
 $_SERVER['SESSION_DRIVER'] = 'cookie';
 $_SERVER['LOG_CHANNEL'] = 'stderr';
