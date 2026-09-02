@@ -54,6 +54,14 @@ $_SERVER['CACHE_DRIVER'] = 'array';
 $_SERVER['SESSION_DRIVER'] = 'cookie';
 $_SERVER['LOG_CHANNEL'] = 'stderr';
 
+// Bind dynamic HTTPS APP_URL for Vercel redirects
+if (isset($_SERVER['HTTP_HOST'])) {
+    $appUrl = 'https://' . $_SERVER['HTTP_HOST'];
+    putenv("APP_URL={$appUrl}");
+    $_ENV['APP_URL'] = $appUrl;
+    $_SERVER['APP_URL'] = $appUrl;
+}
+
 if (empty(getenv('APP_KEY')) && empty($_ENV['APP_KEY'])) {
     $appKey = 'base64:nIETmmyRblG5BQ2BRzwFSvkt3STBSxh6/D1bH2ovjTs=';
     putenv("APP_KEY={$appKey}");
