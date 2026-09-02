@@ -48,40 +48,40 @@
 <body class="min-h-full flex flex-col bg-slate-950 text-slate-100 antialiased selection:bg-amber-400 selection:text-slate-950">
 
     <!-- Top Navigation Header -->
-    <header class="no-print sticky top-0 z-40 bg-slate-900/95 backdrop-blur border-b-2 border-amber-400/40 px-4 py-3 shadow-lg">
-        <div class="max-w-5xl mx-auto flex items-center justify-between">
+    <header class="no-print sticky top-0 z-40 bg-slate-900/95 backdrop-blur border-b-2 border-amber-400/40 px-3 sm:px-4 py-2.5 sm:py-3 shadow-lg">
+        <div class="max-w-5xl mx-auto flex items-center justify-between gap-2">
             <!-- Brand Logo -->
-            <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5 group">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center text-slate-950 font-black shadow-lg shadow-amber-400/25 border border-amber-300 group-active:scale-95 transition-transform">
-                    <span class="material-symbols-outlined font-bold text-xl">account_balance_wallet</span>
+            <a href="{{ route('dashboard') }}" class="flex items-center gap-2 group shrink-0">
+                <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center text-slate-950 font-black shadow-lg shadow-amber-400/25 border border-amber-300 group-active:scale-95 transition-transform shrink-0">
+                    <span class="material-symbols-outlined font-bold text-lg sm:text-xl">account_balance_wallet</span>
                 </div>
                 <div>
-                    <h1 class="text-base md:text-lg font-black tracking-tight text-white uppercase flex items-center gap-1">
+                    <h1 class="text-sm sm:text-base md:text-lg font-black tracking-tight text-white uppercase flex items-center gap-1">
                         GAJIAN<span class="text-amber-400">ARMN</span>
                     </h1>
-                    <p class="text-[10px] uppercase font-extrabold tracking-widest text-slate-400 -mt-1">
+                    <p class="text-[9px] sm:text-[10px] uppercase font-extrabold tracking-widest text-slate-400 -mt-1 hidden xs:block">
                         Fieldwork Calculator
                     </p>
                 </div>
             </a>
 
             <!-- User & Nav Controls -->
-            <div class="flex items-center gap-2">
-                <a href="{{ route('dashboard') }}" class="px-3 py-2 rounded-md font-bold text-xs uppercase tracking-wider transition-colors flex items-center gap-1.5 {{ request()->routeIs('dashboard') ? 'bg-amber-400 text-slate-950 border border-amber-300 shadow' : 'bg-slate-800 text-slate-300 hover:bg-slate-700' }}">
+            <div class="flex items-center gap-1.5 sm:gap-2">
+                <a href="{{ route('dashboard') }}" class="px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg font-extrabold text-[11px] sm:text-xs uppercase tracking-wider transition-colors flex items-center gap-1 sm:gap-1.5 {{ request()->routeIs('dashboard') ? 'bg-amber-400 text-slate-950 border border-amber-300 shadow' : 'bg-slate-800 text-slate-300 hover:bg-slate-700' }}" title="Dashboard">
                     <span class="material-symbols-outlined text-base">dashboard</span>
-                    <span>Dashboard</span>
+                    <span class="hidden sm:inline">Dashboard</span>
                 </a>
 
-                <a href="{{ route('tarifs.index') }}" class="px-3 py-2 rounded-md font-bold text-xs uppercase tracking-wider transition-colors flex items-center gap-1.5 {{ request()->routeIs('tarifs.*') ? 'bg-amber-400 text-slate-950 border border-amber-300 shadow' : 'bg-slate-800 text-slate-300 hover:bg-slate-700' }}">
+                <a href="{{ route('tarifs.index') }}" class="px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg font-extrabold text-[11px] sm:text-xs uppercase tracking-wider transition-colors flex items-center gap-1 sm:gap-1.5 {{ request()->routeIs('tarifs.*') ? 'bg-amber-400 text-slate-950 border border-amber-300 shadow' : 'bg-slate-800 text-slate-300 hover:bg-slate-700' }}" title="Tarif Admin">
                     <span class="material-symbols-outlined text-base">payments</span>
-                    <span>Tarif Admin</span>
+                    <span class="hidden sm:inline">Tarif Admin</span>
                 </a>
 
                 <form action="{{ route('logout') }}" method="POST" class="inline">
                     @csrf
-                    <button type="submit" class="px-3 py-2 rounded-md bg-rose-950/80 hover:bg-rose-900 border border-rose-700/60 text-rose-300 font-bold text-xs uppercase tracking-wider transition-colors flex items-center gap-1">
+                    <button type="submit" class="px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-rose-950/80 hover:bg-rose-900 border border-rose-700/60 text-rose-300 font-extrabold text-[11px] sm:text-xs uppercase tracking-wider transition-colors flex items-center gap-1" title="Logout">
                         <span class="material-symbols-outlined text-base">logout</span>
-                        <span>Logout</span>
+                        <span class="hidden sm:inline">Logout</span>
                     </button>
                 </form>
             </div>
@@ -89,14 +89,14 @@
     </header>
 
     <!-- Main Container -->
-    <main class="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 space-y-6">
+    <main class="flex-1 max-w-5xl w-full mx-auto p-3.5 sm:p-4 md:p-6 space-y-4 md:space-y-6">
         @yield('content')
     </main>
 
     <!-- Toast Notifications Container (Fixed Bottom-Right Guaranteed) -->
-    <div id="toastContainer" class="no-print" style="position: fixed; bottom: 24px; right: 24px; z-index: 99999; max-width: 380px; width: calc(100% - 48px); pointer-events: none;">
+    <div id="toastContainer" class="no-print" style="position: fixed; bottom: 20px; right: 16px; left: 16px; sm:left: auto; z-index: 99999; max-width: 380px; width: auto; pointer-events: none;">
         @if(session('success'))
-            <div id="toastSuccess" style="background-color: #0f172a; border: 2px solid #10b981; color: #6ee7b7; border-radius: 16px; padding: 14px 18px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: space-between; gap: 12px; pointer-events: auto; transition: opacity 0.3s ease, transform 0.3s ease; opacity: 1; transform: translateY(0);">
+            <div id="toastSuccess" style="background-color: #0f172a; border: 2px solid #10b981; color: #6ee7b7; border-radius: 16px; padding: 12px 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: space-between; gap: 12px; pointer-events: auto; transition: opacity 0.3s ease, transform 0.3s ease; opacity: 1; transform: translateY(0);">
                 <div style="font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.4;">
                     {{ session('success') }}
                 </div>
@@ -107,7 +107,7 @@
         @endif
 
         @if($errors->any())
-            <div id="toastError" style="background-color: #0f172a; border: 2px solid #f43f5e; color: #fda4af; border-radius: 16px; padding: 14px 18px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); pointer-events: auto; transition: opacity 0.3s ease, transform 0.3s ease; opacity: 1; transform: translateY(0); margin-top: 8px;">
+            <div id="toastError" style="background-color: #0f172a; border: 2px solid #f43f5e; color: #fda4af; border-radius: 16px; padding: 12px 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); pointer-events: auto; transition: opacity 0.3s ease, transform 0.3s ease; opacity: 1; transform: translateY(0); margin-top: 8px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                     <span style="font-weight: 900; font-size: 12px; text-transform: uppercase;">Terdapat Kesalahan:</span>
                     <button onclick="dismissToast('toastError')" style="color: #fb7185; background: none; border: none; font-weight: 900; font-size: 11px; text-transform: uppercase; cursor: pointer;">
@@ -124,9 +124,9 @@
     </div>
 
     <!-- Mobile Bottom Quick Status Footer -->
-    <footer class="no-print bg-slate-900 border-t border-slate-800 py-4 px-4 text-center text-xs text-slate-500">
-        <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 font-mono-num">
-            <span>Fieldwork Utilitarian UI System &bull; Single-User Edition</span>
+    <footer class="no-print bg-slate-900 border-t border-slate-800 py-3.5 px-4 text-center text-[11px] text-slate-500">
+        <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-1.5 font-mono-num">
+            <span>Fieldwork Utilitarian UI System &bull; Mobile Ready</span>
             <span>Local Time: {{ now()->translatedFormat('d M Y - H:i') }}</span>
         </div>
     </footer>
@@ -138,9 +138,9 @@
         <button 
             id="aiFabBtn" 
             onclick="openAiChat()" 
-            class="group fixed bottom-6 right-6 z-50 px-4 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 active:scale-95 text-slate-950 font-black shadow-2xl shadow-amber-400/30 flex items-center gap-2 border-2 border-amber-300 transition-all cursor-pointer"
+            class="group fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 active:scale-95 text-slate-950 font-black shadow-2xl shadow-amber-400/30 flex items-center gap-2 border-2 border-amber-300 transition-all cursor-pointer"
         >
-            <span class="material-symbols-outlined text-2xl group-hover:rotate-12 transition-transform">smart_toy</span>
+            <span class="material-symbols-outlined text-xl sm:text-2xl group-hover:rotate-12 transition-transform">smart_toy</span>
             <span class="text-xs uppercase tracking-wider font-extrabold hidden sm:inline">Asisten AI</span>
             <span class="w-2 h-2 rounded-full bg-emerald-600 animate-ping"></span>
         </button>
@@ -148,23 +148,23 @@
         <!-- Chat Window Modal -->
         <div 
             id="aiChatWindow" 
-            class="hidden fixed bottom-6 right-4 sm:right-6 w-[380px] max-w-[calc(100vw-32px)] h-[520px] max-h-[calc(100vh-48px)] bg-slate-900 border-2 border-amber-400/90 rounded-2xl shadow-2xl flex flex-col overflow-hidden backdrop-blur-lg z-50"
+            class="hidden fixed bottom-3 left-3 right-3 sm:left-auto sm:right-6 sm:bottom-6 w-auto sm:w-[380px] max-w-[calc(100vw-24px)] h-[82vh] sm:h-[520px] max-h-[640px] bg-slate-900 border-2 border-amber-400/90 rounded-2xl shadow-2xl flex flex-col overflow-hidden backdrop-blur-lg z-50"
         >
             <!-- Header -->
-            <div class="p-3.5 bg-slate-950 border-b border-slate-800 flex items-center justify-between flex-shrink-0">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-lg bg-amber-400 text-slate-950 flex items-center justify-center font-black">
-                        <span class="material-symbols-outlined text-lg">smart_toy</span>
+            <div class="p-3 sm:p-3.5 bg-slate-950 border-b border-slate-800 flex items-center justify-between flex-shrink-0">
+                <div class="flex items-center gap-2 sm:gap-2.5">
+                    <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-amber-400 text-slate-950 flex items-center justify-center font-black flex-shrink-0">
+                        <span class="material-symbols-outlined text-base sm:text-lg">smart_toy</span>
                     </div>
-                    <div>
-                        <h4 class="text-xs font-black uppercase text-white tracking-wider flex items-center gap-1.5">
+                    <div class="min-w-0">
+                        <h4 class="text-xs font-black uppercase text-white tracking-wider flex items-center gap-1.5 truncate">
                             <span>Asisten Gajian AI</span>
                             <span class="px-1.5 py-0.2 text-[9px] rounded bg-emerald-950 text-emerald-300 border border-emerald-500/50">Gemini 2.5</span>
                         </h4>
-                        <p class="text-[10px] text-slate-400 font-medium">Siap bantu catat job &amp; analisis gajian</p>
+                        <p class="text-[10px] text-slate-400 font-medium truncate">Siap bantu catat job &amp; rekap gajian</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-1">
+                <div class="flex items-center gap-1 flex-shrink-0">
                     <button type="button" onclick="clearAiChatHistory()" title="Bersihkan obrolan" class="text-slate-400 hover:text-rose-400 p-1 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer">
                         <span class="material-symbols-outlined text-base">delete_sweep</span>
                     </button>
@@ -176,7 +176,7 @@
 
             <!-- Quick Action Chips -->
             <div class="p-2 bg-slate-950/80 border-b border-slate-800/80 space-y-2 flex-shrink-0">
-                <div class="flex items-center gap-1.5 overflow-x-auto" style="scrollbar-width: none; -ms-overflow-style: none;">
+                <div class="flex items-center gap-1.5 overflow-x-auto pb-1" style="scrollbar-width: thin; -ms-overflow-style: none;">
                     <button onclick="sendQuickPrompt('Berapa total pendapatan dan job order saya bulan ini?')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold text-[10px] uppercase tracking-wider whitespace-nowrap border border-slate-700 flex-shrink-0">
                         Rekap Bulan Ini
                     </button>
@@ -190,7 +190,7 @@
                 </div>
 
                 <!-- Expandable Category Quick Picker Menu -->
-                <div id="categoryPickerMenu" class="hidden p-2.5 rounded-xl bg-slate-900 border border-slate-700 space-y-2 animate-fadeIn">
+                <div id="categoryPickerMenu" class="hidden p-2.5 rounded-xl bg-slate-900 border border-slate-700 space-y-2 animate-fadeIn max-h-48 overflow-y-auto">
                     <div class="flex items-center justify-between border-b border-slate-800 pb-1.5">
                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Status Pekerjaan:</p>
                         <!-- Status Toggle Buttons -->
@@ -263,19 +263,19 @@
             </div>
 
             <!-- Input Form -->
-            <form id="aiChatForm" onsubmit="handleAiChatSubmit(event)" class="p-3 bg-slate-950 border-t border-slate-800 flex items-center gap-2 flex-shrink-0">
+            <form id="aiChatForm" onsubmit="handleAiChatSubmit(event)" class="p-2.5 sm:p-3 bg-slate-950 border-t border-slate-800 flex items-center gap-2 flex-shrink-0">
                 <input 
                     type="text" 
                     id="aiInputText" 
                     placeholder="Tulis pesan atau catat job..." 
                     required
                     autocomplete="off"
-                    class="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-900 border-2 border-slate-700 text-white font-medium text-xs focus:border-amber-400 focus:outline-none"
+                    class="flex-1 px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-xl bg-slate-900 border-2 border-slate-700 text-white font-medium text-xs focus:border-amber-400 focus:outline-none"
                 >
                 <button 
                     type="submit" 
                     id="aiSendBtn"
-                    class="p-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black flex items-center justify-center cursor-pointer border-2 border-amber-300 transition-all"
+                    class="p-2 sm:p-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black flex items-center justify-center cursor-pointer border-2 border-amber-300 transition-all flex-shrink-0 min-h-[38px] min-w-[38px]"
                 >
                     <span class="material-symbols-outlined text-base">send</span>
                 </button>
