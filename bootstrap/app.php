@@ -20,20 +20,19 @@ $app = Application::configure(basePath: dirname(__DIR__))
         );
     })->create();
 
-if (isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || getenv('VERCEL') || env('VERCEL')) {
-    $storageDirs = [
-        '/tmp/storage/app/public',
-        '/tmp/storage/framework/cache/data',
-        '/tmp/storage/framework/sessions',
-        '/tmp/storage/framework/views',
-        '/tmp/storage/logs',
-    ];
-    foreach ($storageDirs as $dir) {
-        if (!is_dir($dir)) {
-            @mkdir($dir, 0755, true);
-        }
+$storageDirs = [
+    '/tmp/storage/app/public',
+    '/tmp/storage/framework/cache/data',
+    '/tmp/storage/framework/sessions',
+    '/tmp/storage/framework/views',
+    '/tmp/storage/logs',
+    '/tmp/bootstrap/cache',
+];
+foreach ($storageDirs as $dir) {
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0755, true);
     }
-    $app->useStoragePath('/tmp/storage');
 }
+$app->useStoragePath('/tmp/storage');
 
 return $app;
