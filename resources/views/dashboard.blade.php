@@ -233,8 +233,38 @@
     </div>
 
 
+    <!-- MOBILE TAB SWITCHER (Rekap Harian vs Detail Transaksi) -->
+    <div class="block sm:hidden mb-2">
+        <div class="grid grid-cols-2 gap-2 p-1.5 rounded-2xl bg-slate-900 border-2 border-slate-800 shadow-xl">
+            <button 
+                type="button" 
+                id="btnMobileTabRekap"
+                onclick="switchMobileTab('rekap')"
+                class="py-3 px-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow bg-amber-400 text-slate-950"
+            >
+                <span class="material-symbols-outlined text-base">calendar_month</span>
+                <span>Rekap Harian</span>
+            </button>
+            <button 
+                type="button" 
+                id="btnMobileTabDetail"
+                onclick="switchMobileTab('detail')"
+                class="py-3 px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 text-slate-400 bg-slate-950 hover:bg-slate-800"
+            >
+                <span class="material-symbols-outlined text-base">receipt_long</span>
+                <span>Detail Jobs</span>
+                @if($detailJobOrders->total() > 0)
+                    <span class="px-1.5 py-0.5 rounded-md bg-amber-400/20 text-amber-400 text-[10px] font-mono-num font-bold border border-amber-400/30">
+                        {{ $detailJobOrders->total() }}
+                    </span>
+                @endif
+            </button>
+        </div>
+    </div>
+
+
     <!-- 3. REKAP HARIAN DALAM BULAN & FILTER / EKSPOR UNIFIED CARD -->
-    <div class="bg-slate-900 border-2 border-slate-800 rounded-2xl p-4 sm:p-5 md:p-6 shadow-xl space-y-4 sm:space-y-5">
+    <div id="sectionRekapContainer" class="bg-slate-900 border-2 border-slate-800 rounded-2xl p-4 sm:p-5 md:p-6 shadow-xl space-y-4 sm:space-y-5">
         <!-- Unified Header: Title & Export Buttons -->
         <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 border-b border-slate-800 pb-3.5">
             <div>
@@ -481,7 +511,7 @@
 
 
     <!-- 5. DETAIL JOB ORDERS LIST (WITH EDIT & DELETE) -->
-    <div class="bg-slate-900 border-2 border-slate-800 rounded-2xl p-4 sm:p-5 md:p-6 shadow-xl space-y-4">
+    <div id="sectionDetailContainer" class="bg-slate-900 border-2 border-slate-800 rounded-2xl p-4 sm:p-5 md:p-6 shadow-xl space-y-4 hidden sm:block">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
             <div>
                 <h3 class="text-base font-black uppercase text-white tracking-wider flex items-center gap-2">
@@ -861,8 +891,45 @@
         }, 2500);
     }
 
+    function switchMobileTab(target) {
+        const sectionRekap = document.getElementById('sectionRekapContainer');
+        const sectionDetail = document.getElementById('sectionDetailContainer');
+        const btnRekap = document.getElementById('btnMobileTabRekap');
+        const btnDetail = document.getElementById('btnMobileTabDetail');
+
+        if (!sectionRekap || !sectionDetail) return;
+
+        if (target === 'rekap') {
+            sectionRekap.classList.remove('hidden');
+            sectionDetail.classList.add('hidden');
+            sectionDetail.classList.remove('block');
+            
+            if (btnRekap && btnDetail) {
+                btnRekap.className = "py-3 px-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow bg-amber-400 text-slate-950";
+                btnDetail.className = "py-3 px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 text-slate-400 bg-slate-950 hover:bg-slate-800";
+            }
+        } else {
+            sectionDetail.classList.remove('hidden');
+            sectionDetail.classList.add('block');
+            sectionRekap.classList.add('hidden');
+            sectionRekap.classList.remove('block');
+
+            if (btnRekap && btnDetail) {
+                btnDetail.className = "py-3 px-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow bg-amber-400 text-slate-950";
+                btnRekap.className = "py-3 px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 text-slate-400 bg-slate-950 hover:bg-slate-800";
+            }
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         updatePricePreview();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('tanggal') || urlParams.has('page') || urlParams.get('tab') === 'detail') {
+            if (window.innerWidth < 640) {
+                switchMobileTab('detail');
+            }
+        }
     });
 </script>
 @endpush
