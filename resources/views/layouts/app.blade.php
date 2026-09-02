@@ -373,7 +373,7 @@
                         container.innerHTML = '';
                         aiHistory = [];
                         messages.forEach(msg => {
-                            renderSingleMessageDOM(msg.role, msg.text, msg.isError || false, msg.jobId || null);
+                            renderSingleMessageDOM(msg.role, msg.text, msg.isError || false, msg.jobId || null, msg.undone || false);
                             aiHistory.push({ role: msg.role, text: msg.text });
                         });
                         container.scrollTop = container.scrollHeight;
@@ -385,10 +385,10 @@
             }
         }
 
-        function saveMessageToStorage(role, text, isError = false, jobId = null) {
+        function saveMessageToStorage(role, text, isError = false, jobId = null, undone = false) {
             try {
                 let messages = JSON.parse(localStorage.getItem(AI_CHAT_STORAGE_KEY) || '[]');
-                messages.push({ role, text, isError, jobId, timestamp: Date.now() });
+                messages.push({ role, text, isError, jobId, undone, timestamp: Date.now() });
                 if (messages.length > 40) messages = messages.slice(-40);
                 localStorage.setItem(AI_CHAT_STORAGE_KEY, JSON.stringify(messages));
             } catch (e) {
@@ -418,7 +418,7 @@
             }
         }
 
-        function renderSingleMessageDOM(role, text, isError = false, jobId = null) {
+        function renderSingleMessageDOM(role, text, isError = false, jobId = null, undone = false) {
             const container = document.getElementById('aiMessagesContainer');
             if (!container) return;
 
@@ -429,7 +429,7 @@
             const formattedText = text.replace(/\n/g, '<br>');
 
             let undoHtml = '';
-            if (jobId) {
+            if (jobId && !undone) {
                 undoHtml = `
                     <div class="mt-2.5 pt-2 border-t border-slate-700/60 flex items-center justify-between gap-2" id="undoContainer_${jobId}">
                         <span class="text-[11px] text-slate-400 font-medium">Salah input data?</span>
@@ -441,6 +441,13 @@
                             <span class="material-symbols-outlined text-xs">undo</span>
                             <span>Batalkan (Undo)</span>
                         </button>
+                    </div>
+                `;
+            } else if (undone) {
+                undoHtml = `
+                    <div class="mt-2.5 pt-2 border-t border-slate-700/60 flex items-center gap-1.5 text-xs text-emerald-400 font-bold">
+                        <span class="material-symbols-outlined text-sm">check_circle</span>
+                        <span>Pencatatan telah dibatalkan</span>
                     </div>
                 `;
             }
@@ -534,8 +541,24 @@
 
                 if (response.ok && data.success) {
                     if (undoContainer) {
-                        undoContainer.innerHTML = '<span class="text-[11px] text-emerald-400 font-bold flex items-center gap-1"><span class="material-symbols-outlined text-xs">check_circle</span> ' + data.message + '</span>';
+                        undoContainer.className = 'mt-2.5 pt-2 border-t border-slate-700/60 flex items-center gap-1.5 text-xs text-emerald-400 font-bold';
+                        undoContainer.innerHTML = '<span class="material-symbols-outlined text-sm">check_circle</span><span>' + (data.message || 'Pencatatan telah dibatalkan.') + '</span>';
                     }
+
+                    // Permanently update localStorage so button disappears
+                    try {
+                        let messages = JSON.parse(localStorage.getItem(AI_CHAT_STORAGE_KEY) || '[]');
+                        messages = messages.map(m => {
+                            if (m.jobId == jobId) {
+                                m.undone = true;
+                            }
+                            return m;
+                        });
+                        localStorage.setItem(AI_CHAT_STORAGE_KEY, JSON.stringify(messages));
+                    } catch (e) {
+                        console.error("Failed to update undo storage:", e);
+                    }
+
                     refreshDashboardData();
                 } else {
                     alert(data.message || 'Gagal membatalkan pencatatan.');
