@@ -232,11 +232,11 @@ class AiChatController extends Controller
                         }
                     }
 
-                    // Smart Quantity / Batch Extractor (e.g., "proaktif 10", "10 proaktif", "faktur 5", "qris 8")
+                    // Smart Quantity / Batch Extractor (e.g., "proaktif mall 19", "proaktif 10", "10 proaktif", "faktur 5", "qris 8")
                     $quantity = 1;
-                    if (preg_match('/(?:catat|input|tambah)?\s*(\d{1,2})\s*(?:x|kali|buah|unit|jo)?\s*(?:pekerjaan|tugas|transaksi)?\s*(?:proaktif|pm|faktur|edc|qris|piket|visit|kunjungan|init)/i', $msgNorm, $qtyMatch)) {
+                    if (preg_match('/\b(\d{1,2})\b\s*(?:x|kali|buah|unit|jo)?\s*(?:pekerjaan|tugas|transaksi)?\s*(?:proaktif|pm|faktur|edc|qris|piket|visit|kunjungan|init|dalam|luar|mall|mal)/i', $msgNorm, $qtyMatch)) {
                         $quantity = (int)$qtyMatch[1];
-                    } elseif (preg_match('/(?:proaktif|pm|faktur|edc|qris|piket|visit|kunjungan|init|jo)\s*(?:berhasil|gagal)?\s*(\d{1,2})\s*(?:x|kali|buah|unit|jo)?\b/i', $msgNorm, $qtyMatch)) {
+                    } elseif (preg_match('/(?:proaktif|pm|faktur|edc|qris|piket|visit|kunjungan|init|jo|mall|mal|dalam|luar)[^0-9]*\b(\d{1,2})\b/i', $msgNorm, $qtyMatch)) {
                         $quantity = (int)$qtyMatch[1];
                     } elseif (preg_match('/\b(\d{1,2})\s*(?:x|kali|buah|unit|jo)\b/i', $msgNorm, $qtyMatch)) {
                         $quantity = (int)$qtyMatch[1];
@@ -246,6 +246,10 @@ class AiChatController extends Controller
 
                     // Smart Store / Merchant / Location Note Extractor
                     $cleanNote = $userMessage;
+                    if ($quantity > 1) {
+                        $cleanNote = preg_replace('/\b' . $quantity . '\b/', '', $cleanNote);
+                    }
+
                     $removeWords = [
                         'catat', 'input', 'tambah', 'berhasil', 'gagal', 'batal', 'cancel', 'unsuccessful',
                         'hari ini', 'kemarin', 'besok', 'nominal', 'sebesar', 'kategori', 'kirim faktur', 'faktur',
@@ -266,7 +270,7 @@ class AiChatController extends Controller
                     }
 
                     $extractedNote = trim(preg_replace('/\s+/', ' ', $cleanNote));
-                    $finalCatatan = (!empty($extractedNote) && strlen($extractedNote) >= 2) 
+                    $finalCatatan = (!empty($extractedNote) && strlen($extractedNote) >= 2 && !is_numeric($extractedNote)) 
                         ? ucwords(strtolower($extractedNote)) 
                         : null;
 
