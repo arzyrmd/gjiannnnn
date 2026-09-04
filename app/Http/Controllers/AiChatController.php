@@ -54,7 +54,7 @@ class AiChatController extends Controller
                     return "- [" . $j->tanggal->format('d/m/Y') . "] " . $j->kategori . " (" . $j->status . ") = Rp " . number_format($j->tarif, 0, ',', '.') . ($j->catatan ? " (Catatan: " . $j->catatan . ")" : "");
                 })->implode("\n");
 
-            // 2. Build System Prompt safely with natural conversational tone
+            // 2. Build System Prompt safely with natural conversational tone & batch support
             $systemPrompt = "Kamu adalah 'Asisten Gajian ARMN', seorang asisten pribadi teknisi lapangan yang ramah, sopan, manusiawi, dan sigap.\n\n"
                 . "DATA REAL-TIME TEKNISI SAAT INI:\n"
                 . "- Tanggal Hari Ini: " . $today . " (" . Carbon::now()->translatedFormat('l, d F Y') . ")\n"
@@ -67,9 +67,9 @@ class AiChatController extends Controller
                 . "GAYA BAHASA & PETUNJUK RESPONS:\n"
                 . "1. Gunakan bahasa Indonesia yang santai, manusiawi, ramah, dan sopan (seperti rekan kerja lapangan yang sigap).\n"
                 . "2. Hindari penggunaan emoji atau ikon yang berlebihan.\n"
-                . "3. Jika teknisi bermaksud MENCATAT JOB ORDER / PIKET BARU via percakapan:\n"
-                . "   - Analisis kategori dan statusnya.\n"
-                . "   - Jawab dengan konfirmasi ramah yang natural (misal: 'Siap mas, pengerjaan Kirim Faktur (Berhasil) senilai Rp 15.000 sudah saya simpan ke database. Ada job lain yang mau diinput?').\n"
+                . "3. Jika teknisi bermaksud MENCATAT JOB ORDER / PIKET BARU via percakapan (termasuk input jumlah banyak seperti 'proaktif 10', 'faktur 5', 'qris 8', dll):\n"
+                . "   - Analisis kategori, jumlah (quantity), dan statusnya.\n"
+                . "   - Jawab dengan konfirmasi ramah yang natural.\n"
                 . "   - Di akhir jawabanmu, SERTAKAN JSON ACTION dalam blok kode json persis dengan format berikut:\n"
                 . "     ```json\n"
                 . "     {\n"
@@ -79,7 +79,8 @@ class AiChatController extends Controller
                 . "       \"status\": \"berhasil_atau_gagal\",\n"
                 . "       \"tanggal\": \"YYYY-MM-DD\",\n"
                 . "       \"catatan\": \"Catatan singkat jika ada\",\n"
-                . "       \"custom_tarif\": nominal_angka_jika_piket_event_atau_null\n"
+                . "       \"custom_tarif\": nominal_angka_jika_piket_event_atau_null,\n"
+                . "       \"quantity\": jumlah_angka_integer_misal_10\n"
                 . "     }\n"
                 . "     ```\n"
                 . "4. Jika teknisi meminta rekap WhatsApp, buatkan format pesan ringkas yang rapi tanpa berlebihan.";
@@ -134,7 +135,7 @@ class AiChatController extends Controller
                 }
             }
 
-            // 4. Smart Local Fallback Engine if Gemini API fails or key is invalid
+            // 4. Smart Local Fallback Engine (with Batch/Quantity Support)
             $autoCreated = false;
             $createdJobInfo = null;
 
@@ -205,7 +206,7 @@ class AiChatController extends Controller
                     || str_contains($msgNorm, 'input') 
                     || str_contains($msgNorm, 'tambah');
 
-                // Scenario A: Auto-record job order
+                // Scenario A: Auto-record job order (supports batch / quantity e.g. "proaktif 10", "faktur 5")
                 if ($isJobRequest) {
                     if (!$foundTarif) {
                         $foundTarif = $tarifs->first();
@@ -230,6 +231,18 @@ class AiChatController extends Controller
                             }
                         }
                     }
+
+                    // Smart Quantity / Batch Extractor (e.g., "proaktif 10", "10 proaktif", "faktur 5", "qris 8")
+                    $quantity = 1;
+                    if (preg_match('/(?:catat|input|tambah)?\s*(\d{1,2})\s*(?:x|kali|buah|unit|jo)?\s*(?:pekerjaan|tugas|transaksi)?\s*(?:proaktif|pm|faktur|edc|qris|piket|visit|kunjungan|init)/i', $msgNorm, $qtyMatch)) {
+                        $quantity = (int)$qtyMatch[1];
+                    } elseif (preg_match('/(?:proaktif|pm|faktur|edc|qris|piket|visit|kunjungan|init|jo)\s*(?:berhasil|gagal)?\s*(\d{1,2})\s*(?:x|kali|buah|unit|jo)?\b/i', $msgNorm, $qtyMatch)) {
+                        $quantity = (int)$qtyMatch[1];
+                    } elseif (preg_match('/\b(\d{1,2})\s*(?:x|kali|buah|unit|jo)\b/i', $msgNorm, $qtyMatch)) {
+                        $quantity = (int)$qtyMatch[1];
+                    }
+
+                    $quantity = max(1, min(100, $quantity));
 
                     // Smart Store / Merchant / Location Note Extractor
                     $cleanNote = $userMessage;
@@ -257,25 +270,37 @@ class AiChatController extends Controller
                         ? ucwords(strtolower($extractedNote)) 
                         : null;
 
-                    $newJob = JobOrder::create([
-                        'tarif_id' => $foundTarif->id,
-                        'kategori' => $foundTarif->kategori,
-                        'status' => $status,
-                        'tarif' => $rate,
-                        'tanggal' => $today,
-                        'catatan' => $finalCatatan,
-                    ]);
+                    $createdJobIds = [];
+                    $totalBatchTarif = 0;
+
+                    for ($i = 0; $i < $quantity; $i++) {
+                        $newJob = JobOrder::create([
+                            'tarif_id' => $foundTarif->id,
+                            'kategori' => $foundTarif->kategori,
+                            'status' => $status,
+                            'tarif' => $rate,
+                            'tanggal' => $today,
+                            'catatan' => $finalCatatan,
+                        ]);
+                        $createdJobIds[] = $newJob->id;
+                        $totalBatchTarif += $rate;
+                    }
 
                     $autoCreated = true;
                     $createdJobInfo = [
-                        'id' => $newJob->id,
-                        'kategori' => $newJob->kategori,
-                        'tarif' => $newJob->tarif,
-                        'tanggal' => $newJob->tanggal->format('d/m/Y'),
+                        'id' => implode(',', $createdJobIds),
+                        'count' => $quantity,
+                        'kategori' => $foundTarif->kategori,
+                        'tarif' => $totalBatchTarif,
+                        'tanggal' => Carbon::parse($today)->format('d/m/Y'),
                     ];
 
                     $noteText = $finalCatatan ? " (" . $finalCatatan . ")" : "";
-                    $replyText = "Siap mas, pekerjaan " . $newJob->kategori . " (" . ucfirst($newJob->status) . ")" . $noteText . " sebesar Rp " . number_format($newJob->tarif, 0, ',', '.') . " untuk hari ini telah dicatatkan ke sistem.";
+                    if ($quantity > 1) {
+                        $replyText = "Siap mas, " . $quantity . " pekerjaan " . $foundTarif->kategori . " (" . ucfirst($status) . ")" . $noteText . " senilai Rp " . number_format($rate, 0, ',', '.') . "/JO (Total: Rp " . number_format($totalBatchTarif, 0, ',', '.') . ") untuk hari ini telah berhasil dicatatkan sekaligus ke sistem.";
+                    } else {
+                        $replyText = "Siap mas, pekerjaan " . $foundTarif->kategori . " (" . ucfirst($status) . ")" . $noteText . " sebesar Rp " . number_format($rate, 0, ',', '.') . " untuk hari ini telah dicatatkan ke sistem.";
+                    }
                 }
                 // Scenario B: WhatsApp Recap Generator
                 elseif (str_contains($msgLower, 'wa') || str_contains($msgLower, 'whatsapp') || str_contains($msgLower, 'format')) {
@@ -365,21 +390,33 @@ class AiChatController extends Controller
                                     $rate = (int)$actionData['custom_tarif'];
                                 }
 
-                                $newJob = JobOrder::create([
-                                    'tarif_id' => $tarifModel->id,
-                                    'kategori' => $tarifModel->kategori,
-                                    'status' => $status,
-                                    'tarif' => $rate,
-                                    'tanggal' => $actionData['tanggal'] ?? $today,
-                                    'catatan' => $actionData['catatan'] ?? 'Dicatat via AI Assistant',
-                                ]);
+                                $quantity = isset($actionData['quantity']) && is_numeric($actionData['quantity']) && $actionData['quantity'] > 0
+                                    ? (int)$actionData['quantity']
+                                    : 1;
+
+                                $createdJobIds = [];
+                                $totalBatchTarif = 0;
+
+                                for ($i = 0; $i < min($quantity, 100); $i++) {
+                                    $newJob = JobOrder::create([
+                                        'tarif_id' => $tarifModel->id,
+                                        'kategori' => $tarifModel->kategori,
+                                        'status' => $status,
+                                        'tarif' => $rate,
+                                        'tanggal' => $actionData['tanggal'] ?? $today,
+                                        'catatan' => $actionData['catatan'] ?? 'Dicatat via AI Assistant',
+                                    ]);
+                                    $createdJobIds[] = $newJob->id;
+                                    $totalBatchTarif += $rate;
+                                }
 
                                 $autoCreated = true;
                                 $createdJobInfo = [
-                                    'id' => $newJob->id,
-                                    'kategori' => $newJob->kategori,
-                                    'tarif' => $newJob->tarif,
-                                    'tanggal' => $newJob->tanggal->format('d/m/Y'),
+                                    'id' => implode(',', $createdJobIds),
+                                    'count' => count($createdJobIds),
+                                    'kategori' => $tarifModel->kategori,
+                                    'tarif' => $totalBatchTarif,
+                                    'tanggal' => Carbon::parse($actionData['tanggal'] ?? $today)->format('d/m/Y'),
                                 ];
                             }
                         } catch (\Exception $e) {
@@ -411,21 +448,38 @@ class AiChatController extends Controller
     public function undo($id)
     {
         try {
-            $job = JobOrder::find($id);
+            $ids = array_filter(array_map('trim', explode(',', (string)$id)), function ($v) {
+                return $v !== '' && is_numeric($v);
+            });
 
-            if (!$job) {
+            if (empty($ids)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Transaksi tidak ditemukan atau format ID salah.',
+                ], 404);
+            }
+
+            $jobs = JobOrder::whereIn('id', $ids)->get();
+
+            if ($jobs->isEmpty()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Transaksi tidak ditemukan atau sudah dihapus.',
                 ], 404);
             }
 
-            $info = $job->kategori . ($job->catatan ? " ({$job->catatan})" : "");
-            $job->delete();
+            $count = $jobs->count();
+            $sampleCategory = $jobs->first()->kategori;
+
+            JobOrder::whereIn('id', $ids)->delete();
+
+            $msg = ($count > 1)
+                ? "Pencatatan {$count} data {$sampleCategory} telah berhasil dibatalkan sekaligus."
+                : "Pencatatan {$sampleCategory} telah berhasil dibatalkan.";
 
             return response()->json([
                 'success' => true,
-                'message' => "Pencatatan {$info} telah berhasil dibatalkan.",
+                'message' => $msg,
             ]);
         } catch (\Exception $e) {
             return response()->json([
