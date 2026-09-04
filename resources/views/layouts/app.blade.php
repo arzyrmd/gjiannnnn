@@ -435,7 +435,7 @@
                         <span class="text-[11px] text-slate-400 font-medium">Salah input data?</span>
                         <button 
                             type="button"
-                            onclick="undoCreatedJob(${jobId}, this)" 
+                            onclick="undoCreatedJob('${jobId}', this)" 
                             class="px-2.5 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500 text-rose-300 hover:text-white border border-rose-500/40 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 transition-all cursor-pointer shadow-sm active:scale-95"
                         >
                             <span class="material-symbols-outlined text-xs">undo</span>
@@ -521,20 +521,23 @@
                 return;
             }
 
-            const undoContainer = document.getElementById('undoContainer_' + jobId);
+            const cleanJobId = String(jobId);
+            const undoContainer = btnElement ? (btnElement.closest('[id^="undoContainer_"]') || document.getElementById('undoContainer_' + cleanJobId)) : document.getElementById('undoContainer_' + cleanJobId);
+
             if (btnElement) {
                 btnElement.disabled = true;
                 btnElement.innerHTML = '<span class="material-symbols-outlined text-xs animate-spin">refresh</span> <span>Membatalkan...</span>';
             }
 
             try {
-                const response = await fetch('/ai/undo/' + jobId, {
-                    method: 'DELETE',
+                const response = await fetch("{{ route('ai.undo.post') }}", {
+                    method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
                         'X-CSRF-TOKEN': "{{ csrf_token() }}"
-                    }
+                    },
+                    body: JSON.stringify({ id: cleanJobId })
                 });
 
                 const data = await response.json();
@@ -549,7 +552,7 @@
                     try {
                         let messages = JSON.parse(localStorage.getItem(AI_CHAT_STORAGE_KEY) || '[]');
                         messages = messages.map(m => {
-                            if (m.jobId == jobId) {
+                            if (String(m.jobId) === cleanJobId) {
                                 m.undone = true;
                             }
                             return m;
@@ -568,6 +571,7 @@
                     }
                 }
             } catch (err) {
+                console.error("Undo Error:", err);
                 alert('Gagal terhubung ke server.');
                 if (btnElement) {
                     btnElement.disabled = false;

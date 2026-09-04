@@ -445,10 +445,12 @@ class AiChatController extends Controller
         }
     }
 
-    public function undo($id)
+    public function undo(Request $request, $id = null)
     {
         try {
-            $ids = array_filter(array_map('trim', explode(',', (string)$id)), function ($v) {
+            $rawId = $request->input('id', $id);
+
+            $ids = array_filter(array_map('trim', explode(',', (string)$rawId)), function ($v) {
                 return $v !== '' && is_numeric($v);
             });
 

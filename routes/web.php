@@ -39,5 +39,6 @@ Route::middleware('auth')->group(function () {
 
     // AI Assistant Chatbot API
     Route::post('/ai/chat', [\App\Http\Controllers\AiChatController::class, 'chat'])->name('ai.chat');
-    Route::delete('/ai/undo/{id}', [\App\Http\Controllers\AiChatController::class, 'undo'])->name('ai.undo');
+    Route::post('/ai/undo', [\App\Http\Controllers\AiChatController::class, 'undo'])->name('ai.undo.post');
+    Route::delete('/ai/undo/{id?}', [\App\Http\Controllers\AiChatController::class, 'undo'])->name('ai.undo');
 });
