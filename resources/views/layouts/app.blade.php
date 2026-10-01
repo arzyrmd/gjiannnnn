@@ -78,15 +78,30 @@
 
             <!-- User & Nav Controls -->
             <div class="flex items-center gap-2">
+                @auth
+                    <!-- User Role Badge & Name -->
+                    <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 text-xs font-bold mr-1">
+                        <span class="w-2 h-2 rounded-full {{ auth()->user()->isAdmin() ? 'bg-amber-400 animate-pulse' : 'bg-cyan-400' }}"></span>
+                        <span class="text-white font-mono">{{ auth()->user()->name }}</span>
+                        @if(auth()->user()->isAdmin())
+                            <span class="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-amber-400/20 text-amber-300 border border-amber-400/40">ADMIN</span>
+                        @else
+                            <span class="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-cyan-400/20 text-cyan-300 border border-cyan-400/40">TEKNISI</span>
+                        @endif
+                    </div>
+                @endauth
+
                 <a href="{{ route('dashboard') }}" class="px-3 sm:px-4 py-2 rounded-xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 {{ request()->routeIs('dashboard') ? 'bg-gradient-to-r from-amber-400 via-amber-500 to-orange-400 text-slate-950 shadow-lg shadow-amber-500/20 font-black' : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700/80 hover:text-white border border-slate-700/50' }}" title="Dashboard">
                     <span class="material-symbols-outlined text-lg">dashboard</span>
                     <span class="hidden sm:inline">Dashboard</span>
                 </a>
 
-                <a href="{{ route('tarifs.index') }}" class="px-3 sm:px-4 py-2 rounded-xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 {{ request()->routeIs('tarifs.*') ? 'bg-gradient-to-r from-amber-400 via-amber-500 to-orange-400 text-slate-950 shadow-lg shadow-amber-500/20 font-black' : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700/80 hover:text-white border border-slate-700/50' }}" title="Tarif Admin">
-                    <span class="material-symbols-outlined text-lg">payments</span>
-                    <span class="hidden sm:inline">Tarif Admin</span>
-                </a>
+                @if(auth()->check() && auth()->user()->isAdmin())
+                    <a href="{{ route('tarifs.index') }}" class="px-3 sm:px-4 py-2 rounded-xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 {{ request()->routeIs('tarifs.*') ? 'bg-gradient-to-r from-amber-400 via-amber-500 to-orange-400 text-slate-950 shadow-lg shadow-amber-500/20 font-black' : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700/80 hover:text-white border border-slate-700/50' }}" title="Tarif Admin">
+                        <span class="material-symbols-outlined text-lg">payments</span>
+                        <span class="hidden sm:inline">Tarif Admin</span>
+                    </a>
+                @endif
 
                 <form action="{{ route('logout') }}" method="POST" class="inline">
                     @csrf

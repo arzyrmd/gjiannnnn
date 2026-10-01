@@ -5,6 +5,62 @@
 @section('content')
 <div class="space-y-6 sm:space-y-8">
 
+    @if(auth()->user()->isAdmin())
+        <!-- ADMIN PANEL HEADER & TECHNICIAN FILTER BAR -->
+        <div class="rounded-3xl bg-slate-900/80 backdrop-blur-xl border border-amber-500/30 p-4 sm:p-5 shadow-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative overflow-hidden">
+            <div class="absolute -top-12 -left-12 w-36 h-36 bg-amber-500/10 rounded-full blur-2xl"></div>
+            <div class="flex items-center gap-3.5 relative z-10">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 text-slate-950 flex items-center justify-center font-black shadow-lg shadow-amber-500/20 shrink-0">
+                    <span class="material-symbols-outlined text-2xl">admin_panel_settings</span>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-black uppercase tracking-wider text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-lg border border-amber-500/30">PANEL UTAMA ADMIN</span>
+                        <span class="text-xs font-bold text-slate-300 font-mono">| {{ auth()->user()->name }}</span>
+                    </div>
+                    <p class="text-xs text-slate-400 font-medium mt-0.5">Monitoring Rekap Gaji &amp; Job Order Seluruh Teknisi Lapangan</p>
+                </div>
+            </div>
+
+            <form method="GET" action="{{ route('dashboard') }}" class="flex items-center gap-2 w-full sm:w-auto relative z-10">
+                @if(request('bulan'))
+                    <input type="hidden" name="bulan" value="{{ request('bulan') }}">
+                @endif
+                @if(request('start_date'))
+                    <input type="hidden" name="start_date" value="{{ request('start_date') }}">
+                    <input type="hidden" name="end_date" value="{{ request('end_date') }}">
+                @endif
+
+                <label for="teknisi_id" class="text-xs font-extrabold text-slate-300 uppercase tracking-wider whitespace-nowrap hidden sm:inline">Kabin Teknisi:</label>
+                <select name="teknisi_id" id="teknisi_id" onchange="this.form.submit()" class="w-full sm:w-auto px-4 py-2.5 rounded-2xl bg-slate-950 border border-amber-500/40 text-amber-300 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-amber-400 transition-all cursor-pointer shadow-inner">
+                    <option value="all" {{ ($targetUserId === null) ? 'selected' : '' }}>👥 Semua Teknisi (Ringkasan Global)</option>
+                    @foreach($allTeknisi as $teknisiItem)
+                        <option value="{{ $teknisiItem->id }}" {{ ($targetUserId == $teknisiItem->id) ? 'selected' : '' }}>
+                            👤 {{ $teknisiItem->name }} ({{ $teknisiItem->email }})
+                        </option>
+                    @endforeach
+                </select>
+            </form>
+        </div>
+    @else
+        <!-- TECHNICIAN PANEL HEADER -->
+        <div class="rounded-3xl bg-slate-900/80 backdrop-blur-xl border border-cyan-500/30 p-4 sm:p-5 shadow-2xl flex items-center justify-between gap-4 relative overflow-hidden">
+            <div class="absolute -top-12 -left-12 w-36 h-36 bg-cyan-500/10 rounded-full blur-2xl"></div>
+            <div class="flex items-center gap-3.5 relative z-10">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-500 text-slate-950 flex items-center justify-center font-black shadow-lg shadow-cyan-500/20 shrink-0">
+                    <span class="material-symbols-outlined text-2xl">badge</span>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-black uppercase tracking-wider text-cyan-300 bg-cyan-500/10 px-2.5 py-0.5 rounded-lg border border-cyan-500/30">KABIN GAJIAN TEKNISI</span>
+                        <span class="text-xs font-extrabold text-white font-mono">| {{ auth()->user()->name }}</span>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-0.5">Kalkulator, AI Input &amp; Rekap Pendapatan Pribadi Teknisi</p>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <!-- 1. TOP METRICS SPOTLIGHT (2 MASTER CARDS: HARI INI & BULAN INI) -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         
@@ -569,6 +625,9 @@
                     <tr>
                         <th class="py-4 px-4">#</th>
                         <th class="py-4 px-4">Tanggal</th>
+                        @if(auth()->user()->isAdmin())
+                            <th class="py-4 px-4">Teknisi</th>
+                        @endif
                         <th class="py-4 px-4">Kategori Tugas</th>
                         <th class="py-4 px-4 text-center">Status</th>
                         <th class="py-4 px-4 text-right">Tarif (Snapshot)</th>
@@ -585,6 +644,11 @@
                             <td class="py-4 px-4 font-mono-num text-slate-300 font-bold whitespace-nowrap">
                                 {{ $job->tanggal->format('d/m/Y') }}
                             </td>
+                            @if(auth()->user()->isAdmin())
+                                <td class="py-4 px-4 font-bold text-amber-300 whitespace-nowrap">
+                                    {{ $job->user ? $job->user->name : 'System' }}
+                                </td>
+                            @endif
                             <td class="py-4 px-4 font-bold text-white">
                                 {{ $job->kategori }}
                             </td>

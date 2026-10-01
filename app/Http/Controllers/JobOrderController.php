@@ -38,6 +38,7 @@ class JobOrderController extends Controller
 
         for ($i = 0; $i < $quantity; $i++) {
             JobOrder::create([
+                'user_id' => auth()->id(),
                 'tarif_id' => $tarifModel->id,
                 'kategori' => $tarifModel->kategori, // Snapshot category name
                 'status' => $validated['status'],
@@ -65,6 +66,11 @@ class JobOrderController extends Controller
 
     public function update(Request $request, JobOrder $jobOrder)
     {
+        $user = auth()->user();
+        if ($jobOrder->user_id && $jobOrder->user_id !== $user->id && !$user->isAdmin()) {
+            abort(403, 'Anda tidak memiliki akses untuk mengubah job order ini.');
+        }
+
         $validated = $request->validate([
             'status' => ['required', 'in:berhasil,gagal'],
             'tanggal' => ['required', 'date'],
@@ -117,6 +123,11 @@ class JobOrderController extends Controller
 
     public function destroy(Request $request, JobOrder $jobOrder)
     {
+        $user = auth()->user();
+        if ($jobOrder->user_id && $jobOrder->user_id !== $user->id && !$user->isAdmin()) {
+            abort(403, 'Anda tidak memiliki akses untuk menghapus job order ini.');
+        }
+
         $jobOrder->delete();
 
         if ($request->wantsJson() || $request->ajax()) {
@@ -131,6 +142,7 @@ class JobOrderController extends Controller
 
     public function exportCsv(Request $request)
     {
+        $user = auth()->user();
         $selectedBulan = $request->input('bulan', Carbon::now()->format('Y-m'));
         [$year, $month] = explode('-', $selectedBulan);
 
@@ -138,6 +150,12 @@ class JobOrderController extends Controller
         $endDate = $request->input('end_date');
 
         $query = JobOrder::query();
+
+        if ($user->isTeknisi()) {
+            $query->where('user_id', $user->id);
+        } elseif ($user->isAdmin() && $request->filled('teknisi_id') && $request->input('teknisi_id') !== 'all') {
+            $query->where('user_id', $request->input('teknisi_id'));
+        }
 
         if ($startDate && $endDate) {
             $query->whereBetween('tanggal', [$startDate, $endDate]);
@@ -161,7 +179,7 @@ class JobOrderController extends Controller
             $file = fopen('php://output', 'w');
             fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
             
-            fputcsv($file, ['No', 'Tanggal', 'Kategori Tugas', 'Status', 'Tarif Snapshot (Rp)', 'Catatan']);
+            fputcsv($file, ['No', 'Tanggal', 'Teknisi', 'Kategori Tugas', 'Status', 'Tarif Snapshot (Rp)', 'Catatan']);
 
             $no = 1;
             $totalPendapatan = 0;
@@ -170,6 +188,7 @@ class JobOrderController extends Controller
                 fputcsv($file, [
                     $no++,
                     $job->tanggal->format('Y-m-d'),
+                    $job->user ? $job->user->name : 'System',
                     $job->kategori,
                     ucfirst($job->status),
                     $job->tarif,
@@ -181,7 +200,7 @@ class JobOrderController extends Controller
             $totalJobCount = $jobOrders->filter(fn($j) => !str_starts_with(strtolower($j->kategori), 'piket'))->count();
 
             fputcsv($file, []);
-            fputcsv($file, ['TOTAL JOB ORDER (EXCL. PIKET)', $totalJobCount, '', 'TOTAL PENDAPATAN', $totalPendapatan, '']);
+            fputcsv($file, ['TOTAL JOB ORDER (EXCL. PIKET)', $totalJobCount, '', '', 'TOTAL PENDAPATAN', $totalPendapatan, '']);
 
             fclose($file);
         };
@@ -191,6 +210,7 @@ class JobOrderController extends Controller
 
     public function exportPdf(Request $request)
     {
+        $user = auth()->user();
         $selectedBulan = $request->input('bulan', Carbon::now()->format('Y-m'));
         [$year, $month] = explode('-', $selectedBulan);
 
@@ -198,6 +218,12 @@ class JobOrderController extends Controller
         $endDate = $request->input('end_date');
 
         $query = JobOrder::query();
+
+        if ($user->isTeknisi()) {
+            $query->where('user_id', $user->id);
+        } elseif ($user->isAdmin() && $request->filled('teknisi_id') && $request->input('teknisi_id') !== 'all') {
+            $query->where('user_id', $request->input('teknisi_id'));
+        }
 
         if ($startDate && $endDate) {
             $query->whereBetween('tanggal', [$startDate, $endDate]);
@@ -207,7 +233,7 @@ class JobOrderController extends Controller
             $titlePeriod = "Bulan " . Carbon::createFromDate($year, $month, 1)->translatedFormat('F Y');
         }
 
-        $jobOrders = $query->orderBy('tanggal', 'asc')->get();
+        $jobOrders = $query->with('user')->orderBy('tanggal', 'asc')->get();
 
         $rekapHarian = (clone $query)
             ->selectRaw("tanggal, COUNT(CASE WHEN kategori NOT LIKE 'Piket%' THEN 1 END) as total_job, COUNT(CASE WHEN kategori LIKE 'Piket%' THEN 1 END) as total_piket, SUM(tarif) as total_pendapatan")

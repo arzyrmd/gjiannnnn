@@ -11,6 +11,7 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
+        $user = auth()->user();
         $today = Carbon::today()->toDateString();
         
         // Month filter (format YYYY-MM)
@@ -27,34 +28,50 @@ class DashboardController extends Controller
             $endDate = $request->input('tanggal');
         }
 
-        // Today metrics (Pendapatan total termasuk piket, Total Job menghitung JO murni)
-        $pendapatanHariIni = JobOrder::whereDate('tanggal', $today)->sum('tarif');
-        $totalJobHariIni = JobOrder::whereDate('tanggal', $today)
+        // Active user scoping: Teknisi sees only their own data; Admin sees all or filtered technician
+        $targetUserId = null;
+        if ($user->isTeknisi()) {
+            $targetUserId = $user->id;
+        } elseif ($user->isAdmin() && $request->filled('teknisi_id') && $request->input('teknisi_id') !== 'all') {
+            $targetUserId = $request->input('teknisi_id');
+        }
+
+        $baseQuery = function () use ($targetUserId) {
+            $q = JobOrder::query();
+            if ($targetUserId) {
+                $q->where('user_id', $targetUserId);
+            }
+            return $q;
+        };
+
+        // Today metrics
+        $pendapatanHariIni = $baseQuery()->whereDate('tanggal', $today)->sum('tarif');
+        $totalJobHariIni = $baseQuery()->whereDate('tanggal', $today)
             ->where('kategori', 'not like', 'Piket%')
             ->count();
-        $totalPiketHariIni = JobOrder::whereDate('tanggal', $today)
+        $totalPiketHariIni = $baseQuery()->whereDate('tanggal', $today)
             ->where('kategori', 'like', 'Piket%')
             ->count();
 
         // Selected Month metrics
-        $pendapatanBulanIni = JobOrder::whereYear('tanggal', $year)
+        $pendapatanBulanIni = $baseQuery()->whereYear('tanggal', $year)
             ->whereMonth('tanggal', $month)
             ->sum('tarif');
-        $totalJobBulanIni = JobOrder::whereYear('tanggal', $year)
+        $totalJobBulanIni = $baseQuery()->whereYear('tanggal', $year)
             ->whereMonth('tanggal', $month)
             ->where('kategori', 'not like', 'Piket%')
             ->count();
-        $totalPiketBulanIni = JobOrder::whereYear('tanggal', $year)
+        $totalPiketBulanIni = $baseQuery()->whereYear('tanggal', $year)
             ->whereMonth('tanggal', $month)
             ->where('kategori', 'like', 'Piket%')
             ->count();
-        $pendapatanPiketBulanIni = JobOrder::whereYear('tanggal', $year)
+        $pendapatanPiketBulanIni = $baseQuery()->whereYear('tanggal', $year)
             ->whereMonth('tanggal', $month)
             ->where('kategori', 'like', 'Piket%')
             ->sum('tarif');
 
-        // Daily recap for selected month (total_job menghitung JO murni, total_piket menghitung Piket)
-        $rekapHarian = JobOrder::whereYear('tanggal', $year)
+        // Daily recap for selected month
+        $rekapHarian = $baseQuery()->whereYear('tanggal', $year)
             ->whereMonth('tanggal', $month)
             ->selectRaw("tanggal, COUNT(CASE WHEN kategori NOT LIKE 'Piket%' THEN 1 END) as total_job, COUNT(CASE WHEN kategori LIKE 'Piket%' THEN 1 END) as total_piket, SUM(tarif) as total_pendapatan")
             ->groupBy('tanggal')
@@ -62,22 +79,25 @@ class DashboardController extends Controller
             ->get();
 
         // Detail Job Orders query
-        $detailQuery = JobOrder::query();
+        $detailQuery = $baseQuery();
 
         if ($startDate && $endDate) {
             $detailQuery->whereBetween('tanggal', [$startDate, $endDate]);
         } else {
-            // Default show detail for selected month
             $detailQuery->whereYear('tanggal', $year)->whereMonth('tanggal', $month);
         }
 
-        $detailJobOrders = $detailQuery->orderBy('tanggal', 'desc')
+        $detailJobOrders = $detailQuery->with('user')
+            ->orderBy('tanggal', 'desc')
             ->orderBy('id', 'desc')
             ->paginate(15)
             ->withQueryString();
 
         // Tarifs for quick job order input
         $tarifs = Tarif::orderBy('kategori', 'asc')->get();
+
+        // All technicians for Admin filter dropdown
+        $allTeknisi = $user->isAdmin() ? \App\Models\User::where('role', 'teknisi')->orderBy('name', 'asc')->get() : collect();
 
         return view('dashboard', compact(
             'today',
@@ -95,36 +115,54 @@ class DashboardController extends Controller
             'pendapatanPiketBulanIni',
             'rekapHarian',
             'detailJobOrders',
-            'tarifs'
+            'tarifs',
+            'allTeknisi',
+            'targetUserId'
         ));
     }
 
     public function apiStats(Request $request)
     {
+        $user = auth()->user();
         $today = Carbon::today()->toDateString();
         $selectedBulan = $request->input('bulan', Carbon::now()->format('Y-m'));
         [$year, $month] = explode('-', $selectedBulan);
 
-        $pendapatanHariIni = JobOrder::whereDate('tanggal', $today)->sum('tarif');
-        $totalJobHariIni = JobOrder::whereDate('tanggal', $today)
+        $targetUserId = null;
+        if ($user->isTeknisi()) {
+            $targetUserId = $user->id;
+        } elseif ($user->isAdmin() && $request->filled('teknisi_id') && $request->input('teknisi_id') !== 'all') {
+            $targetUserId = $request->input('teknisi_id');
+        }
+
+        $baseQuery = function () use ($targetUserId) {
+            $q = JobOrder::query();
+            if ($targetUserId) {
+                $q->where('user_id', $targetUserId);
+            }
+            return $q;
+        };
+
+        $pendapatanHariIni = $baseQuery()->whereDate('tanggal', $today)->sum('tarif');
+        $totalJobHariIni = $baseQuery()->whereDate('tanggal', $today)
             ->where('kategori', 'not like', 'Piket%')
             ->count();
-        $totalPiketHariIni = JobOrder::whereDate('tanggal', $today)
+        $totalPiketHariIni = $baseQuery()->whereDate('tanggal', $today)
             ->where('kategori', 'like', 'Piket%')
             ->count();
 
-        $pendapatanBulanIni = JobOrder::whereYear('tanggal', $year)
+        $pendapatanBulanIni = $baseQuery()->whereYear('tanggal', $year)
             ->whereMonth('tanggal', $month)
             ->sum('tarif');
-        $totalJobBulanIni = JobOrder::whereYear('tanggal', $year)
+        $totalJobBulanIni = $baseQuery()->whereYear('tanggal', $year)
             ->whereMonth('tanggal', $month)
             ->where('kategori', 'not like', 'Piket%')
             ->count();
-        $totalPiketBulanIni = JobOrder::whereYear('tanggal', $year)
+        $totalPiketBulanIni = $baseQuery()->whereYear('tanggal', $year)
             ->whereMonth('tanggal', $month)
             ->where('kategori', 'like', 'Piket%')
             ->count();
-        $pendapatanPiketBulanIni = JobOrder::whereYear('tanggal', $year)
+        $pendapatanPiketBulanIni = $baseQuery()->whereYear('tanggal', $year)
             ->whereMonth('tanggal', $month)
             ->where('kategori', 'like', 'Piket%')
             ->sum('tarif');

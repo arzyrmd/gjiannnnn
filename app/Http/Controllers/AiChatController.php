@@ -22,26 +22,29 @@ class AiChatController extends Controller
             $userMessage = trim($request->input('message'));
             $apiKey = config('services.gemini.key');
 
-            // 1. Gather live technician context
+            // 1. Gather live technician context for current user
+            $userId = auth()->id();
             $today = Carbon::today()->toDateString();
             $now = Carbon::now();
             $year = $now->year;
             $month = sprintf('%02d', $now->month);
 
-            $pendapatanHariIni = JobOrder::whereDate('tanggal', $today)->sum('tarif');
-            $totalJobHariIni = JobOrder::whereDate('tanggal', $today)->where('kategori', 'not like', 'Piket%')->count();
-            $totalPiketHariIni = JobOrder::whereDate('tanggal', $today)->where('kategori', 'like', 'Piket%')->count();
+            $baseQuery = fn() => JobOrder::where('user_id', $userId);
 
-            $pendapatanBulanIni = JobOrder::whereYear('tanggal', $year)->whereMonth('tanggal', $month)->sum('tarif');
-            $totalJobBulanIni = JobOrder::whereYear('tanggal', $year)->whereMonth('tanggal', $month)->where('kategori', 'not like', 'Piket%')->count();
-            $totalPiketBulanIni = JobOrder::whereYear('tanggal', $year)->whereMonth('tanggal', $month)->where('kategori', 'like', 'Piket%')->count();
+            $pendapatanHariIni = $baseQuery()->whereDate('tanggal', $today)->sum('tarif');
+            $totalJobHariIni = $baseQuery()->whereDate('tanggal', $today)->where('kategori', 'not like', 'Piket%')->count();
+            $totalPiketHariIni = $baseQuery()->whereDate('tanggal', $today)->where('kategori', 'like', 'Piket%')->count();
+
+            $pendapatanBulanIni = $baseQuery()->whereYear('tanggal', $year)->whereMonth('tanggal', $month)->sum('tarif');
+            $totalJobBulanIni = $baseQuery()->whereYear('tanggal', $year)->whereMonth('tanggal', $month)->where('kategori', 'not like', 'Piket%')->count();
+            $totalPiketBulanIni = $baseQuery()->whereYear('tanggal', $year)->whereMonth('tanggal', $month)->where('kategori', 'like', 'Piket%')->count();
 
             $tarifs = Tarif::orderBy('kategori', 'asc')->get();
             $tarifListStr = $tarifs->map(function ($t) {
                 return "- ID " . $t->id . ": " . $t->kategori . " (Berhasil: Rp " . number_format($t->tarif_berhasil, 0, ',', '.') . ", Gagal: Rp " . number_format($t->tarif_gagal ?? 0, 0, ',', '.') . ")";
             })->implode("\n");
 
-            $recentJobs = JobOrder::whereYear('tanggal', $year)
+            $recentJobs = $baseQuery()->whereYear('tanggal', $year)
                 ->whereMonth('tanggal', $month)
                 ->orderBy('tanggal', 'desc')
                 ->orderBy('id', 'desc')
@@ -286,6 +289,7 @@ class AiChatController extends Controller
 
                     for ($i = 0; $i < $quantity; $i++) {
                         $newJob = JobOrder::create([
+                            'user_id' => auth()->id(),
                             'tarif_id' => $foundTarif->id,
                             'kategori' => $foundTarif->kategori,
                             'status' => $status,
@@ -424,6 +428,7 @@ class AiChatController extends Controller
 
                                 for ($i = 0; $i < min($quantity, 100); $i++) {
                                     $newJob = JobOrder::create([
+                                        'user_id' => auth()->id(),
                                         'tarif_id' => $tarifModel->id,
                                         'kategori' => $tarifModel->kategori,
                                         'status' => $status,
