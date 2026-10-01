@@ -16,6 +16,8 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
+use App\Http\Controllers\UserController;
+
 // Protected Routes
 Route::middleware('auth')->group(function () {
     // Dashboard & Rekap
@@ -30,11 +32,20 @@ Route::middleware('auth')->group(function () {
     Route::get('/export/csv', [JobOrderController::class, 'exportCsv'])->name('export.csv');
     Route::get('/export/pdf', [JobOrderController::class, 'exportPdf'])->name('export.pdf');
 
-    // Admin Tarif Management
-    Route::get('/tarifs', [TarifController::class, 'index'])->name('tarifs.index');
-    Route::post('/tarifs', [TarifController::class, 'store'])->name('tarifs.store');
-    Route::put('/tarifs/{tarif}', [TarifController::class, 'update'])->name('tarifs.update');
-    Route::delete('/tarifs/{tarif}', [TarifController::class, 'destroy'])->name('tarifs.destroy');
+    // Admin Routes (Kelola User & Kelola Tarif)
+    Route::middleware('admin')->group(function () {
+        // User Management
+        Route::get('/users', [UserController::class, 'index'])->name('users.index');
+        Route::post('/users', [UserController::class, 'store'])->name('users.store');
+        Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+        Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+
+        // Tarif Management
+        Route::get('/tarifs', [TarifController::class, 'index'])->name('tarifs.index');
+        Route::post('/tarifs', [TarifController::class, 'store'])->name('tarifs.store');
+        Route::put('/tarifs/{tarif}', [TarifController::class, 'update'])->name('tarifs.update');
+        Route::delete('/tarifs/{tarif}', [TarifController::class, 'destroy'])->name('tarifs.destroy');
+    });
 
     // Dashboard Stats API (Real-time Ajax Refresh)
     Route::get('/api/dashboard-stats', [DashboardController::class, 'apiStats'])->name('dashboard.stats');

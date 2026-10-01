@@ -30,12 +30,6 @@ class AppServiceProvider extends ServiceProvider
                     $table->string('role')->default('teknisi');
                 });
             }
-
-            if (\Illuminate\Support\Facades\Schema::hasTable('job_orders') && !\Illuminate\Support\Facades\Schema::hasColumn('job_orders', 'user_id')) {
-                \Illuminate\Support\Facades\Schema::table('job_orders', function (\Illuminate\Database\Schema\Blueprint $table) {
-                    $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
-                });
-            }
         } catch (\Throwable $e) {
             // Ignore database boot check exceptions
         }

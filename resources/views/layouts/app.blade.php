@@ -77,10 +77,10 @@
             </a>
 
             <!-- User & Nav Controls -->
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-1.5 sm:gap-2">
                 @auth
                     <!-- User Role Badge & Name -->
-                    <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 text-xs font-bold mr-1">
+                    <div class="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 text-xs font-bold mr-1">
                         <span class="w-2 h-2 rounded-full {{ auth()->user()->isAdmin() ? 'bg-amber-400 animate-pulse' : 'bg-cyan-400' }}"></span>
                         <span class="text-white font-mono">{{ auth()->user()->name }}</span>
                         @if(auth()->user()->isAdmin())
@@ -91,23 +91,31 @@
                     </div>
                 @endauth
 
-                <a href="{{ route('dashboard') }}" class="px-3 sm:px-4 py-2 rounded-xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 {{ request()->routeIs('dashboard') ? 'bg-gradient-to-r from-amber-400 via-amber-500 to-orange-400 text-slate-950 shadow-lg shadow-amber-500/20 font-black' : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700/80 hover:text-white border border-slate-700/50' }}" title="Dashboard">
-                    <span class="material-symbols-outlined text-lg">dashboard</span>
-                    <span class="hidden sm:inline">Dashboard</span>
+                <!-- Monitoring / Dashboard Link -->
+                <a href="{{ route('dashboard') }}" class="px-2.5 sm:px-3.5 py-2 rounded-xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 {{ request()->routeIs('dashboard') ? 'bg-gradient-to-r from-amber-400 via-amber-500 to-orange-400 text-slate-950 shadow-lg shadow-amber-500/20 font-black' : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700/80 hover:text-white border border-slate-700/50' }}" title="Monitoring System">
+                    <span class="material-symbols-outlined text-lg">monitoring</span>
+                    <span class="hidden sm:inline">{{ auth()->check() && auth()->user()->isAdmin() ? 'Monitoring' : 'Dashboard' }}</span>
                 </a>
 
                 @if(auth()->check() && auth()->user()->isAdmin())
-                    <a href="{{ route('tarifs.index') }}" class="px-3 sm:px-4 py-2 rounded-xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 {{ request()->routeIs('tarifs.*') ? 'bg-gradient-to-r from-amber-400 via-amber-500 to-orange-400 text-slate-950 shadow-lg shadow-amber-500/20 font-black' : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700/80 hover:text-white border border-slate-700/50' }}" title="Tarif Admin">
+                    <!-- Data User Link -->
+                    <a href="{{ route('users.index') }}" class="px-2.5 sm:px-3.5 py-2 rounded-xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 {{ request()->routeIs('users.*') ? 'bg-gradient-to-r from-amber-400 via-amber-500 to-orange-400 text-slate-950 shadow-lg shadow-amber-500/20 font-black' : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700/80 hover:text-white border border-slate-700/50' }}" title="Kelola User &amp; Teknisi">
+                        <span class="material-symbols-outlined text-lg">manage_accounts</span>
+                        <span class="hidden sm:inline">Data User</span>
+                    </a>
+
+                    <!-- Data Tarif Link -->
+                    <a href="{{ route('tarifs.index') }}" class="px-2.5 sm:px-3.5 py-2 rounded-xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 {{ request()->routeIs('tarifs.*') ? 'bg-gradient-to-r from-amber-400 via-amber-500 to-orange-400 text-slate-950 shadow-lg shadow-amber-500/20 font-black' : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700/80 hover:text-white border border-slate-700/50' }}" title="Kelola Master Tarif">
                         <span class="material-symbols-outlined text-lg">payments</span>
-                        <span class="hidden sm:inline">Tarif Admin</span>
+                        <span class="hidden sm:inline">Data Tarif</span>
                     </a>
                 @endif
 
                 <form action="{{ route('logout') }}" method="POST" class="inline">
                     @csrf
-                    <button type="submit" class="px-3 py-2 rounded-xl bg-rose-950/60 hover:bg-rose-900/80 border border-rose-800/60 text-rose-300 hover:text-rose-100 font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer" title="Logout">
+                    <button type="submit" class="px-2.5 sm:px-3 py-2 rounded-xl bg-rose-950/60 hover:bg-rose-900/80 border border-rose-800/60 text-rose-300 hover:text-rose-100 font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer" title="Logout">
                         <span class="material-symbols-outlined text-lg">logout</span>
-                        <span class="hidden sm:inline">Logout</span>
+                        <span class="hidden md:inline">Logout</span>
                     </button>
                 </form>
             </div>
