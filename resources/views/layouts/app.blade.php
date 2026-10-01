@@ -31,6 +31,17 @@
             vertical-align: middle;
             line-height: 1;
         }
+        /* Mobile Scroll Containment for AI Chatbot */
+        #aiChatWindow {
+            overscroll-behavior: contain;
+            overscroll-behavior-y: contain;
+            touch-action: pan-y;
+        }
+        #aiMessagesContainer {
+            overscroll-behavior: contain;
+            overscroll-behavior-y: contain;
+            -webkit-overflow-scrolling: touch;
+        }
         @media print {
             .no-print { display: none !important; }
             body { background: white !important; color: black !important; }
@@ -298,6 +309,9 @@
             if (chatWin) {
                 chatWin.classList.remove('hidden');
                 if (fabBtn) fabBtn.classList.add('hidden');
+                if (window.innerWidth < 640) {
+                    document.body.style.overflow = 'hidden';
+                }
                 document.getElementById('aiInputText')?.focus();
             }
         }
@@ -308,6 +322,7 @@
             if (chatWin) {
                 chatWin.classList.add('hidden');
                 if (fabBtn) fabBtn.classList.remove('hidden');
+                document.body.style.overflow = '';
             }
         }
 
