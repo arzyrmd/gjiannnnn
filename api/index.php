@@ -34,14 +34,15 @@ putenv('APP_DEBUG=true');
 // SQLite database copy for Vercel Serverless
 $sqliteDbPath = '/tmp/database.sqlite';
 $sourceDb = __DIR__ . '/../database/database.sqlite';
-if (!file_exists($sqliteDbPath)) {
-    if (file_exists($sourceDb)) {
+if (file_exists($sourceDb)) {
+    if (!file_exists($sqliteDbPath) || filemtime($sourceDb) > filemtime($sqliteDbPath) || filesize($sqliteDbPath) < 1000) {
         @copy($sourceDb, $sqliteDbPath);
-    } else {
-        @touch($sqliteDbPath);
+        @chmod($sqliteDbPath, 0666);
     }
+} else if (!file_exists($sqliteDbPath)) {
+    @touch($sqliteDbPath);
+    @chmod($sqliteDbPath, 0666);
 }
-@chmod($sqliteDbPath, 0666);
 
 putenv('DB_CONNECTION=sqlite');
 putenv("DB_DATABASE={$sqliteDbPath}");
