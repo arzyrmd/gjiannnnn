@@ -65,13 +65,13 @@
 
                 <div class="space-y-2">
                     <label for="email" class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider">
-                        Email Teknisi
+                        Email User
                     </label>
                     <input 
                         type="email" 
                         name="email" 
                         id="email" 
-                        value="{{ old('email', 'teknisi@gajianarmn.com') }}" 
+                        value="{{ old('email') }}" 
                         required 
                         autofocus
                         class="w-full px-4 py-3.5 rounded-2xl bg-slate-950/90 border border-slate-700/80 text-white font-mono placeholder:text-slate-600 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition-all text-sm"
@@ -87,7 +87,7 @@
                         type="password" 
                         name="password" 
                         id="password" 
-                        value="password123"
+                        value=""
                         required 
                         class="w-full px-4 py-3.5 rounded-2xl bg-slate-950/90 border border-slate-700/80 text-white font-mono placeholder:text-slate-600 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition-all text-sm"
                         placeholder="••••••••"
@@ -105,21 +105,20 @@
                     type="submit" 
                     class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-orange-400 hover:from-amber-300 hover:to-orange-300 active:scale-[0.98] text-slate-950 font-black text-sm uppercase tracking-wider shadow-lg shadow-amber-500/25 transition-all cursor-pointer flex items-center justify-center gap-2"
                 >
-                    <span>MASUK KABIN TEKNISI</span>
+                    <span>MASUK KABIN GAJIAN</span>
                     <span class="material-symbols-outlined text-xl">arrow_forward</span>
                 </button>
             </form>
 
-            <!-- Quick Credentials Info Box -->
-            <div class="p-4 rounded-2xl bg-slate-950/90 border border-slate-800/80 text-xs space-y-1.5 shadow-inner">
-                <span class="font-black text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-base">info</span>
-                    <span>Kredensial Default Seeder:</span>
-                </span>
-                <div class="font-mono text-[11px] text-slate-300 pl-6 leading-relaxed">
-                    Email: <span class="text-white font-bold">teknisi@gajianarmn.com</span><br>
-                    Pass: <span class="text-white font-bold">password123</span>
-                </div>
+            <!-- Registration Redirect Link -->
+            <div class="pt-4 border-t border-slate-800/80 text-center">
+                <p class="text-xs text-slate-400">
+                    Belum punya akun teknisi? 
+                    <a href="{{ route('register') }}" class="font-bold text-amber-400 hover:text-amber-300 underline transition-colors inline-flex items-center gap-1">
+                        <span>Daftar Akun Teknisi</span>
+                        <span class="material-symbols-outlined text-sm">person_add</span>
+                    </a>
+                </p>
             </div>
         </div>
     </div>

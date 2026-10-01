@@ -13,12 +13,14 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        // Admin Utama
         User::updateOrCreate(
-            ['email' => 'teknisi@gajianarmn.com'],
+            ['email' => 'admin@gajianarmn.com'],
             [
-                'name' => 'Teknisi Lapangan',
-                'email' => 'teknisi@gajianarmn.com',
+                'name' => 'Admin Utama',
+                'email' => 'admin@gajianarmn.com',
                 'password' => Hash::make('password123'),
+                'role' => 'admin',
             ]
         );
     }
