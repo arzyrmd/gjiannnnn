@@ -26,7 +26,9 @@ class AppServiceProvider extends ServiceProvider
 
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('users') && !\Illuminate\Support\Facades\Schema::hasColumn('users', 'role')) {
-                \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+                \Illuminate\Support\Facades\Schema::table('users', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->string('role')->default('teknisi');
+                });
             }
         } catch (\Throwable $e) {
             // Ignore database boot check exceptions
