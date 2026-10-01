@@ -67,9 +67,10 @@ class AiChatController extends Controller
                 . "GAYA BAHASA & PETUNJUK RESPONS:\n"
                 . "1. Gunakan bahasa Indonesia yang santai, manusiawi, ramah, dan sopan (seperti rekan kerja lapangan yang sigap).\n"
                 . "2. Hindari penggunaan emoji atau ikon yang berlebihan.\n"
-                . "3. Jika teknisi bermaksud MENCATAT JOB ORDER / PIKET BARU via percakapan (termasuk input jumlah banyak seperti 'proaktif 10', 'faktur 5', 'qris 8', dll):\n"
-                . "   - Analisis kategori, jumlah (quantity), dan statusnya.\n"
-                . "   - Jawab dengan konfirmasi ramah yang natural.\n"
+                . "3. ATURAN PENTING PENCATATAN JOB ORDER / PIKET BARU (termasuk input jumlah banyak misal: 'projek 15', '15 projek', 'proaktif 10', 'faktur 5', 'qris 8', dll):\n"
+                . "   - BILA PENGGUNA MENULIS NAMA KATEGORI DIIKUTI ANGKA 1-100 (CONTOH: 'projek 15', 'faktur 10', 'qris 8', '15 projek'), ANGKA TERSEBUT ADALAH JUMLAH/QUANTITY PEKERJAAN (quantity: 15), BUKAN NOMINAL TARIF (custom_tarif: null)!\n"
+                . "   - Gunakan tarif resmi dari DAFTAR MASTER KATEGORI & TARIF OFFICIAL di atas. Set custom_tarif = null, KECUALI bila piket event atau jika pengguna mengetik angka ribuan/nominal misal '75k', '100rb', '50000'.\n"
+                . "   - ATURAN CATATAN (catatan): JANGAN pernah mengisi 'catatan' dengan nama kategori itu sendiri (contoh: JANGAN isi 'catatan': 'Projek' jika kategorinya 'Projek'). Jika pengguna tidak menyebut nama merchant/lokasi toko spesifik, isi 'catatan': null.\n"
                 . "   - Di akhir jawabanmu, SERTAKAN JSON ACTION dalam blok kode json persis dengan format berikut:\n"
                 . "     ```json\n"
                 . "     {\n"
@@ -78,9 +79,9 @@ class AiChatController extends Controller
                 . "       \"kategori\": \"NAMA_KATEGORI\",\n"
                 . "       \"status\": \"berhasil_atau_gagal\",\n"
                 . "       \"tanggal\": \"YYYY-MM-DD\",\n"
-                . "       \"catatan\": \"Catatan singkat jika ada\",\n"
-                . "       \"custom_tarif\": nominal_angka_jika_piket_event_atau_null,\n"
-                . "       \"quantity\": jumlah_angka_integer_misal_10\n"
+                . "       \"catatan\": \"Merchant/lokasi toko spesifik jika ada, atau null\",\n"
+                . "       \"custom_tarif\": null_atau_nominal_angka,\n"
+                . "       \"quantity\": JUMLAH_ANGKA_INTEGER_MISAL_15\n"
                 . "     }\n"
                 . "     ```\n"
                 . "4. Jika teknisi meminta rekap WhatsApp, buatkan format pesan ringkas yang rapi tanpa berlebihan.";
@@ -117,7 +118,7 @@ class AiChatController extends Controller
                                 ],
                                 'contents' => $userContents,
                                 'generationConfig' => [
-                                    'temperature' => 0.4,
+                                    'temperature' => 0.3,
                                     'maxOutputTokens' => 1000,
                                 ],
                             ]);
@@ -141,63 +142,62 @@ class AiChatController extends Controller
 
             if (empty($replyText)) {
                 $msgLower = strtolower($userMessage);
-                // Normalize spaced "pro aktif" / "pro-aktif" to "proaktif"
+                // Normalize spaced "pro aktif" / "pro-aktif" / "project" to "proaktif"
                 $msgNorm = preg_replace('/pro[\s\-]*aktif/i', 'proaktif', $msgLower);
 
                 // 1. Comprehensive Master Category & Slang Detection
                 $foundTarif = null;
 
-                if (str_contains($msgNorm, 'proaktif mall') 
-                    || str_contains($msgNorm, 'proaktif dalam') 
-                    || str_contains($msgNorm, 'proaktif didalam') 
-                    || str_contains($msgNorm, 'pm dalam') 
-                    || str_contains($msgNorm, 'pm didalam') 
-                    || str_contains($msgNorm, 'maintenance dalam')
-                    || str_contains($msgNorm, 'maintenance didalam')
-                    || str_contains($msgNorm, 'pm mall')
-                    || str_contains($msgNorm, 'pm mal')
-                ) {
-                    $foundTarif = $tarifs->first(fn($t) => str_contains(strtolower($t->kategori), 'dalam mall'));
-                } elseif (str_contains($msgNorm, 'proaktif luar') 
-                    || str_contains($msgNorm, 'pm luar') 
-                    || str_contains($msgNorm, 'maintenance luar')
-                    || str_contains($msgNorm, 'proaktif maintenance luar')
-                ) {
-                    $foundTarif = $tarifs->first(fn($t) => str_contains(strtolower($t->kategori), 'luar mall'));
-                } elseif (str_contains($msgNorm, 'proaktif') || str_contains($msgNorm, 'maintenance') || preg_match('/\bpm\b/i', $msgNorm)) {
-                    if (str_contains($msgNorm, 'mall') || str_contains($msgNorm, 'mal') || str_contains($msgNorm, 'dalam') || str_contains($msgNorm, 'didalam')) {
-                        $foundTarif = $tarifs->first(fn($t) => str_contains(strtolower($t->kategori), 'dalam mall'));
-                    } else {
-                        $foundTarif = $tarifs->first(fn($t) => str_contains(strtolower($t->kategori), 'luar mall'));
+                // First check exact DB category names match
+                foreach ($tarifs as $t) {
+                    $katLower = strtolower($t->kategori);
+                    $cleanKatLower = trim(preg_replace('/\(.*?\)/', '', $katLower));
+                    if (str_contains($msgNorm, $katLower) || ($cleanKatLower !== '' && str_contains($msgNorm, $cleanKatLower))) {
+                        $foundTarif = $t;
+                        break;
                     }
-                } elseif (str_contains($msgNorm, 'tarik edc') || str_contains($msgNorm, 'penarikan') || str_contains($msgNorm, 'cabut edc')) {
-                    $foundTarif = $tarifs->first(fn($t) => str_contains(strtolower($t->kategori), 'penarikan'));
-                } elseif (str_contains($msgNorm, 'pasang edc') || str_contains($msgNorm, 'pemasangan') || str_contains($msgNorm, 'edc') || str_contains($msgNorm, 'instalasi')) {
-                    $foundTarif = $tarifs->first(fn($t) => str_contains(strtolower($t->kategori), 'pemasangan edc') || str_contains(strtolower($t->kategori), 'edc'));
-                } elseif (str_contains($msgNorm, 'qris')) {
-                    $foundTarif = $tarifs->first(fn($t) => str_contains(strtolower($t->kategori), 'qris'));
-                } elseif (str_contains($msgNorm, 'piket mall') || str_contains($msgNorm, 'piket mal')) {
-                    $foundTarif = $tarifs->first(fn($t) => str_contains(strtolower($t->kategori), 'piket mall'));
-                } elseif (str_contains($msgNorm, 'piket event') || str_contains($msgNorm, 'event') || str_contains($msgNorm, 'piket acara')) {
-                    $foundTarif = $tarifs->first(fn($t) => str_contains(strtolower($t->kategori), 'piket event'));
-                } elseif (str_contains($msgNorm, 'piket')) {
-                    $foundTarif = $tarifs->first(fn($t) => str_contains(strtolower($t->kategori), 'piket'));
-                } elseif (str_contains($msgNorm, 'faktur')) {
-                    $foundTarif = $tarifs->first(fn($t) => str_contains(strtolower($t->kategori), 'faktur'));
-                } elseif (str_contains($msgNorm, 'kunjungan') || str_contains($msgNorm, 'visit')) {
-                    $foundTarif = $tarifs->first(fn($t) => str_contains(strtolower($t->kategori), 'kunjungan'));
-                } elseif (str_contains($msgNorm, 'init')) {
-                    $foundTarif = $tarifs->first(fn($t) => str_contains(strtolower($t->kategori), 'init'));
                 }
 
+                // If not matched, check shorthand slang keywords
                 if (!$foundTarif) {
-                    foreach ($tarifs as $t) {
-                        $katLower = strtolower($t->kategori);
-                        $cleanKatLower = str_replace(['(', ')'], '', $katLower);
-                        if (str_contains($msgNorm, $katLower) || str_contains($msgNorm, $cleanKatLower)) {
-                            $foundTarif = $t;
-                            break;
-                        }
+                    if (str_contains($msgNorm, 'proaktif mall') 
+                        || str_contains($msgNorm, 'proaktif dalam') 
+                        || str_contains($msgNorm, 'proaktif didalam') 
+                        || str_contains($msgNorm, 'pm dalam') 
+                        || str_contains($msgNorm, 'pm didalam') 
+                        || str_contains($msgNorm, 'maintenance dalam')
+                        || str_contains($msgNorm, 'maintenance didalam')
+                        || str_contains($msgNorm, 'pm mall')
+                        || str_contains($msgNorm, 'pm mal')
+                    ) {
+                        $foundTarif = $tarifs->first(fn($t) => str_contains(strtolower($t->kategori), 'dalam mall'));
+                    } elseif (str_contains($msgNorm, 'proaktif luar') 
+                        || str_contains($msgNorm, 'pm luar') 
+                        || str_contains($msgNorm, 'maintenance luar')
+                        || str_contains($msgNorm, 'proaktif maintenance luar')
+                    ) {
+                        $foundTarif = $tarifs->first(fn($t) => str_contains(strtolower($t->kategori), 'luar mall'));
+                    } elseif (str_contains($msgNorm, 'proaktif') || str_contains($msgNorm, 'projek') || str_contains($msgNorm, 'project') || str_contains($msgNorm, 'maintenance') || preg_match('/\bpm\b/i', $msgNorm)) {
+                        $foundTarif = $tarifs->first(fn($t) => str_contains(strtolower($t->kategori), 'proaktif') || str_contains(strtolower($t->kategori), 'projek') || str_contains(strtolower($t->kategori), 'maintenance'))
+                                    ?? $tarifs->first(fn($t) => str_contains(strtolower($t->kategori), 'dalam mall'));
+                    } elseif (str_contains($msgNorm, 'tarik edc') || str_contains($msgNorm, 'penarikan') || str_contains($msgNorm, 'cabut edc')) {
+                        $foundTarif = $tarifs->first(fn($t) => str_contains(strtolower($t->kategori), 'penarikan'));
+                    } elseif (str_contains($msgNorm, 'pasang edc') || str_contains($msgNorm, 'pemasangan') || str_contains($msgNorm, 'edc') || str_contains($msgNorm, 'instalasi')) {
+                        $foundTarif = $tarifs->first(fn($t) => str_contains(strtolower($t->kategori), 'pemasangan edc') || str_contains(strtolower($t->kategori), 'edc'));
+                    } elseif (str_contains($msgNorm, 'qris')) {
+                        $foundTarif = $tarifs->first(fn($t) => str_contains(strtolower($t->kategori), 'qris'));
+                    } elseif (str_contains($msgNorm, 'piket mall') || str_contains($msgNorm, 'piket mal')) {
+                        $foundTarif = $tarifs->first(fn($t) => str_contains(strtolower($t->kategori), 'piket mall'));
+                    } elseif (str_contains($msgNorm, 'piket event') || str_contains($msgNorm, 'event') || str_contains($msgNorm, 'piket acara')) {
+                        $foundTarif = $tarifs->first(fn($t) => str_contains(strtolower($t->kategori), 'piket event'));
+                    } elseif (str_contains($msgNorm, 'piket')) {
+                        $foundTarif = $tarifs->first(fn($t) => str_contains(strtolower($t->kategori), 'piket'));
+                    } elseif (str_contains($msgNorm, 'faktur')) {
+                        $foundTarif = $tarifs->first(fn($t) => str_contains(strtolower($t->kategori), 'faktur'));
+                    } elseif (str_contains($msgNorm, 'kunjungan') || str_contains($msgNorm, 'visit')) {
+                        $foundTarif = $tarifs->first(fn($t) => str_contains(strtolower($t->kategori), 'kunjungan'));
+                    } elseif (str_contains($msgNorm, 'init')) {
+                        $foundTarif = $tarifs->first(fn($t) => str_contains(strtolower($t->kategori), 'init'));
                     }
                 }
 
@@ -206,7 +206,7 @@ class AiChatController extends Controller
                     || str_contains($msgNorm, 'input') 
                     || str_contains($msgNorm, 'tambah');
 
-                // Scenario A: Auto-record job order (supports batch / quantity e.g. "proaktif 10", "faktur 5")
+                // Scenario A: Auto-record job order
                 if ($isJobRequest) {
                     if (!$foundTarif) {
                         $foundTarif = $tarifs->first();
@@ -232,14 +232,15 @@ class AiChatController extends Controller
                         }
                     }
 
-                    // Smart Quantity / Batch Extractor (e.g., "proaktif mall 19", "proaktif 10", "10 proaktif", "faktur 5", "qris 8")
+                    // Smart Universal Quantity / Batch Extractor (e.g., "projek 15", "15 projek", "proaktif 10", "faktur 5", "qris 8")
                     $quantity = 1;
-                    if (preg_match('/\b(\d{1,2})\b\s*(?:x|kali|buah|unit|jo)?\s*(?:pekerjaan|tugas|transaksi)?\s*(?:proaktif|pm|faktur|edc|qris|piket|visit|kunjungan|init|dalam|luar|mall|mal)/i', $msgNorm, $qtyMatch)) {
-                        $quantity = (int)$qtyMatch[1];
-                    } elseif (preg_match('/(?:proaktif|pm|faktur|edc|qris|piket|visit|kunjungan|init|jo|mall|mal|dalam|luar)[^0-9]*\b(\d{1,2})\b/i', $msgNorm, $qtyMatch)) {
-                        $quantity = (int)$qtyMatch[1];
-                    } elseif (preg_match('/\b(\d{1,2})\s*(?:x|kali|buah|unit|jo)\b/i', $msgNorm, $qtyMatch)) {
-                        $quantity = (int)$qtyMatch[1];
+                    if (preg_match('/\b(\d{1,2})\b/i', $msgNorm, $qtyMatch)) {
+                        $candidateQty = (int)$qtyMatch[1];
+                        if ($candidateQty >= 1 && $candidateQty <= 100) {
+                            if (!preg_match('/\b' . $candidateQty . '\s*(?:rb|k|000)\b/i', $msgNorm)) {
+                                $quantity = $candidateQty;
+                            }
+                        }
                     }
 
                     $quantity = max(1, min(100, $quantity));
@@ -252,9 +253,9 @@ class AiChatController extends Controller
 
                     $removeWords = [
                         'catat', 'input', 'tambah', 'berhasil', 'gagal', 'batal', 'cancel', 'unsuccessful',
-                        'hari ini', 'kemarin', 'besok', 'nominal', 'sebesar', 'kategori', 'kirim faktur', 'faktur',
-                        'kunjungan', 'visit', 'pemasangan edc', 'penarikan edc', 'pasang baru qris', 'qris', 'edc', 'init',
-                        'pasang', 'tarik', 'cabut', 'instalasi',
+                        'hari ini', 'kemarin', 'besok', 'nominal', 'sebesar', 'kategori', 'projek', 'project',
+                        'kirim faktur', 'faktur', 'kunjungan', 'visit', 'pemasangan edc', 'penarikan edc',
+                        'pasang baru qris', 'qris', 'edc', 'init', 'pasang', 'tarik', 'cabut', 'instalasi',
                         'piket mall (diluar jo)', 'piket mall', 'piket mal', 'piket event', 'piket acara', 'piket', 'event',
                         'proaktif maintenance dalam mall', 'proaktif maintenance luar mall', 'proaktif maintenance',
                         'proaktif dalam mall', 'proaktif luar mall', 'proaktif mall', 'proaktif luar', 'proaktif',
@@ -262,15 +263,21 @@ class AiChatController extends Controller
                         'pm dalam mall', 'pm luar mall', 'pm dalam', 'pm luar', 'pm mall', 'pm', 'maintenance',
                         'toko', 'merchant', 'store', 'di'
                     ];
+                    if ($foundTarif) {
+                        $removeWords = array_merge($removeWords, explode(' ', strtolower($foundTarif->kategori)));
+                    }
 
                     $cleanNote = preg_replace('/\b\d+(?:\.\d+)?(?:rb|k)?\b/i', '', $cleanNote);
 
                     foreach ($removeWords as $word) {
-                        $cleanNote = preg_replace('/\b' . preg_quote($word, '/') . '\b/ui', '', $cleanNote);
+                        $word = trim($word);
+                        if ($word !== '' && strlen($word) >= 2) {
+                            $cleanNote = preg_replace('/\b' . preg_quote($word, '/') . '\b/ui', '', $cleanNote);
+                        }
                     }
 
                     $extractedNote = trim(preg_replace('/\s+/', ' ', $cleanNote));
-                    $finalCatatan = (!empty($extractedNote) && strlen($extractedNote) >= 2 && !is_numeric($extractedNote)) 
+                    $finalCatatan = (!empty($extractedNote) && strlen($extractedNote) >= 2 && !is_numeric($extractedNote) && strtolower($extractedNote) !== strtolower($foundTarif->kategori)) 
                         ? ucwords(strtolower($extractedNote)) 
                         : null;
 
@@ -381,6 +388,10 @@ class AiChatController extends Controller
                                 $tarifModel = Tarif::where('kategori', 'like', '%' . $actionData['kategori'] . '%')->first();
                             }
 
+                            if (!$tarifModel) {
+                                $tarifModel = Tarif::first();
+                            }
+
                             if ($tarifModel) {
                                 $status = in_array(strtolower($actionData['status'] ?? ''), ['berhasil', 'gagal'])
                                     ? strtolower($actionData['status'])
@@ -390,13 +401,23 @@ class AiChatController extends Controller
                                     ? $tarifModel->tarif_berhasil
                                     : ($tarifModel->tarif_gagal ?? 0);
 
-                                if (isset($actionData['custom_tarif']) && is_numeric($actionData['custom_tarif'])) {
+                                if (isset($actionData['custom_tarif']) && is_numeric($actionData['custom_tarif']) && (int)$actionData['custom_tarif'] >= 1000) {
                                     $rate = (int)$actionData['custom_tarif'];
                                 }
 
                                 $quantity = isset($actionData['quantity']) && is_numeric($actionData['quantity']) && $actionData['quantity'] > 0
                                     ? (int)$actionData['quantity']
                                     : 1;
+
+                                // Clean notes from Gemini so category name isn't duplicated
+                                $finalCatatan = $actionData['catatan'] ?? null;
+                                if ($finalCatatan) {
+                                    $cleanCat = strtolower(trim($finalCatatan));
+                                    $cleanKat = strtolower(trim($tarifModel->kategori));
+                                    if ($cleanCat === $cleanKat || str_contains($cleanCat, 'dicatat via') || $cleanCat === 'null' || $cleanCat === 'projek') {
+                                        $finalCatatan = null;
+                                    }
+                                }
 
                                 $createdJobIds = [];
                                 $totalBatchTarif = 0;
@@ -408,7 +429,7 @@ class AiChatController extends Controller
                                         'status' => $status,
                                         'tarif' => $rate,
                                         'tanggal' => $actionData['tanggal'] ?? $today,
-                                        'catatan' => $actionData['catatan'] ?? 'Dicatat via AI Assistant',
+                                        'catatan' => $finalCatatan,
                                     ]);
                                     $createdJobIds[] = $newJob->id;
                                     $totalBatchTarif += $rate;
@@ -470,27 +491,30 @@ class AiChatController extends Controller
             if ($jobs->isEmpty()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Transaksi tidak ditemukan atau sudah dihapus.',
+                    'message' => 'Data job order tidak ditemukan atau sudah dihapus.',
                 ], 404);
             }
 
             $count = $jobs->count();
-            $sampleCategory = $jobs->first()->kategori;
+            $kategoriName = $jobs->first()->kategori;
 
             JobOrder::whereIn('id', $ids)->delete();
 
-            $msg = ($count > 1)
-                ? "Pencatatan {$count} data {$sampleCategory} telah berhasil dibatalkan sekaligus."
-                : "Pencatatan {$sampleCategory} telah berhasil dibatalkan.";
+            $message = ($count > 1)
+                ? "Berhasil membatalkan & menghapus " . $count . " entri pekerjaan " . $kategoriName . "."
+                : "Berhasil membatalkan & menghapus pencatatan job " . $kategoriName . ".";
 
             return response()->json([
                 'success' => true,
-                'message' => $msg,
+                'message' => $message,
+                'deleted_count' => $count,
             ]);
-        } catch (\Exception $e) {
+
+        } catch (\Throwable $ex) {
+            Log::error("Uncaught AiChatController undo Error: " . $ex->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal membatalkan transaksi: ' . $e->getMessage(),
+                'message' => 'Gagal membatalkan pencatatan: ' . $ex->getMessage(),
             ], 500);
         }
     }
@@ -498,23 +522,17 @@ class AiChatController extends Controller
     private function resolveDateFromMessage(string $message): ?Carbon
     {
         $msg = strtolower($message);
-        $now = Carbon::now();
 
-        // 1. Relative keywords
-        if (str_contains($msg, 'besok') || str_contains($msg, 'esok') || str_contains($msg, 'tomorrow')) {
-            return Carbon::tomorrow();
-        }
-        if (str_contains($msg, 'kemarin') || str_contains($msg, 'yesterday')) {
-            return Carbon::yesterday();
-        }
-        if (str_contains($msg, 'lusa')) {
-            return Carbon::today()->addDays(2);
-        }
-        if (str_contains($msg, 'hari ini') || str_contains($msg, 'sekarang') || str_contains($msg, 'today')) {
+        if (str_contains($msg, 'hari ini') || str_contains($msg, 'today')) {
             return Carbon::today();
         }
+        if (str_contains($msg, 'kemarin') || str_contains($msg, 'kemaren') || str_contains($msg, 'yesterday')) {
+            return Carbon::yesterday();
+        }
+        if (str_contains($msg, 'besok') || str_contains($msg, 'tomorrow')) {
+            return Carbon::tomorrow();
+        }
 
-        // 2. Indonesian & English Month Name Mapping
         $monthsMap = [
             'januari' => 1, 'jan' => 1,
             'februari' => 2, 'feb' => 2,
@@ -523,45 +541,26 @@ class AiChatController extends Controller
             'mei' => 5, 'may' => 5,
             'juni' => 6, 'jun' => 6,
             'juli' => 7, 'jul' => 7,
-            'agustus' => 8, 'agt' => 8, 'aug' => 8, 'august' => 8,
+            'agustus' => 8, 'agt' => 8, 'aug' => 8,
             'september' => 9, 'sep' => 9,
-            'oktober' => 10, 'okt' => 10, 'oct' => 10, 'october' => 10,
+            'oktober' => 10, 'okt' => 10,
             'november' => 11, 'nov' => 11,
-            'desember' => 12, 'des' => 12, 'dec' => 12, 'december' => 12,
+            'desember' => 12, 'des' => 12,
         ];
 
-        $targetMonth = $now->month;
-        $targetYear = $now->year;
-        $targetDay = null;
+        // Format: "31 agustus", "tgl 15 maret 2026", "1 september", "tanggal 5 agustus"
+        if (preg_match('/(?:tgl|tanggal)?\s*(\d{1,2})\s+([a-z]+)(?:\s+(\d{4}))?/i', $msg, $matches)) {
+            $day = (int)$matches[1];
+            $monthStr = strtolower($matches[2]);
+            $year = !empty($matches[3]) ? (int)$matches[3] : Carbon::now()->year;
 
-        // Check explicit 4-digit year
-        if (preg_match('/\b(20\d{2})\b/', $msg, $yearMatch)) {
-            $targetYear = (int)$yearMatch[1];
-        }
-
-        // Check month name
-        foreach ($monthsMap as $monthName => $monthNum) {
-            if (preg_match('/\b' . $monthName . '\b/i', $msg)) {
-                $targetMonth = $monthNum;
-                break;
-            }
-        }
-
-        // Check day number e.g. "31 agustus", "tanggal 1", "tgl 15", "1 september"
-        if (preg_match('/(?:tanggal|tgl)?\s*(\d{1,2})\b/i', $msg, $dayMatch)) {
-            $dayVal = (int)$dayMatch[1];
-            if ($dayVal >= 1 && $dayVal <= 31) {
-                $targetDay = $dayVal;
-            }
-        }
-
-        if ($targetDay !== null) {
-            try {
-                $maxDays = Carbon::createFromDate($targetYear, $targetMonth, 1)->daysInMonth;
-                $validDay = min($targetDay, $maxDays);
-                return Carbon::createFromDate($targetYear, $targetMonth, $validDay);
-            } catch (\Exception $e) {
-                return null;
+            if (isset($monthsMap[$monthStr])) {
+                $month = $monthsMap[$monthStr];
+                try {
+                    return Carbon::createFromDate($year, $month, $day);
+                } catch (\Exception $e) {
+                    return null;
+                }
             }
         }
 
