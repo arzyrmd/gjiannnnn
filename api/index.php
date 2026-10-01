@@ -31,22 +31,30 @@ putenv('SESSION_DRIVER=file');
 putenv('LOG_CHANNEL=stderr');
 putenv('APP_DEBUG=true');
 
-// SQLite database copy for Vercel Serverless
-$sqliteDbPath = '/tmp/database.sqlite';
-$sourceDb = __DIR__ . '/../database/database.sqlite';
-if (file_exists($sourceDb)) {
-    if (!file_exists($sqliteDbPath) || @filesize($sqliteDbPath) !== @filesize($sourceDb) || @md5_file($sourceDb) !== @md5_file($sqliteDbPath)) {
-        @unlink($sqliteDbPath);
-        @copy($sourceDb, $sqliteDbPath);
+$dbConn = getenv('DB_CONNECTION') ?: ($_ENV['DB_CONNECTION'] ?? 'sqlite');
+
+if ($dbConn === 'sqlite') {
+    // SQLite database copy for Vercel Serverless
+    $sqliteDbPath = '/tmp/database.sqlite';
+    $sourceDb = __DIR__ . '/../database/database.sqlite';
+    if (file_exists($sourceDb)) {
+        if (!file_exists($sqliteDbPath) || @filesize($sqliteDbPath) !== @filesize($sourceDb) || @md5_file($sourceDb) !== @md5_file($sqliteDbPath)) {
+            @unlink($sqliteDbPath);
+            @copy($sourceDb, $sqliteDbPath);
+            @chmod($sqliteDbPath, 0666);
+        }
+    } else if (!file_exists($sqliteDbPath)) {
+        @touch($sqliteDbPath);
         @chmod($sqliteDbPath, 0666);
     }
-} else if (!file_exists($sqliteDbPath)) {
-    @touch($sqliteDbPath);
-    @chmod($sqliteDbPath, 0666);
-}
 
-putenv('DB_CONNECTION=sqlite');
-putenv("DB_DATABASE={$sqliteDbPath}");
+    putenv('DB_CONNECTION=sqlite');
+    putenv("DB_DATABASE={$sqliteDbPath}");
+    $_ENV['DB_CONNECTION'] = 'sqlite';
+    $_ENV['DB_DATABASE'] = $sqliteDbPath;
+    $_SERVER['DB_CONNECTION'] = 'sqlite';
+    $_SERVER['DB_DATABASE'] = $sqliteDbPath;
+}
 
 $_ENV['APP_STORAGE'] = '/tmp/storage';
 $_ENV['VIEW_COMPILED_PATH'] = '/tmp';
@@ -60,8 +68,6 @@ $_ENV['CACHE_DRIVER'] = 'file';
 $_ENV['SESSION_DRIVER'] = 'file';
 $_ENV['LOG_CHANNEL'] = 'stderr';
 $_ENV['APP_DEBUG'] = 'true';
-$_ENV['DB_CONNECTION'] = 'sqlite';
-$_ENV['DB_DATABASE'] = $sqliteDbPath;
 
 $_SERVER['APP_STORAGE'] = '/tmp/storage';
 $_SERVER['VIEW_COMPILED_PATH'] = '/tmp';
@@ -75,8 +81,6 @@ $_SERVER['CACHE_DRIVER'] = 'file';
 $_SERVER['SESSION_DRIVER'] = 'file';
 $_SERVER['LOG_CHANNEL'] = 'stderr';
 $_SERVER['APP_DEBUG'] = 'true';
-$_SERVER['DB_CONNECTION'] = 'sqlite';
-$_SERVER['DB_DATABASE'] = $sqliteDbPath;
 
 // Bind dynamic HTTPS APP_URL for Vercel redirects
 if (isset($_SERVER['HTTP_HOST'])) {
