@@ -35,7 +35,7 @@ putenv('APP_DEBUG=true');
 $sqliteDbPath = '/tmp/database.sqlite';
 $sourceDb = __DIR__ . '/../database/database.sqlite';
 if (file_exists($sourceDb)) {
-    if (!file_exists($sqliteDbPath) || filemtime($sourceDb) > filemtime($sqliteDbPath) || filesize($sqliteDbPath) < 1000) {
+    if (!file_exists($sqliteDbPath) || @md5_file($sourceDb) !== @md5_file($sqliteDbPath)) {
         @copy($sourceDb, $sqliteDbPath);
         @chmod($sqliteDbPath, 0666);
     }
