@@ -18,6 +18,7 @@ class JobOrderController extends Controller
             'tanggal' => ['required', 'date'],
             'catatan' => ['nullable', 'string', 'max:500'],
             'custom_tarif' => ['nullable', 'integer', 'min:0'],
+            'quantity' => ['nullable', 'integer', 'min:1', 'max:100'],
         ]);
 
         $tarifModel = Tarif::findOrFail($validated['tarif_id']);
@@ -32,23 +33,34 @@ class JobOrderController extends Controller
             $rate = (int)$request->custom_tarif;
         }
 
-        JobOrder::create([
-            'tarif_id' => $tarifModel->id,
-            'kategori' => $tarifModel->kategori, // Snapshot category name
-            'status' => $validated['status'],
-            'tarif' => $rate, // Snapshot tariff rate
-            'tanggal' => $validated['tanggal'],
-            'catatan' => $validated['catatan'] ?? null,
-        ]);
+        $quantity = max(1, min(100, (int)$request->input('quantity', 1)));
+        $createdCount = 0;
+
+        for ($i = 0; $i < $quantity; $i++) {
+            JobOrder::create([
+                'tarif_id' => $tarifModel->id,
+                'kategori' => $tarifModel->kategori, // Snapshot category name
+                'status' => $validated['status'],
+                'tarif' => $rate, // Snapshot tariff rate
+                'tanggal' => $validated['tanggal'],
+                'catatan' => $validated['catatan'] ?? null,
+            ]);
+            $createdCount++;
+        }
+
+        $msg = ($createdCount > 1)
+            ? "{$createdCount} Job Order berhasil dicatat sekaligus!"
+            : "Job order berhasil dicatat!";
 
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Job order berhasil dicatat!',
+                'message' => $msg,
+                'created_count' => $createdCount,
             ]);
         }
 
-        return redirect()->back()->with('success', 'Job order berhasil dicatat!');
+        return redirect()->back()->with('success', $msg);
     }
 
     public function update(Request $request, JobOrder $jobOrder)
@@ -147,10 +159,8 @@ class JobOrderController extends Controller
 
         $callback = function () use ($jobOrders) {
             $file = fopen('php://output', 'w');
-            // Add UTF-8 BOM for Excel compatibility
             fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
             
-            // Header column
             fputcsv($file, ['No', 'Tanggal', 'Kategori Tugas', 'Status', 'Tarif Snapshot (Rp)', 'Catatan']);
 
             $no = 1;
@@ -170,7 +180,6 @@ class JobOrderController extends Controller
 
             $totalJobCount = $jobOrders->filter(fn($j) => !str_starts_with(strtolower($j->kategori), 'piket'))->count();
 
-            // Summary row
             fputcsv($file, []);
             fputcsv($file, ['TOTAL JOB ORDER (EXCL. PIKET)', $totalJobCount, '', 'TOTAL PENDAPATAN', $totalPendapatan, '']);
 

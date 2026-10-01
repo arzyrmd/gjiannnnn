@@ -103,7 +103,7 @@
                     <h2 class="text-base sm:text-lg font-black uppercase tracking-wider text-white">
                         Catat Job Order Baru
                     </h2>
-                    <p class="text-xs text-slate-400 mt-0.5">Form input cepat pekerjaan atau piket harian teknisi.</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Form input cepat pekerjaan atau piket harian teknisi (Dukungan Batch Quantity).</p>
                 </div>
             </div>
             <span class="px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-400 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider shrink-0 shadow-sm">
@@ -114,10 +114,10 @@
         <form action="{{ route('job-orders.store') }}" method="POST" class="space-y-5" id="quickJobForm" onsubmit="handleQuickJobFormSubmit(event)">
             @csrf
 
-            <!-- Form Row 1: Select Kategori, Status Radio, Tanggal -->
+            <!-- Form Row 1: Select Kategori, Status Radio, Jumlah (Qty), Tanggal -->
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
-                <!-- 1. Select Kategori Tugas (Width 5 col) -->
-                <div class="space-y-2 md:col-span-5">
+                <!-- 1. Select Kategori Tugas (Width 4 col) -->
+                <div class="space-y-2 md:col-span-4">
                     <label for="tarif_id" class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider">
                         Kategori Tugas <span class="text-amber-400">*</span>
                     </label>
@@ -142,8 +142,8 @@
                     </select>
                 </div>
 
-                <!-- 2. Status Radio Options (Width 4 col) -->
-                <div class="space-y-2 md:col-span-4">
+                <!-- 2. Status Radio Options (Width 3 col) -->
+                <div class="space-y-2 md:col-span-3">
                     <label class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider">
                         Status Job <span class="text-amber-400">*</span>
                     </label>
@@ -157,8 +157,8 @@
                                 checked 
                                 onchange="updatePricePreview()"
                             >
-                            <div class="w-full py-3 px-3 rounded-2xl bg-slate-950/80 border border-slate-800 peer-checked:border-emerald-500 peer-checked:bg-emerald-950/60 peer-checked:text-emerald-400 text-slate-400 font-extrabold text-center text-xs uppercase tracking-wider transition-all shadow-sm min-h-[48px] flex items-center justify-center gap-1.5">
-                                <span class="material-symbols-outlined text-lg">check_circle</span>
+                            <div class="w-full py-3 px-2.5 rounded-2xl bg-slate-950/80 border border-slate-800 peer-checked:border-emerald-500 peer-checked:bg-emerald-950/60 peer-checked:text-emerald-400 text-slate-400 font-extrabold text-center text-xs uppercase tracking-wider transition-all shadow-sm min-h-[48px] flex items-center justify-center gap-1">
+                                <span class="material-symbols-outlined text-base">check_circle</span>
                                 <span>BERHASIL</span>
                             </div>
                         </label>
@@ -172,15 +172,34 @@
                                 {{ old('status') === 'gagal' ? 'checked' : '' }}
                                 onchange="updatePricePreview()"
                             >
-                            <div class="w-full py-3 px-3 rounded-2xl bg-slate-950/80 border border-slate-800 peer-checked:border-rose-500 peer-checked:bg-rose-950/60 peer-checked:text-rose-400 text-slate-400 font-extrabold text-center text-xs uppercase tracking-wider transition-all shadow-sm min-h-[48px] flex items-center justify-center gap-1.5">
-                                <span class="material-symbols-outlined text-lg">cancel</span>
+                            <div class="w-full py-3 px-2.5 rounded-2xl bg-slate-950/80 border border-slate-800 peer-checked:border-rose-500 peer-checked:bg-rose-950/60 peer-checked:text-rose-400 text-slate-400 font-extrabold text-center text-xs uppercase tracking-wider transition-all shadow-sm min-h-[48px] flex items-center justify-center gap-1">
+                                <span class="material-symbols-outlined text-base">cancel</span>
                                 <span>GAGAL</span>
                             </div>
                         </label>
                     </div>
                 </div>
 
-                <!-- 3. Tanggal Input (Width 3 col) -->
+                <!-- 3. Jumlah (Quantity) Input (Width 2 col) -->
+                <div class="space-y-2 md:col-span-2">
+                    <label for="quantity" class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider">
+                        Jumlah (JO) <span class="text-amber-400">*</span>
+                    </label>
+                    <input 
+                        type="number" 
+                        name="quantity" 
+                        id="quantity" 
+                        value="{{ old('quantity', 1) }}" 
+                        min="1" 
+                        max="100" 
+                        required 
+                        oninput="updatePricePreview()"
+                        onchange="updatePricePreview()"
+                        class="w-full px-3 py-3 rounded-2xl bg-slate-950/80 border border-slate-700/80 text-white font-mono-num font-black text-center focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 focus:outline-none transition-all text-sm min-h-[48px]"
+                    >
+                </div>
+
+                <!-- 4. Tanggal Input (Width 3 col) -->
                 <div class="space-y-2 md:col-span-3">
                     <div class="flex items-center justify-between gap-1">
                         <label for="tanggal" class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider">
@@ -802,6 +821,8 @@
         const status = document.querySelector('input[name="status"]:checked')?.value || 'berhasil';
         const customContainer = document.getElementById('customTarifContainer');
         const customInput = document.getElementById('custom_tarif');
+        const qtyInput = document.getElementById('quantity');
+        const qty = Math.max(1, parseInt(qtyInput?.value || 1));
         
         if (!selectedOption || !selectedOption.value) {
             document.getElementById('pricePreview').innerText = 'Rp 0';
@@ -824,7 +845,12 @@
             if (customContainer) customContainer.classList.add('hidden');
         }
 
-        document.getElementById('pricePreview').innerText = 'Rp ' + activeFee.toLocaleString('id-ID');
+        const totalFee = activeFee * qty;
+        if (qty > 1) {
+            document.getElementById('pricePreview').innerHTML = 'Rp ' + totalFee.toLocaleString('id-ID') + ' <span class="text-xs font-semibold text-amber-300/80">(' + qty + ' JO x Rp ' + activeFee.toLocaleString('id-ID') + ')</span>';
+        } else {
+            document.getElementById('pricePreview').innerText = 'Rp ' + activeFee.toLocaleString('id-ID');
+        }
     }
 
     function openEditModal(job) {
@@ -873,6 +899,9 @@
 
             if (response.ok && data.success) {
                 form.reset();
+                const qtyInput = document.getElementById('quantity');
+                if (qtyInput) qtyInput.value = '1';
+
                 if (typeof updatePricePreview === 'function') updatePricePreview();
                 
                 showTemporaryToast(data.message || 'Job order berhasil dicatat!');
