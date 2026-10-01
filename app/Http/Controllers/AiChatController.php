@@ -491,7 +491,7 @@ class AiChatController extends Controller
                 ], 404);
             }
 
-            $jobs = JobOrder::whereIn('id', $ids)->get();
+            $jobs = JobOrder::whereIn('id', $ids)->where('user_id', auth()->id())->get();
 
             if ($jobs->isEmpty()) {
                 return response()->json([
@@ -503,7 +503,7 @@ class AiChatController extends Controller
             $count = $jobs->count();
             $kategoriName = $jobs->first()->kategori;
 
-            JobOrder::whereIn('id', $ids)->delete();
+            JobOrder::whereIn('id', $ids)->where('user_id', auth()->id())->delete();
 
             $message = ($count > 1)
                 ? "Berhasil membatalkan & menghapus " . $count . " entri pekerjaan " . $kategoriName . "."

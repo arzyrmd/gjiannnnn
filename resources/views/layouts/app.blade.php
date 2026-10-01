@@ -402,7 +402,7 @@
             }
         }
 
-        const AI_CHAT_STORAGE_KEY = 'gajian_ai_chat_history_v2';
+        const AI_CHAT_STORAGE_KEY = 'gajian_ai_chat_user_{{ auth()->id() ?? "guest" }}';
 
         function loadSavedAiChatHistory() {
             const container = document.getElementById('aiMessagesContainer');
