@@ -30,6 +30,19 @@ putenv('CACHE_DRIVER=array');
 putenv('SESSION_DRIVER=cookie');
 putenv('LOG_CHANNEL=stderr');
 
+// SQLite database copy for Vercel Serverless
+$sqliteDbPath = '/tmp/database.sqlite';
+$sourceDb = __DIR__ . '/../database/database.sqlite';
+if (!file_exists($sqliteDbPath)) {
+    if (file_exists($sourceDb)) {
+        @copy($sourceDb, $sqliteDbPath);
+    } else {
+        @touch($sqliteDbPath);
+    }
+}
+putenv('DB_CONNECTION=sqlite');
+putenv("DB_DATABASE={$sqliteDbPath}");
+
 $_ENV['APP_STORAGE'] = '/tmp/storage';
 $_ENV['VIEW_COMPILED_PATH'] = '/tmp';
 $_ENV['APP_CONFIG_CACHE'] = '/tmp/config.php';
@@ -41,6 +54,8 @@ $_ENV['APP_MAINTENANCE_STORE'] = 'array';
 $_ENV['CACHE_DRIVER'] = 'array';
 $_ENV['SESSION_DRIVER'] = 'cookie';
 $_ENV['LOG_CHANNEL'] = 'stderr';
+$_ENV['DB_CONNECTION'] = 'sqlite';
+$_ENV['DB_DATABASE'] = $sqliteDbPath;
 
 $_SERVER['APP_STORAGE'] = '/tmp/storage';
 $_SERVER['VIEW_COMPILED_PATH'] = '/tmp';
@@ -53,6 +68,8 @@ $_SERVER['APP_MAINTENANCE_STORE'] = 'array';
 $_SERVER['CACHE_DRIVER'] = 'array';
 $_SERVER['SESSION_DRIVER'] = 'cookie';
 $_SERVER['LOG_CHANNEL'] = 'stderr';
+$_SERVER['DB_CONNECTION'] = 'sqlite';
+$_SERVER['DB_DATABASE'] = $sqliteDbPath;
 
 // Bind dynamic HTTPS APP_URL for Vercel redirects
 if (isset($_SERVER['HTTP_HOST'])) {
