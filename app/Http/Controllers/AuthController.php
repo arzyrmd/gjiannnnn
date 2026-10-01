@@ -56,12 +56,37 @@ class AuthController extends Controller
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
         ]);
 
-        $user = \App\Models\User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
-            'role' => 'teknisi',
-        ]);
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('users', 'role')) {
+                \Illuminate\Support\Facades\DB::statement("ALTER TABLE users ADD COLUMN role VARCHAR DEFAULT 'teknisi'");
+            }
+        } catch (\Throwable $e) {
+            // Ignore if column already exists
+        }
+
+        try {
+            $user = \App\Models\User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
+                'role' => 'teknisi',
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if (str_contains($e->getMessage(), 'role')) {
+                try {
+                    \Illuminate\Support\Facades\DB::statement("ALTER TABLE users ADD COLUMN role VARCHAR DEFAULT 'teknisi'");
+                } catch (\Throwable $ex) {}
+                
+                $user = \App\Models\User::create([
+                    'name' => $validated['name'],
+                    'email' => $validated['email'],
+                    'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
+                    'role' => 'teknisi',
+                ]);
+            } else {
+                throw $e;
+            }
+        }
 
         Auth::login($user);
 
