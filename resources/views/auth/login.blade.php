@@ -168,15 +168,15 @@
                     <p>Untuk menjaga keamanan akun teknisi lapangan, proses reset password dilakukan oleh **Admin / Koordinator Lapangan** Gajian ARMN.</p>
                 </div>
                 
-                <p>Silakan hubungi Admin via WhatsApp dengan menyebutkan **Nama Lengkap** &amp; **Email Teknisi** Anda:</p>
+                <p>Silakan hubungi Admin via WhatsApp (<span class="font-mono font-bold text-amber-400">0857-1242-4969</span>) dengan menyebutkan **Nama Lengkap** &amp; **Email Teknisi** Anda:</p>
 
                 <a 
-                    href="https://wa.me/?text=Halo%20Admin%20GajianARMN,%20saya%20lupa%20password%20akun%20teknisi%20saya.%20Mohon%20bantuan%20reset%20password." 
+                    href="https://wa.me/6285712424969?text=Halo%20Admin%20GajianARMN,%20saya%20lupa%20password%20akun%20teknisi%20saya.%20Mohon%20bantuan%20reset%20password." 
                     target="_blank" 
                     class="w-full py-3.5 px-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
                 >
                     <span class="material-symbols-outlined text-lg">chat</span>
-                    <span>Hubungi Admin via WhatsApp</span>
+                    <span>Hubungi Admin (085712424969)</span>
                 </a>
             </div>
 
