@@ -96,6 +96,9 @@ class DashboardController extends Controller
         // Tarifs for quick job order input
         $tarifs = Tarif::orderBy('kategori', 'asc')->get();
 
+        // All technicians for Admin filter dropdown
+        $allTeknisi = $user->isAdmin() ? \App\Models\User::where('role', 'teknisi')->orderBy('name', 'asc')->get() : collect();
+
         // Admin specific insights & analytics
         $totalTeknisiCount = 0;
         $totalSuccessJobs = 0;
