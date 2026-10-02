@@ -96,8 +96,50 @@ class DashboardController extends Controller
         // Tarifs for quick job order input
         $tarifs = Tarif::orderBy('kategori', 'asc')->get();
 
-        // All technicians for Admin filter dropdown
-        $allTeknisi = $user->isAdmin() ? \App\Models\User::where('role', 'teknisi')->orderBy('name', 'asc')->get() : collect();
+        // Admin specific insights & analytics
+        $totalTeknisiCount = 0;
+        $totalSuccessJobs = 0;
+        $totalFailedJobs = 0;
+        $successRate = 100;
+        $teknisiLeaderboard = collect();
+        $kategoriBreakdown = collect();
+
+        if ($user->isAdmin()) {
+            $totalTeknisiCount = \App\Models\User::where('role', 'teknisi')->count();
+
+            $totalSuccessJobs = JobOrder::whereYear('tanggal', $year)
+                ->whereMonth('tanggal', $month)
+                ->where('status', 'berhasil')
+                ->count();
+
+            $totalFailedJobs = JobOrder::whereYear('tanggal', $year)
+                ->whereMonth('tanggal', $month)
+                ->where('status', 'gagal')
+                ->count();
+
+            $totalAllJobs = $totalSuccessJobs + $totalFailedJobs;
+            $successRate = ($totalAllJobs > 0) ? round(($totalSuccessJobs / $totalAllJobs) * 100, 1) : 100;
+
+            // Teknisi Leaderboard for selected month
+            $teknisiLeaderboard = \App\Models\User::where('role', 'teknisi')
+                ->withCount(['jobOrders as total_job' => function ($query) use ($year, $month) {
+                    $query->whereYear('tanggal', $year)->whereMonth('tanggal', $month);
+                }])
+                ->withSum(['jobOrders as total_pendapatan' => function ($query) use ($year, $month) {
+                    $query->whereYear('tanggal', $year)->whereMonth('tanggal', $month);
+                }], 'tarif')
+                ->orderByDesc('total_pendapatan')
+                ->limit(5)
+                ->get();
+
+            // Category breakdown for selected month
+            $kategoriBreakdown = JobOrder::whereYear('tanggal', $year)
+                ->whereMonth('tanggal', $month)
+                ->selectRaw('kategori, COUNT(*) as count, SUM(tarif) as total_tarif')
+                ->groupBy('kategori')
+                ->orderByDesc('count')
+                ->get();
+        }
 
         return view('dashboard', compact(
             'today',
@@ -117,7 +159,13 @@ class DashboardController extends Controller
             'detailJobOrders',
             'tarifs',
             'allTeknisi',
-            'targetUserId'
+            'targetUserId',
+            'totalTeknisiCount',
+            'totalSuccessJobs',
+            'totalFailedJobs',
+            'successRate',
+            'teknisiLeaderboard',
+            'kategoriBreakdown'
         ));
     }
 

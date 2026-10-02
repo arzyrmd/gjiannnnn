@@ -145,6 +145,163 @@
     </div>
 
 
+    @if(auth()->user()->isAdmin())
+    <!-- ADMIN EXECUTIVE ANALYTICS SPOTLIGHT -->
+    <div class="space-y-6">
+        <!-- 1. ADMIN KPI METRIC CARDS -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <!-- KPI 1: Total Teknisi -->
+            <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800/80 shadow-xl flex items-center gap-3 relative overflow-hidden group hover:border-amber-500/40 transition-all">
+                <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center font-black shrink-0 shadow-sm">
+                    <span class="material-symbols-outlined text-xl">engineering</span>
+                </div>
+                <div class="min-w-0">
+                    <span class="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider text-slate-400 block truncate">Total Teknisi</span>
+                    <span class="text-base sm:text-xl font-black font-mono-num text-white">{{ $totalTeknisiCount }} <span class="text-xs text-slate-400 font-semibold">Orang</span></span>
+                </div>
+            </div>
+
+            <!-- KPI 2: Success Rate -->
+            <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800/80 shadow-xl flex items-center gap-3 relative overflow-hidden group hover:border-emerald-500/40 transition-all">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-black shrink-0 shadow-sm">
+                    <span class="material-symbols-outlined text-xl">verified</span>
+                </div>
+                <div class="min-w-0">
+                    <span class="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider text-slate-400 block truncate">Rate Success</span>
+                    <span class="text-base sm:text-xl font-black font-mono-num text-emerald-400">{{ $successRate }}%</span>
+                </div>
+            </div>
+
+            <!-- KPI 3: Job Berhasil vs Gagal -->
+            <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800/80 shadow-xl flex items-center gap-3 relative overflow-hidden group hover:border-cyan-500/40 transition-all">
+                <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center font-black shrink-0 shadow-sm">
+                    <span class="material-symbols-outlined text-xl">task_alt</span>
+                </div>
+                <div class="min-w-0">
+                    <span class="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider text-slate-400 block truncate">Berhasil / Gagal</span>
+                    <span class="text-xs sm:text-sm font-black font-mono-num text-slate-200">
+                        <span class="text-emerald-400 font-extrabold">{{ $totalSuccessJobs }}</span> / <span class="text-rose-400 font-extrabold">{{ $totalFailedJobs }}</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- KPI 4: Quick Action Nav Hub -->
+            <div class="p-3 rounded-2xl bg-slate-900/80 border border-amber-500/30 shadow-xl flex items-center justify-around gap-1">
+                <a href="{{ route('users.index') }}" class="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-slate-800 text-slate-300 hover:text-amber-400 transition-colors" title="Kelola User &amp; Teknisi">
+                    <span class="material-symbols-outlined text-lg">group_add</span>
+                    <span class="text-[9px] font-extrabold uppercase tracking-wider">User</span>
+                </a>
+                <a href="{{ route('tarifs.index') }}" class="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-slate-800 text-slate-300 hover:text-amber-400 transition-colors" title="Pengaturan Master Tarif">
+                    <span class="material-symbols-outlined text-lg">price_change</span>
+                    <span class="text-[9px] font-extrabold uppercase tracking-wider">Tarif</span>
+                </a>
+                <a href="{{ route('reports.export', ['bulan' => $selectedBulan]) }}" class="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-slate-800 text-slate-300 hover:text-amber-400 transition-colors" title="Export Rekap CSV">
+                    <span class="material-symbols-outlined text-lg">download</span>
+                    <span class="text-[9px] font-extrabold uppercase tracking-wider">Export</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 2. ADMIN GRID: LEADERBOARD TEKNISI & CATEGORY ANALYTICS -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+            <!-- LEADERBOARD TEKNISI TERBAIK (7 cols) -->
+            <div class="lg:col-span-7 rounded-3xl bg-slate-900/70 backdrop-blur-xl border border-slate-800/80 p-5 shadow-2xl space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-400 to-orange-500 text-slate-950 flex items-center justify-center font-black text-sm shadow-md">
+                            <span class="material-symbols-outlined text-base">trophy</span>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-black uppercase tracking-wider text-white">Leaderboard Performance Teknisi</h3>
+                            <p class="text-[10px] text-slate-400 font-medium">Peringkat perolehan gaji terbanyak bulan {{ \Carbon\Carbon::createFromDate($year, $month, 1)->translatedFormat('F Y') }}</p>
+                        </div>
+                    </div>
+                    <span class="px-2.5 py-0.5 rounded-full bg-amber-400/10 text-amber-300 text-[10px] font-bold uppercase tracking-wider border border-amber-400/30">Top 5</span>
+                </div>
+
+                <div class="space-y-2.5">
+                    @forelse($teknisiLeaderboard as $index => $leader)
+                        @php
+                            $rankColors = [
+                                0 => 'from-amber-400 to-orange-400 text-slate-950 border-amber-300',
+                                1 => 'from-slate-300 to-slate-400 text-slate-950 border-slate-200',
+                                2 => 'from-amber-700 to-amber-800 text-white border-amber-600',
+                            ];
+                            $badgeClass = $rankColors[$index] ?? 'bg-slate-800 text-slate-400 border-slate-700';
+                        @endphp
+                        <div class="p-3 rounded-2xl bg-slate-950/70 border border-slate-800/80 flex items-center justify-between gap-3 hover:border-slate-700 transition-all">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-7 h-7 rounded-xl bg-gradient-to-br {{ $badgeClass }} flex items-center justify-center font-black text-xs shrink-0 shadow-sm border">
+                                    {{ $index + 1 }}
+                                </div>
+                                <div class="min-w-0">
+                                    <h4 class="text-xs font-bold text-white truncate flex items-center gap-1.5">
+                                        <span>{{ $leader->name }}</span>
+                                        @if($targetUserId == $leader->id)
+                                            <span class="px-1.5 py-0.2 text-[9px] rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold uppercase">Terfilter</span>
+                                        @endif
+                                    </h4>
+                                    <p class="text-[10px] text-slate-400 truncate">{{ $leader->email }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0 text-right">
+                                <div>
+                                    <span class="text-xs font-black font-mono-num text-amber-400 block">Rp {{ number_format($leader->total_pendapatan ?? 0, 0, ',', '.') }}</span>
+                                    <span class="text-[10px] font-bold text-slate-400 block">{{ $leader->total_job ?? 0 }} JO</span>
+                                </div>
+                                <a href="{{ route('dashboard', ['teknisi_id' => $leader->id, 'bulan' => $selectedBulan]) }}" class="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-amber-400 hover:text-slate-950 text-slate-300 text-[10px] font-bold uppercase tracking-wider transition-all" title="Filter Kabin Teknisi Ini">
+                                    Kabin
+                                </a>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="p-6 text-center text-slate-500 text-xs font-bold bg-slate-950/40 rounded-2xl border border-slate-800">
+                            Belum ada aktivitas job order pada bulan ini.
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+
+            <!-- ANALYTICS KATEGORI PEKERJAAN (5 cols) -->
+            <div class="lg:col-span-5 rounded-3xl bg-slate-900/70 backdrop-blur-xl border border-slate-800/80 p-5 shadow-2xl space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-500 text-slate-950 flex items-center justify-center font-black text-sm shadow-md">
+                            <span class="material-symbols-outlined text-base">pie_chart</span>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-black uppercase tracking-wider text-white">Breakdown Pekerjaan</h3>
+                            <p class="text-[10px] text-slate-400 font-medium">Distribusi kategori job order teknisi</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-3 max-h-72 overflow-y-auto no-scrollbar pr-1">
+                    @forelse($kategoriBreakdown as $kat)
+                        @php
+                            $maxCount = $kategoriBreakdown->max('count') ?: 1;
+                            $percent = round(($kat->count / $maxCount) * 100);
+                        @endphp
+                        <div class="space-y-1.5 p-2.5 rounded-xl bg-slate-950/60 border border-slate-800/60">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="font-bold text-slate-200 truncate max-w-[60%]">{{ $kat->kategori }}</span>
+                                <span class="font-black font-mono-num text-cyan-300 text-[11px]">{{ $kat->count }} JO <span class="text-slate-400 font-normal">(Rp {{ number_format($kat->total_tarif, 0, ',', '.') }})</span></span>
+                            </div>
+                            <div class="w-full h-2 rounded-full bg-slate-900 overflow-hidden">
+                                <div class="h-full rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-500" style="width: {{ $percent }}%;"></div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="p-6 text-center text-slate-500 text-xs font-bold bg-slate-950/40 rounded-2xl border border-slate-800">
+                            Belum ada data kategori untuk bulan ini.
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
     @unless(auth()->user()->isAdmin())
     <!-- 2. QUICK INPUT JOB ORDER FORM -->
     <div class="relative rounded-3xl bg-slate-900/70 backdrop-blur-xl border border-slate-800/80 p-5 sm:p-6 md:p-7 shadow-2xl space-y-5 overflow-hidden">
