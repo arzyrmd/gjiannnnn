@@ -440,62 +440,74 @@
 
     @unless(auth()->user()->isAdmin())
     <!-- 2. QUICK INPUT JOB ORDER FORM -->
-    <div class="relative rounded-3xl bg-slate-900/70 backdrop-blur-xl border border-slate-800/80 p-5 sm:p-6 md:p-7 shadow-2xl space-y-5 overflow-hidden">
-        <!-- Top Gradient Border Strip -->
-        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500"></div>
+    <div class="relative rounded-3xl bg-slate-900/80 backdrop-blur-2xl border border-slate-800/90 p-5 sm:p-6 md:p-7 shadow-2xl space-y-6 overflow-hidden group hover:border-amber-500/30 transition-all duration-300">
+        <!-- Background Ambient Glow Orbs -->
+        <div class="absolute -top-24 -right-24 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-amber-500/15 transition-all duration-500"></div>
+        <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4 gap-2">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-amber-400/10 border border-amber-400/30 text-amber-400 flex items-center justify-center font-black shrink-0">
-                    <span class="material-symbols-outlined text-xl">post_add</span>
+        <!-- Top Accent Header Line -->
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-orange-500 to-emerald-400"></div>
+
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4 gap-3 relative z-10">
+            <div class="flex items-center gap-3.5">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-400/20 to-orange-500/20 border border-amber-400/30 text-amber-400 flex items-center justify-center font-black shrink-0 shadow-md shadow-amber-500/10">
+                    <span class="material-symbols-outlined text-2xl">post_add</span>
                 </div>
                 <div>
-                    <h2 class="text-base sm:text-lg font-black uppercase tracking-wider text-white">
-                        Catat Job Order Baru
+                    <h2 class="text-base sm:text-lg font-black uppercase tracking-wider text-white flex items-center gap-2">
+                        <span>Catat Job Order Baru</span>
                     </h2>
-                    <p class="text-xs text-slate-400 mt-0.5">Form input cepat pekerjaan atau piket harian teknisi (Dukungan Batch Quantity).</p>
+                    <p class="text-xs text-slate-400 mt-0.5 font-medium">Input pekerjaan atau piket harian teknisi dengan dukungan akumulasi kuantitas (batch JO).</p>
                 </div>
             </div>
-            <span class="px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-400 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider shrink-0 shadow-sm">
-                Input Cepat
-            </span>
+            <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-400/10 border border-amber-400/30 text-amber-400 text-xs font-extrabold uppercase tracking-wider shrink-0 shadow-sm">
+                <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                <span>Input Cepat</span>
+            </div>
         </div>
 
-        <form action="{{ route('job-orders.store') }}" method="POST" class="space-y-5" id="quickJobForm" onsubmit="handleQuickJobFormSubmit(event)">
+        <form action="{{ route('job-orders.store') }}" method="POST" class="space-y-5 relative z-10" id="quickJobForm" onsubmit="handleQuickJobFormSubmit(event)">
             @csrf
 
             <!-- Form Row 1: Select Kategori, Status Radio, Jumlah (Qty), Tanggal -->
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
                 <!-- 1. Select Kategori Tugas (Width 4 col) -->
                 <div class="space-y-2 md:col-span-4">
-                    <label for="tarif_id" class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider">
-                        Kategori Tugas <span class="text-amber-400">*</span>
+                    <label for="tarif_id" class="flex items-center gap-1.5 text-xs font-extrabold text-slate-300 uppercase tracking-wider">
+                        <span class="material-symbols-outlined text-sm text-amber-400">category</span>
+                        <span>Kategori Tugas</span>
+                        <span class="text-amber-400">*</span>
                     </label>
-                    <select 
-                        name="tarif_id" 
-                        id="tarif_id" 
-                        required 
-                        class="w-full px-4 py-3 rounded-2xl bg-slate-950/80 border border-slate-700/80 text-white font-bold focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 focus:outline-none transition-all text-sm min-h-[48px] cursor-pointer"
-                        onchange="updatePricePreview()"
-                    >
-                        <option value="" disabled selected>Pilih Kategori Pekerjaan</option>
-                        @foreach($tarifs as $tarif)
-                            <option 
-                                value="{{ $tarif->id }}" 
-                                data-berhasil="{{ $tarif->tarif_berhasil }}" 
-                                data-gagal="{{ $tarif->tarif_gagal ?? 0 }}"
-                                {{ old('tarif_id') == $tarif->id ? 'selected' : '' }}
-                            >
-                                {{ $tarif->kategori }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <div class="relative">
+                        <select 
+                            name="tarif_id" 
+                            id="tarif_id" 
+                            required 
+                            class="w-full px-4 py-3 rounded-2xl bg-slate-950/90 border border-slate-700/80 text-white font-bold focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 focus:outline-none transition-all text-sm min-h-[48px] cursor-pointer shadow-inner appearance-none pr-10"
+                            onchange="updatePricePreview()"
+                        >
+                            <option value="" disabled selected>Pilih Kategori Pekerjaan</option>
+                            @foreach($tarifs as $tarif)
+                                <option 
+                                    value="{{ $tarif->id }}" 
+                                    data-berhasil="{{ $tarif->tarif_berhasil }}" 
+                                    data-gagal="{{ $tarif->tarif_gagal ?? 0 }}"
+                                    {{ old('tarif_id') == $tarif->id ? 'selected' : '' }}
+                                >
+                                    {{ $tarif->kategori }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xl">unfold_more</span>
+                    </div>
                 </div>
 
                 <!-- 2. Status Radio Options (Width 3 col) -->
                 <div class="space-y-2 md:col-span-3">
-                    <label class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider">
-                        Status Job <span class="text-amber-400">*</span>
+                    <label class="flex items-center gap-1.5 text-xs font-extrabold text-slate-300 uppercase tracking-wider">
+                        <span class="material-symbols-outlined text-sm text-amber-400">task_alt</span>
+                        <span>Status Job</span>
+                        <span class="text-amber-400">*</span>
                     </label>
                     <div class="grid grid-cols-2 gap-2">
                         <label class="cursor-pointer">
@@ -507,7 +519,7 @@
                                 checked 
                                 onchange="updatePricePreview()"
                             >
-                            <div class="w-full py-3 px-2.5 rounded-2xl bg-slate-950/80 border border-slate-800 peer-checked:border-emerald-500 peer-checked:bg-emerald-950/60 peer-checked:text-emerald-400 text-slate-400 font-extrabold text-center text-xs uppercase tracking-wider transition-all shadow-sm min-h-[48px] flex items-center justify-center gap-1">
+                            <div class="w-full py-3 px-2 rounded-2xl bg-slate-950/90 border border-slate-800 peer-checked:border-emerald-400 peer-checked:bg-emerald-500/15 peer-checked:text-emerald-300 peer-checked:shadow-lg peer-checked:shadow-emerald-500/10 text-slate-400 font-extrabold text-center text-xs uppercase tracking-wider transition-all min-h-[48px] flex items-center justify-center gap-1">
                                 <span class="material-symbols-outlined text-base">check_circle</span>
                                 <span>BERHASIL</span>
                             </div>
@@ -522,7 +534,7 @@
                                 {{ old('status') === 'gagal' ? 'checked' : '' }}
                                 onchange="updatePricePreview()"
                             >
-                            <div class="w-full py-3 px-2.5 rounded-2xl bg-slate-950/80 border border-slate-800 peer-checked:border-rose-500 peer-checked:bg-rose-950/60 peer-checked:text-rose-400 text-slate-400 font-extrabold text-center text-xs uppercase tracking-wider transition-all shadow-sm min-h-[48px] flex items-center justify-center gap-1">
+                            <div class="w-full py-3 px-2 rounded-2xl bg-slate-950/90 border border-slate-800 peer-checked:border-rose-500 peer-checked:bg-rose-500/15 peer-checked:text-rose-300 peer-checked:shadow-lg peer-checked:shadow-rose-500/10 text-slate-400 font-extrabold text-center text-xs uppercase tracking-wider transition-all min-h-[48px] flex items-center justify-center gap-1">
                                 <span class="material-symbols-outlined text-base">cancel</span>
                                 <span>GAGAL</span>
                             </div>
@@ -532,8 +544,10 @@
 
                 <!-- 3. Jumlah (Quantity) Input (Width 2 col) -->
                 <div class="space-y-2 md:col-span-2">
-                    <label for="quantity" class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider">
-                        Jumlah (JO) <span class="text-amber-400">*</span>
+                    <label for="quantity" class="flex items-center gap-1.5 text-xs font-extrabold text-slate-300 uppercase tracking-wider">
+                        <span class="material-symbols-outlined text-sm text-amber-400">tag</span>
+                        <span>Jumlah (JO)</span>
+                        <span class="text-amber-400">*</span>
                     </label>
                     <input 
                         type="number" 
@@ -545,19 +559,21 @@
                         required 
                         oninput="updatePricePreview()"
                         onchange="updatePricePreview()"
-                        class="w-full px-3 py-3 rounded-2xl bg-slate-950/80 border border-slate-700/80 text-white font-mono-num font-black text-center focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 focus:outline-none transition-all text-sm min-h-[48px]"
+                        class="w-full px-3 py-3 rounded-2xl bg-slate-950/90 border border-slate-700/80 text-white font-mono-num font-black text-center focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 focus:outline-none transition-all text-sm min-h-[48px]"
                     >
                 </div>
 
                 <!-- 4. Tanggal Input (Width 3 col) -->
                 <div class="space-y-2 md:col-span-3">
                     <div class="flex items-center justify-between gap-1">
-                        <label for="tanggal" class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider">
-                            Tanggal <span class="text-amber-400">*</span>
+                        <label for="tanggal" class="flex items-center gap-1.5 text-xs font-extrabold text-slate-300 uppercase tracking-wider">
+                            <span class="material-symbols-outlined text-sm text-amber-400">calendar_today</span>
+                            <span>Tanggal</span>
+                            <span class="text-amber-400">*</span>
                         </label>
                         <div class="flex items-center gap-1 text-[10px]">
-                            <button type="button" onclick="setQuickFormDate('today')" class="px-2 py-0.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold transition-colors cursor-pointer" title="Set tanggal hari ini">Today</button>
-                            <button type="button" onclick="setQuickFormDate('yesterday')" class="px-2 py-0.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold transition-colors cursor-pointer" title="Set tanggal kemarin">Kemarin</button>
+                            <button type="button" onclick="setQuickFormDate('today')" class="px-2 py-0.5 rounded-lg bg-slate-800 hover:bg-amber-400/20 hover:text-amber-300 text-slate-300 font-bold transition-all cursor-pointer border border-slate-700" title="Set tanggal hari ini">Today</button>
+                            <button type="button" onclick="setQuickFormDate('yesterday')" class="px-2 py-0.5 rounded-lg bg-slate-800 hover:bg-amber-400/20 hover:text-amber-300 text-slate-300 font-bold transition-all cursor-pointer border border-slate-700" title="Set tanggal kemarin">Kemarin</button>
                         </div>
                     </div>
                     <input 
@@ -566,48 +582,55 @@
                         id="tanggal" 
                         value="{{ old('tanggal', $today) }}" 
                         required 
-                        class="w-full px-4 py-3 rounded-2xl bg-slate-950/80 border border-slate-700/80 text-white font-mono font-bold focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 focus:outline-none transition-all text-sm min-h-[48px]"
+                        class="w-full px-4 py-3 rounded-2xl bg-slate-950/90 border border-slate-700/80 text-white font-mono font-bold focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 focus:outline-none transition-all text-sm min-h-[48px]"
                     >
                 </div>
             </div>
 
             <!-- Form Row 2: Catatan & Custom Nominal Input -->
             <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center pt-1">
-                <div class="sm:col-span-8">
+                <div class="sm:col-span-8 relative">
+                    <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-lg">edit_note</span>
                     <input 
                         type="text" 
                         name="catatan" 
                         placeholder="Catatan tambahan / No. Merchant / Lokasi (opsional)" 
                         value="{{ old('catatan') }}"
-                        class="w-full px-4 py-3 rounded-2xl bg-slate-950/80 border border-slate-800 text-slate-200 text-xs focus:border-amber-400 focus:outline-none transition-all min-h-[44px]"
+                        class="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/90 border border-slate-800 text-slate-200 text-xs focus:border-amber-400 focus:outline-none transition-all min-h-[44px]"
                     >
                 </div>
 
                 <!-- Custom Nominal Input (Tampil jika Piket Event dipilih) -->
                 <div id="customTarifContainer" class="sm:col-span-4 hidden">
-                    <input 
-                        type="number" 
-                        name="custom_tarif" 
-                        id="custom_tarif" 
-                        min="0" 
-                        step="1000"
-                        placeholder="Isi Nominal Custom (Rp)" 
-                        oninput="updatePricePreview()"
-                        class="w-full px-4 py-3 rounded-2xl bg-slate-950/90 border border-amber-400/80 text-amber-400 font-mono-num font-bold text-xs focus:outline-none min-h-[44px] shadow-sm"
-                    >
+                    <div class="relative">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-400 font-bold text-xs">Rp</span>
+                        <input 
+                            type="number" 
+                            name="custom_tarif" 
+                            id="custom_tarif" 
+                            min="0" 
+                            step="1000"
+                            placeholder="Isi Nominal Custom (Rp)" 
+                            oninput="updatePricePreview()"
+                            class="w-full pl-9 pr-4 py-3 rounded-2xl bg-slate-950/95 border border-amber-400 text-amber-300 font-mono-num font-extrabold text-xs focus:outline-none min-h-[44px] shadow-lg shadow-amber-500/10"
+                        >
+                    </div>
                 </div>
             </div>
 
             <!-- Action & Preview Row -->
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 pt-4 border-t border-slate-800/80">
-                <div class="w-full sm:w-auto px-4 py-3 rounded-2xl bg-slate-950/90 border border-amber-400/30 flex items-center justify-between sm:justify-start gap-4 shadow-inner">
-                    <span class="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Tarif Snapshot:</span>
-                    <span id="pricePreview" class="text-xl font-black font-mono-num text-amber-400">Rp 0</span>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-4 border-t border-slate-800/80">
+                <div class="w-full sm:w-auto px-5 py-3 rounded-2xl bg-slate-950/95 border border-emerald-500/30 flex items-center justify-between sm:justify-start gap-4 shadow-xl shadow-emerald-500/5 group/snapshot">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                        <span class="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Tarif Snapshot:</span>
+                    </div>
+                    <span id="pricePreview" class="text-2xl font-black font-mono-num text-gradient-emerald tracking-tight">Rp 0</span>
                 </div>
 
                 <button 
                     type="submit" 
-                    class="w-full sm:w-auto py-3.5 px-8 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-orange-400 hover:from-amber-300 hover:to-orange-300 active:scale-[0.99] text-slate-950 font-black text-sm uppercase tracking-wider shadow-lg shadow-amber-500/25 transition-all cursor-pointer min-h-[48px] flex items-center justify-center gap-2"
+                    class="w-full sm:w-auto py-3.5 px-8 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 hover:from-amber-300 hover:to-orange-300 active:scale-[0.98] text-slate-950 font-black text-sm uppercase tracking-wider shadow-xl shadow-amber-500/25 hover:shadow-amber-500/40 transition-all duration-200 cursor-pointer min-h-[50px] flex items-center justify-center gap-2.5 border border-amber-300/30"
                 >
                     <span class="material-symbols-outlined text-xl">save</span>
                     <span>SIMPAN JOB ORDER</span>
