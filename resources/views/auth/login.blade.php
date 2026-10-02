@@ -83,15 +83,25 @@
                     <label for="password" class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider">
                         Password
                     </label>
-                    <input 
-                        type="password" 
-                        name="password" 
-                        id="password" 
-                        value=""
-                        required 
-                        class="w-full px-4 py-3.5 rounded-2xl bg-slate-950/90 border border-slate-700/80 text-white font-mono placeholder:text-slate-600 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition-all text-sm"
-                        placeholder="••••••••"
-                    >
+                    <div class="relative">
+                        <input 
+                            type="password" 
+                            name="password" 
+                            id="passwordInput" 
+                            value=""
+                            required 
+                            class="w-full pl-4 pr-12 py-3.5 rounded-2xl bg-slate-950/90 border border-slate-700/80 text-white font-mono placeholder:text-slate-600 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition-all text-sm"
+                            placeholder="••••••••"
+                        >
+                        <button 
+                            type="button" 
+                            onclick="togglePasswordVisibility('passwordInput', 'passwordToggleIcon')" 
+                            class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-amber-400 p-1.5 rounded-xl transition-colors cursor-pointer flex items-center justify-center"
+                            title="Tampilkan / Sembunyikan Password"
+                        >
+                            <span id="passwordToggleIcon" class="material-symbols-outlined text-lg">visibility</span>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="flex items-center justify-between text-xs text-slate-400 pt-1">
@@ -99,6 +109,14 @@
                         <input type="checkbox" name="remember" checked class="w-4 h-4 rounded bg-slate-950 border-slate-700 text-amber-400 focus:ring-amber-400">
                         <span class="font-bold text-slate-300">Ingat Sesi Saya</span>
                     </label>
+                    <button 
+                        type="button" 
+                        onclick="openForgotPasswordModal()" 
+                        class="font-extrabold text-amber-400 hover:text-amber-300 hover:underline transition-colors cursor-pointer flex items-center gap-1"
+                    >
+                        <span class="material-symbols-outlined text-sm">help_outline</span>
+                        <span>Lupa Sandi?</span>
+                    </button>
                 </div>
 
                 <button 
@@ -123,5 +141,77 @@
         </div>
     </div>
 
+    <!-- Modal Lupa Sandi -->
+    <div id="forgotPasswordModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+        <div class="bg-slate-900 border border-amber-500/30 rounded-3xl p-6 sm:p-7 max-w-md w-full shadow-2xl space-y-5 relative">
+            <div class="flex items-start justify-between border-b border-slate-800 pb-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center font-black shrink-0">
+                        <span class="material-symbols-outlined text-xl">key_off</span>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-black uppercase tracking-wider text-white">Reset / Lupa Sandi</h3>
+                        <p class="text-xs text-slate-400">Bantuan Pemulihan Akun Teknisi</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeForgotPasswordModal()" class="text-slate-400 hover:text-white p-1 rounded-lg">
+                    <span class="material-symbols-outlined text-lg">close</span>
+                </button>
+            </div>
+
+            <div class="space-y-3.5 text-xs text-slate-300 leading-relaxed">
+                <div class="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-1.5">
+                    <p class="font-bold text-amber-400 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">info</span>
+                        <span>Petunjuk Lupa Password:</span>
+                    </p>
+                    <p>Untuk menjaga keamanan akun teknisi lapangan, proses reset password dilakukan oleh **Admin / Koordinator Lapangan** Gajian ARMN.</p>
+                </div>
+                
+                <p>Silakan hubungi Admin via WhatsApp dengan menyebutkan **Nama Lengkap** &amp; **Email Teknisi** Anda:</p>
+
+                <a 
+                    href="https://wa.me/?text=Halo%20Admin%20GajianARMN,%20saya%20lupa%20password%20akun%20teknisi%20saya.%20Mohon%20bantuan%20reset%20password." 
+                    target="_blank" 
+                    class="w-full py-3.5 px-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
+                >
+                    <span class="material-symbols-outlined text-lg">chat</span>
+                    <span>Hubungi Admin via WhatsApp</span>
+                </a>
+            </div>
+
+            <div class="pt-2 text-center">
+                <button type="button" onclick="closeForgotPasswordModal()" class="text-xs font-bold text-slate-400 hover:text-white uppercase tracking-wider transition-colors cursor-pointer">
+                    Tutup &amp; Kembali
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (!input || !icon) return;
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.textContent = 'visibility_off';
+            } else {
+                input.type = 'password';
+                icon.textContent = 'visibility';
+            }
+        }
+
+        function openForgotPasswordModal() {
+            const modal = document.getElementById('forgotPasswordModal');
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeForgotPasswordModal() {
+            const modal = document.getElementById('forgotPasswordModal');
+            if (modal) modal.classList.add('hidden');
+        }
+    </script>
 </body>
 </html>

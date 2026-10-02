@@ -103,14 +103,24 @@
                     <label for="password" class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider">
                         Password
                     </label>
-                    <input 
-                        type="password" 
-                        name="password" 
-                        id="password" 
-                        required 
-                        class="w-full px-4 py-3 rounded-2xl bg-slate-950/90 border border-slate-700/80 text-white font-mono placeholder:text-slate-600 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition-all text-sm"
-                        placeholder="Minimal 6 karakter"
-                    >
+                    <div class="relative">
+                        <input 
+                            type="password" 
+                            name="password" 
+                            id="regPassword" 
+                            required 
+                            class="w-full pl-4 pr-12 py-3 rounded-2xl bg-slate-950/90 border border-slate-700/80 text-white font-mono placeholder:text-slate-600 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition-all text-sm"
+                            placeholder="Minimal 6 karakter"
+                        >
+                        <button 
+                            type="button" 
+                            onclick="togglePasswordVisibility('regPassword', 'regPasswordIcon')" 
+                            class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-amber-400 p-1.5 rounded-xl transition-colors cursor-pointer flex items-center justify-center"
+                            title="Tampilkan / Sembunyikan Password"
+                        >
+                            <span id="regPasswordIcon" class="material-symbols-outlined text-lg">visibility</span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Konfirmasi Password -->
@@ -118,14 +128,24 @@
                     <label for="password_confirmation" class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider">
                         Ulangi Password
                     </label>
-                    <input 
-                        type="password" 
-                        name="password_confirmation" 
-                        id="password_confirmation" 
-                        required 
-                        class="w-full px-4 py-3 rounded-2xl bg-slate-950/90 border border-slate-700/80 text-white font-mono placeholder:text-slate-600 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition-all text-sm"
-                        placeholder="Ulangi password di atas"
-                    >
+                    <div class="relative">
+                        <input 
+                            type="password" 
+                            name="password_confirmation" 
+                            id="regPasswordConfirm" 
+                            required 
+                            class="w-full pl-4 pr-12 py-3 rounded-2xl bg-slate-950/90 border border-slate-700/80 text-white font-mono placeholder:text-slate-600 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition-all text-sm"
+                            placeholder="Ulangi password di atas"
+                        >
+                        <button 
+                            type="button" 
+                            onclick="togglePasswordVisibility('regPasswordConfirm', 'regPasswordConfirmIcon')" 
+                            class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-amber-400 p-1.5 rounded-xl transition-colors cursor-pointer flex items-center justify-center"
+                            title="Tampilkan / Sembunyikan Password"
+                        >
+                            <span id="regPasswordConfirmIcon" class="material-symbols-outlined text-lg">visibility</span>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="pt-2">
@@ -151,5 +171,20 @@
         </div>
     </div>
 
+    <script>
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (!input || !icon) return;
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.textContent = 'visibility_off';
+            } else {
+                input.type = 'password';
+                icon.textContent = 'visibility';
+            }
+        }
+    </script>
 </body>
 </html>
