@@ -145,6 +145,7 @@
     </div>
 
 
+    @unless(auth()->user()->isAdmin())
     <!-- 2. QUICK INPUT JOB ORDER FORM -->
     <div class="relative rounded-3xl bg-slate-900/70 backdrop-blur-xl border border-slate-800/80 p-5 sm:p-6 md:p-7 shadow-2xl space-y-5 overflow-hidden">
         <!-- Top Gradient Border Strip -->
@@ -321,6 +322,7 @@
             </div>
         </form>
     </div>
+    @endunless
 
 
     <!-- MOBILE TAB SWITCHER (Rekap Harian vs Detail Transaksi) -->
@@ -881,6 +883,7 @@
 
     function updatePricePreview() {
         const select = document.getElementById('tarif_id');
+        if (!select) return;
         const selectedOption = select.options[select.selectedIndex];
         const status = document.querySelector('input[name="status"]:checked')?.value || 'berhasil';
         const customContainer = document.getElementById('customTarifContainer');
@@ -889,7 +892,8 @@
         const qty = Math.max(1, parseInt(qtyInput?.value || 1));
         
         if (!selectedOption || !selectedOption.value) {
-            document.getElementById('pricePreview').innerText = 'Rp 0';
+            const pricePreview = document.getElementById('pricePreview');
+            if (pricePreview) pricePreview.innerText = 'Rp 0';
             if (customContainer) customContainer.classList.add('hidden');
             return;
         }
