@@ -22,6 +22,7 @@ use App\Http\Controllers\UserController;
 Route::middleware('auth')->group(function () {
     // Dashboard & Rekap
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/user/update-target', [DashboardController::class, 'updateTarget'])->name('user.target.update');
 
     // Job Orders
     Route::post('/job-orders', [JobOrderController::class, 'store'])->name('job-orders.store');

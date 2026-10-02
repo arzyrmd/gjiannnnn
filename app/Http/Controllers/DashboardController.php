@@ -161,6 +161,32 @@ class DashboardController extends Controller
                 ->get();
         }
 
+        // Target Pendapatan Calculations
+        $activeUser = $targetUserId ? \App\Models\User::find($targetUserId) : $user;
+        $targetPendapatan = $activeUser ? (float) ($activeUser->target_pendapatan ?? 5000000) : 5000000;
+        $tercapaiPendapatan = (float) $pendapatanBulanIni;
+        $sisaTarget = max(0, $targetPendapatan - $tercapaiPendapatan);
+        $persenTarget = ($targetPendapatan > 0) ? min(100, round(($tercapaiPendapatan / $targetPendapatan) * 100, 1)) : 0;
+
+        $now = Carbon::now();
+        if ($selectedBulan === $now->format('Y-m') && !$hasCustomRange) {
+            $daysInMonth = $now->daysInMonth;
+            $sisaHari = max(1, $daysInMonth - $now->day + 1);
+        } elseif ($hasCustomRange) {
+            $startC = Carbon::parse($startDate);
+            $endC = Carbon::parse($endDate);
+            $sisaHari = max(1, $startC->diffInDays($endC) + 1);
+        } else {
+            $sisaHari = Carbon::createFromDate($year, $month, 1)->daysInMonth;
+        }
+
+        $rataRataHarianDibutuhkan = ($sisaTarget > 0) ? ceil($sisaTarget / $sisaHari) : 0;
+
+        // Daily Trend Chart Data
+        $chartLabels = $rekapHarian->map(fn($row) => Carbon::parse($row->tanggal)->format('d M'))->values()->toArray();
+        $chartIncomeData = $rekapHarian->map(fn($row) => (float) $row->total_pendapatan)->values()->toArray();
+        $chartJobData = $rekapHarian->map(fn($row) => (int) $row->total_job)->values()->toArray();
+
         return view('dashboard', compact(
             'today',
             'selectedBulan',
@@ -188,8 +214,45 @@ class DashboardController extends Controller
             'totalFailedJobs',
             'successRate',
             'teknisiLeaderboard',
-            'kategoriBreakdown'
+            'kategoriBreakdown',
+            'targetPendapatan',
+            'tercapaiPendapatan',
+            'sisaTarget',
+            'persenTarget',
+            'sisaHari',
+            'rataRataHarianDibutuhkan',
+            'chartLabels',
+            'chartIncomeData',
+            'chartJobData'
         ));
+    }
+
+    public function updateTarget(Request $request)
+    {
+        $request->validate([
+            'target_pendapatan' => 'required|numeric|min:100000|max:100000000',
+        ]);
+
+        $user = auth()->user();
+        
+        if ($user->isAdmin() && $request->filled('teknisi_id')) {
+            $targetUser = \App\Models\User::find($request->input('teknisi_id'));
+            if ($targetUser) {
+                $targetUser->update(['target_pendapatan' => $request->input('target_pendapatan')]);
+                if ($request->wantsJson()) {
+                    return response()->json(['success' => true, 'message' => 'Target pendapatan teknisi berhasil diperbarui!']);
+                }
+                return redirect()->back()->with('success', 'Target pendapatan teknisi berhasil diperbarui!');
+            }
+        }
+
+        $user->update(['target_pendapatan' => $request->input('target_pendapatan')]);
+
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Target pendapatan berhasil diperbarui!']);
+        }
+
+        return redirect()->back()->with('success', 'Target pendapatan berhasil diperbarui!');
     }
 
     public function apiStats(Request $request)

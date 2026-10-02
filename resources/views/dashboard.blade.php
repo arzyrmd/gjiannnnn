@@ -144,6 +144,142 @@
         </div>
     </div>
 
+    <!-- GOAL METER & DAILY TREND ANALYTICS SECTION -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 my-6">
+        <!-- 1. GOAL METER & PROGRESS CARD (5 cols) -->
+        <div class="lg:col-span-5 rounded-3xl bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 p-5 sm:p-6 shadow-2xl flex flex-col justify-between relative overflow-hidden group">
+            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-gradient-to-br from-emerald-500/10 to-cyan-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+            <div>
+                <div class="flex items-center justify-between border-b border-slate-800/80 pb-3 mb-4">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-400 to-cyan-500 text-slate-950 flex items-center justify-center font-black text-base shadow-md shadow-emerald-500/20">
+                            <span class="material-symbols-outlined text-lg">workspace_premium</span>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-black uppercase tracking-wider text-white flex items-center gap-1.5">
+                                Target Gaji Bulanan
+                            </h3>
+                            <p class="text-[11px] text-slate-400 font-medium">Goal Meter Personal</p>
+                        </div>
+                    </div>
+                    
+                    <button type="button" onclick="openTargetModal()" class="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 text-xs font-extrabold flex items-center gap-1 border border-emerald-500/30 transition-all shadow-sm">
+                        <span class="material-symbols-outlined text-sm">edit</span>
+                        <span>Ubah</span>
+                    </button>
+                </div>
+
+                <!-- Main Target Number & Percentage -->
+                <div class="flex items-baseline justify-between mb-2">
+                    <div>
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Tercapai (Gaji Bersih)</span>
+                        <div class="text-2xl sm:text-3xl font-black font-mono-num text-emerald-400 tracking-tight">
+                            Rp {{ number_format($tercapaiPendapatan, 0, ',', '.') }}
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Target Bulanan</span>
+                        <div class="text-lg font-extrabold font-mono-num text-slate-300">
+                            Rp {{ number_format($targetPendapatan, 0, ',', '.') }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="space-y-1.5 my-4">
+                    <div class="flex justify-between items-center text-xs font-black">
+                        <span class="text-slate-400">Pencapaian Progress</span>
+                        <span class="{{ $persenTarget >= 100 ? 'text-emerald-400' : 'text-cyan-400' }} font-mono-num font-extrabold">{{ $persenTarget }}%</span>
+                    </div>
+                    <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-slate-800/80 shadow-inner">
+                        <div class="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 rounded-full transition-all duration-1000 shadow-sm" style="width: {{ min(100, $persenTarget) }}%"></div>
+                    </div>
+                </div>
+
+                <!-- Stats summary grid -->
+                <div class="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-slate-800/60">
+                    <div class="p-3 rounded-2xl bg-slate-950/60 border border-slate-800/60">
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block mb-0.5">Sisa Target</span>
+                        <span class="text-sm sm:text-base font-black font-mono-num {{ $sisaTarget > 0 ? 'text-amber-400' : 'text-emerald-400' }}">
+                            {{ $sisaTarget > 0 ? 'Rp ' . number_format($sisaTarget, 0, ',', '.') : 'Tercapai! 🎉' }}
+                        </span>
+                    </div>
+                    <div class="p-3 rounded-2xl bg-slate-950/60 border border-slate-800/60">
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block mb-0.5">Perlu/Hari ({{ $sisaHari }} H Sisa)</span>
+                        <span class="text-sm sm:text-base font-black font-mono-num text-cyan-300">
+                            {{ $sisaTarget > 0 ? 'Rp ' . number_format($rataRataHarianDibutuhkan, 0, ',', '.') : 'Rp 0' }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. DAILY TREND CHART (7 cols) -->
+        <div class="lg:col-span-7 rounded-3xl bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 p-5 sm:p-6 shadow-2xl flex flex-col justify-between">
+            <div class="flex items-center justify-between border-b border-slate-800/80 pb-3 mb-4">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-500 text-slate-950 flex items-center justify-center font-black text-base shadow-md shadow-indigo-500/20">
+                        <span class="material-symbols-outlined text-lg">show_chart</span>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-black uppercase tracking-wider text-white">Trend Pendapatan Harian</h3>
+                        <p class="text-[11px] text-slate-400 font-medium">Grafik perolehan per tanggal ({{ $periodLabel }})</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative w-full h-56 sm:h-64">
+                <canvas id="trendChartCanvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDIT TARGET PENDAPATAN -->
+    <div id="targetModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 transition-all duration-300">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 w-full max-w-md shadow-2xl relative">
+            <button type="button" onclick="closeTargetModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-xl">flag</span>
+                </div>
+                <div>
+                    <h3 class="text-base font-black text-white">Set Target Pendapatan</h3>
+                    <p class="text-xs text-slate-400">Atur target pencapaian gaji bulanan Anda</p>
+                </div>
+            </div>
+
+            <form action="{{ route('user.target.update') }}" method="POST" class="space-y-4">
+                @csrf
+                <div>
+                    <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-400 mb-2">Target Pendapatan (Rp)</label>
+                    <div class="relative">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">Rp</span>
+                        <input type="number" step="500000" min="0" name="target_pendapatan" id="targetInput" value="{{ auth()->user()->target_pendapatan ?? 5000000 }}" required
+                            class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-3 text-white font-mono-num font-bold text-lg focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none">
+                    </div>
+                </div>
+
+                <!-- Quick presets -->
+                <div>
+                    <span class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1.5">Pilihan Cepat:</span>
+                    <div class="grid grid-cols-4 gap-2">
+                        <button type="button" onclick="setPresetTarget(3000000)" class="py-2 px-2 bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 hover:border-emerald-500/50 rounded-xl text-xs font-bold text-slate-300 hover:text-emerald-400 transition-all">3 Jt</button>
+                        <button type="button" onclick="setPresetTarget(5000000)" class="py-2 px-2 bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 hover:border-emerald-500/50 rounded-xl text-xs font-bold text-slate-300 hover:text-emerald-400 transition-all">5 Jt</button>
+                        <button type="button" onclick="setPresetTarget(7500000)" class="py-2 px-2 bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 hover:border-emerald-500/50 rounded-xl text-xs font-bold text-slate-300 hover:text-emerald-400 transition-all">7.5 Jt</button>
+                        <button type="button" onclick="setPresetTarget(10000000)" class="py-2 px-2 bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 hover:border-emerald-500/50 rounded-xl text-xs font-bold text-slate-300 hover:text-emerald-400 transition-all">10 Jt</button>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeTargetModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-bold text-xs uppercase tracking-wider">Batal</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/20 transition-all">Simpan Target</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     @if(auth()->user()->isAdmin())
     <!-- ADMIN EXECUTIVE ANALYTICS SPOTLIGHT -->
@@ -1005,6 +1141,7 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
     function setQuickFormDate(target) {
         const input = document.getElementById('tanggal');
@@ -1166,6 +1303,16 @@
         }, 2500);
     }
 
+    function openTargetModal() {
+        document.getElementById('targetModal').classList.remove('hidden');
+    }
+    function closeTargetModal() {
+        document.getElementById('targetModal').classList.add('hidden');
+    }
+    function setPresetTarget(val) {
+        document.getElementById('targetInput').value = val;
+    }
+
     function switchMobileTab(target) {
         const sectionRekap = document.getElementById('sectionRekapContainer');
         const sectionDetail = document.getElementById('sectionDetailContainer');
@@ -1204,6 +1351,78 @@
             if (window.innerWidth < 640) {
                 switchMobileTab('detail');
             }
+        }
+
+        // Initialize Daily Trend Line Chart
+        const ctx = document.getElementById('trendChartCanvas');
+        if (ctx) {
+            const labels = {!! json_encode($chartLabels ?? []) !!};
+            const incomeData = {!! json_encode($chartIncomeData ?? []) !!};
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Pendapatan (Rp)',
+                        data: incomeData,
+                        borderColor: '#10b981',
+                        backgroundColor: function(context) {
+                            const chart = context.chart;
+                            const {ctx, chartArea} = chart;
+                            if (!chartArea) return null;
+                            const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+                            gradient.addColorStop(0, 'rgba(16, 185, 129, 0.3)');
+                            gradient.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+                            return gradient;
+                        },
+                        fill: true,
+                        tension: 0.35,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#10b981',
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            titleColor: '#e2e8f0',
+                            bodyColor: '#34d399',
+                            borderColor: '#334155',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return 'Gaji: Rp ' + new Intl.NumberFormat('id-ID').format(context.raw);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8', font: { size: 10, weight: 'bold' } }
+                        },
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: {
+                                color: '#94a3b8',
+                                font: { size: 10, weight: 'bold' },
+                                callback: function(value) {
+                                    if (value >= 1000000) return (value / 1000000) + ' Jt';
+                                    if (value >= 1000) return (value / 1000) + ' Rb';
+                                    return value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
         }
     });
 </script>
