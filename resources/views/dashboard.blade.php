@@ -111,10 +111,10 @@
             <div class="flex items-center justify-between gap-2 relative z-10">
                 <div class="flex items-center gap-2.5">
                     <span class="w-3 h-3 rounded-full bg-cyan-400 shrink-0 shadow-lg shadow-cyan-400/50"></span>
-                    <span class="text-xs font-black uppercase tracking-wider text-cyan-400">Akumulasi Bulan Ini</span>
+                    <span class="text-xs font-black uppercase tracking-wider text-cyan-400">{{ $periodTitleCard }}</span>
                 </div>
                 <span class="text-[11px] sm:text-xs font-mono-num font-bold text-slate-300 bg-slate-950/80 px-3 py-1 rounded-xl border border-slate-800 shrink-0 shadow-inner">
-                    {{ \Carbon\Carbon::createFromDate($year, $month, 1)->translatedFormat('F Y') }}
+                    {{ $periodLabel }}
                 </span>
             </div>
 
@@ -213,7 +213,7 @@
                         </div>
                         <div>
                             <h3 class="text-sm font-black uppercase tracking-wider text-white">Leaderboard Performance Teknisi</h3>
-                            <p class="text-[10px] text-slate-400 font-medium">Peringkat perolehan gaji terbanyak bulan {{ \Carbon\Carbon::createFromDate($year, $month, 1)->translatedFormat('F Y') }}</p>
+                            <p class="text-[10px] text-slate-400 font-medium">Peringkat perolehan gaji terbanyak ({{ $periodLabel }})</p>
                         </div>
                     </div>
                     <span class="px-2.5 py-0.5 rounded-full bg-amber-400/10 text-amber-300 text-[10px] font-bold uppercase tracking-wider border border-amber-400/30">Top 5</span>
@@ -520,7 +520,7 @@
                 <h3 class="text-base md:text-lg font-black uppercase text-white tracking-wider flex items-center gap-2">
                     <span class="material-symbols-outlined text-slate-400 text-xl">date_range</span>
                     <span>Rekap Harian</span>
-                    <span class="text-amber-400 text-sm sm:text-base">({{ \Carbon\Carbon::createFromDate($year, $month, 1)->translatedFormat('F Y') }})</span>
+                    <span class="text-amber-400 text-sm sm:text-base">({{ $periodLabel }})</span>
                 </h3>
                 <p class="text-xs text-slate-400 mt-0.5">Akumulasi total job order murni dan pendapatan harian.</p>
             </div>
@@ -528,7 +528,7 @@
             <!-- Export Buttons -->
             <div class="grid grid-cols-2 gap-2.5 w-full md:w-auto">
                 <a 
-                    href="{{ route('export.csv', ['bulan' => $selectedBulan, 'start_date' => $startDate, 'end_date' => $endDate]) }}" 
+                    href="{{ route('export.csv', ['bulan' => $selectedBulan, 'start_date' => $startDate, 'end_date' => $endDate, 'teknisi_id' => request('teknisi_id')]) }}" 
                     class="px-4 py-2.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900/80 border border-emerald-500/40 text-emerald-300 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all shadow-sm hover:shadow-emerald-950/40"
                 >
                     <span class="material-symbols-outlined text-base">download</span>
@@ -536,7 +536,7 @@
                 </a>
 
                 <a 
-                    href="{{ route('export.pdf', ['bulan' => $selectedBulan, 'start_date' => $startDate, 'end_date' => $endDate]) }}" 
+                    href="{{ route('export.pdf', ['bulan' => $selectedBulan, 'start_date' => $startDate, 'end_date' => $endDate, 'teknisi_id' => request('teknisi_id')]) }}" 
                     target="_blank"
                     class="px-4 py-2.5 rounded-xl bg-cyan-950/80 hover:bg-cyan-900/80 border border-cyan-500/40 text-cyan-300 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all shadow-sm hover:shadow-cyan-950/40"
                 >
@@ -566,7 +566,7 @@
                     Rentang Tanggal
                 </button>
                 
-                @if($startDate || $endDate || $selectedBulan !== \Carbon\Carbon::now()->format('Y-m'))
+                @if($startDate || $endDate || $selectedBulan !== \Carbon\Carbon::now()->format('Y-m') || request('teknisi_id'))
                     <a href="{{ route('dashboard') }}" class="col-span-2 sm:col-span-1 sm:ml-auto text-center text-xs text-rose-400 hover:underline font-bold uppercase tracking-wider py-1">
                         Reset Filter
                     </a>
@@ -575,6 +575,9 @@
 
             <!-- Form Filter Per Bulan -->
             <form id="formFilterBulan" method="GET" action="{{ route('dashboard') }}" class="{{ ($startDate || $endDate) ? 'hidden' : 'block' }}">
+                @if(request('teknisi_id'))
+                    <input type="hidden" name="teknisi_id" value="{{ request('teknisi_id') }}">
+                @endif
                 <div class="flex flex-col sm:flex-row items-end gap-3">
                     <div class="w-full sm:w-64 space-y-1.5">
                         <label for="bulan" class="block text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">
@@ -598,6 +601,9 @@
             <!-- Form Filter Rentang Tanggal -->
             <form id="formFilterRentang" method="GET" action="{{ route('dashboard') }}" class="{{ ($startDate || $endDate) ? 'block' : 'hidden' }}">
                 <input type="hidden" name="bulan" value="{{ $selectedBulan }}">
+                @if(request('teknisi_id'))
+                    <input type="hidden" name="teknisi_id" value="{{ request('teknisi_id') }}">
+                @endif
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
                     <div class="space-y-1.5">
                         <label for="start_date" class="block text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">
