@@ -178,69 +178,81 @@
         <button 
             id="aiFabBtn" 
             onclick="openAiChat()" 
-            class="group fixed bottom-5 right-5 z-50 px-4 py-3 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 hover:from-amber-300 hover:to-orange-400 active:scale-95 text-slate-950 font-black shadow-2xl shadow-amber-500/30 flex items-center gap-2 border border-amber-300/50 transition-all cursor-pointer"
+            class="group fixed bottom-5 right-5 z-50 px-4 py-3 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 hover:from-amber-300 hover:to-orange-400 active:scale-95 text-slate-950 font-black shadow-[0_10px_25px_rgba(245,158,11,0.4)] flex items-center gap-2.5 border border-amber-300/60 transition-all cursor-pointer hover:shadow-[0_12px_30px_rgba(245,158,11,0.5)]"
         >
-            <span class="material-symbols-outlined text-2xl group-hover:rotate-12 transition-transform">smart_toy</span>
+            <div class="relative flex items-center justify-center">
+                <span class="material-symbols-outlined text-2xl group-hover:rotate-12 transition-transform duration-300">auto_awesome</span>
+            </div>
             <span class="text-xs uppercase tracking-wider font-extrabold hidden sm:inline">Asisten AI</span>
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-950 border border-emerald-400 flex items-center justify-center">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+            <span class="relative flex h-2.5 w-2.5">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 border border-slate-950"></span>
             </span>
         </button>
 
         <!-- Chat Window Modal -->
         <div 
             id="aiChatWindow" 
-            class="hidden fixed bottom-4 left-3 right-3 sm:left-auto sm:right-6 sm:bottom-6 w-auto sm:w-[390px] max-w-[calc(100vw-24px)] h-[82vh] sm:h-[530px] max-h-[640px] bg-slate-900/95 border border-amber-400/40 rounded-3xl shadow-2xl flex flex-col overflow-hidden backdrop-blur-2xl z-50"
+            class="hidden fixed bottom-3 left-3 right-3 sm:left-auto sm:right-6 sm:bottom-6 w-auto sm:w-[420px] max-w-[calc(100vw-24px)] h-[84vh] sm:h-[550px] max-h-[650px] bg-[#0b0f19]/95 border border-amber-500/25 rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9),0_0_35px_rgba(245,158,11,0.12)] flex flex-col overflow-hidden backdrop-blur-2xl z-50 ring-1 ring-white/10"
         >
             <!-- Header -->
-            <div class="p-3.5 bg-slate-950/90 border-b border-slate-800/80 flex items-center justify-between flex-shrink-0">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-slate-950 flex items-center justify-center font-black shrink-0 shadow-md">
-                        <span class="material-symbols-outlined text-lg">smart_toy</span>
+            <div class="p-3.5 bg-slate-950/80 border-b border-slate-800/80 flex items-center justify-between shrink-0 backdrop-blur-md">
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-amber-400 via-amber-500 to-orange-500 text-slate-950 flex items-center justify-center font-black shrink-0 shadow-[0_0_12px_rgba(245,158,11,0.4)]">
+                            <span class="material-symbols-outlined text-xl">auto_awesome</span>
+                        </div>
+                        <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-slate-950"></span>
                     </div>
                     <div class="min-w-0">
-                        <h4 class="text-xs font-black uppercase text-white tracking-wider flex items-center gap-1.5 truncate">
-                            <span>Asisten Gajian AI</span>
-                            <span class="px-1.5 py-0.5 text-[9px] rounded bg-emerald-950/80 text-emerald-400 border border-emerald-500/40 font-bold">Gemini 2.5</span>
-                        </h4>
-                        <p class="text-[10px] text-slate-400 font-medium truncate">Siap bantu catat job &amp; rekap gajian</p>
+                        <div class="flex items-center gap-2">
+                            <h4 class="text-xs font-black uppercase text-white tracking-wider truncate">Asisten Gajian AI</h4>
+                            <span class="px-2 py-0.5 text-[9px] rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 font-extrabold tracking-wide uppercase">Gemini 2.5</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400 font-medium truncate">Siap bantu catat job &amp; rekap gajian</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-1 shrink-0">
-                    <button type="button" onclick="clearAiChatHistory()" title="Bersihkan obrolan" class="text-slate-400 hover:text-rose-400 p-1.5 rounded-lg hover:bg-slate-800/80 transition-colors cursor-pointer">
-                        <span class="material-symbols-outlined text-base">delete_sweep</span>
+                    <button type="button" onclick="clearAiChatHistory()" title="Bersihkan obrolan" class="text-slate-400 hover:text-rose-400 p-2 rounded-xl hover:bg-slate-800/80 transition-colors cursor-pointer flex items-center justify-center">
+                        <span class="material-symbols-outlined text-lg">delete_sweep</span>
                     </button>
-                    <button type="button" onclick="closeAiChat()" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800/80 transition-colors cursor-pointer">
-                        <span class="material-symbols-outlined text-lg">close</span>
+                    <button type="button" onclick="closeAiChat()" title="Tutup" class="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800/80 transition-colors cursor-pointer flex items-center justify-center">
+                        <span class="material-symbols-outlined text-xl">close</span>
                     </button>
                 </div>
             </div>
 
             <!-- Quick Action Chips -->
-            <div class="p-2.5 bg-slate-950/60 border-b border-slate-800/80 space-y-2 flex-shrink-0">
-                <div class="flex items-center gap-1.5 overflow-x-auto pb-1" style="scrollbar-width: thin;">
-                    <button onclick="sendQuickPrompt('Berapa total pendapatan dan job order saya bulan ini?')" class="px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-amber-300 font-bold text-[10px] uppercase tracking-wider whitespace-nowrap border border-slate-700/80 flex-shrink-0 transition-colors">
-                        Rekap Bulan Ini
+            <div class="p-3 bg-slate-950/40 border-b border-slate-800/60 space-y-2 shrink-0">
+                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth py-0.5">
+                    <button type="button" onclick="sendQuickPrompt('Berapa total pendapatan dan job order saya bulan ini?')" class="px-3.5 py-1.5 rounded-xl bg-slate-800/70 hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 font-bold text-[11px] uppercase tracking-wider whitespace-nowrap border border-amber-500/20 hover:border-amber-500/40 shrink-0 transition-all flex items-center gap-1.5 shadow-sm active:scale-95">
+                        <span class="material-symbols-outlined text-sm text-amber-400">calendar_month</span>
+                        <span>Rekap Bulan Ini</span>
                     </button>
-                    <button onclick="sendQuickPrompt('Buatkan format pesan WhatsApp rekap harian untuk saya kirim ke koordinator')" class="px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-cyan-300 font-bold text-[10px] uppercase tracking-wider whitespace-nowrap border border-slate-700/80 flex-shrink-0 transition-colors">
-                        Teks WA Rekap
+                    <button type="button" onclick="sendQuickPrompt('Buatkan format pesan WhatsApp rekap harian untuk saya kirim ke koordinator')" class="px-3.5 py-1.5 rounded-xl bg-slate-800/70 hover:bg-cyan-500/20 text-cyan-300 hover:text-cyan-200 font-bold text-[11px] uppercase tracking-wider whitespace-nowrap border border-cyan-500/20 hover:border-cyan-500/40 shrink-0 transition-all flex items-center gap-1.5 shadow-sm active:scale-95">
+                        <span class="material-symbols-outlined text-sm text-cyan-400">chat</span>
+                        <span>Teks WA Rekap</span>
                     </button>
-                    <button onclick="toggleCategoryPicker()" class="px-3 py-1.5 rounded-xl bg-amber-400 text-slate-950 font-black text-[10px] uppercase tracking-wider whitespace-nowrap border border-amber-300 flex-shrink-0 flex items-center gap-1 hover:bg-amber-300 transition-colors">
+                    <button type="button" onclick="toggleCategoryPicker()" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-[11px] uppercase tracking-wider whitespace-nowrap shrink-0 flex items-center gap-1 transition-all shadow-md shadow-amber-500/20 active:scale-95">
+                        <span class="material-symbols-outlined text-sm">edit_note</span>
                         <span>Catat Job Cepat</span>
-                        <span class="material-symbols-outlined text-xs">expand_more</span>
+                        <span class="material-symbols-outlined text-sm">expand_more</span>
                     </button>
                 </div>
 
                 <!-- Expandable Category Quick Picker Menu -->
-                <div id="categoryPickerMenu" class="hidden p-3 rounded-2xl bg-slate-950 border border-slate-800 space-y-2 max-h-48 overflow-y-auto">
-                    <div class="flex items-center justify-between border-b border-slate-800/80 pb-1.5">
-                        <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Status Pekerjaan:</p>
-                        <div class="flex items-center gap-1 bg-slate-900 p-0.5 rounded-lg border border-slate-800">
+                <div id="categoryPickerMenu" class="hidden mt-2 p-3 rounded-2xl bg-slate-950/95 border border-slate-800 space-y-2.5 max-h-56 overflow-y-auto no-scrollbar shadow-2xl">
+                    <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
+                        <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                            <span class="material-symbols-outlined text-xs text-amber-400">tune</span>
+                            <span>Status Pekerjaan:</span>
+                        </p>
+                        <div class="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
                             <button 
                                 type="button"
                                 id="statusTabBerhasil" 
                                 onclick="setQuickStatus('berhasil')" 
-                                class="px-2 py-0.5 rounded bg-emerald-500 text-slate-950 font-black text-[9px] uppercase tracking-wider transition-all cursor-pointer"
+                                class="px-2.5 py-1 rounded-lg bg-emerald-500 text-slate-950 font-black text-[9px] uppercase tracking-wider transition-all cursor-pointer shadow-sm"
                             >
                                 Berhasil
                             </button>
@@ -248,7 +260,7 @@
                                 type="button"
                                 id="statusTabGagal" 
                                 onclick="setQuickStatus('gagal')" 
-                                class="px-2 py-0.5 rounded text-slate-400 hover:text-rose-400 font-black text-[9px] uppercase tracking-wider transition-all cursor-pointer"
+                                class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-rose-400 font-black text-[9px] uppercase tracking-wider transition-all cursor-pointer"
                             >
                                 Gagal
                             </button>
@@ -256,31 +268,31 @@
                     </div>
 
                     <div class="grid grid-cols-2 gap-1.5">
-                        <button onclick="quickRecordCategory('Kirim Faktur')" class="p-2 rounded-xl bg-slate-900 hover:bg-amber-400/20 text-slate-200 hover:text-amber-300 font-bold text-[10px] text-left border border-slate-800/80 truncate transition-colors">
+                        <button type="button" onclick="quickRecordCategory('Kirim Faktur')" class="p-2.5 rounded-xl bg-slate-900/90 hover:bg-amber-500/15 hover:border-amber-500/40 text-slate-200 hover:text-amber-300 font-bold text-[11px] text-left border border-slate-800/80 truncate transition-all active:scale-98">
                             Kirim Faktur
                         </button>
-                        <button onclick="quickRecordCategory('Kunjungan')" class="p-2 rounded-xl bg-slate-900 hover:bg-amber-400/20 text-slate-200 hover:text-amber-300 font-bold text-[10px] text-left border border-slate-800/80 truncate transition-colors">
+                        <button type="button" onclick="quickRecordCategory('Kunjungan')" class="p-2.5 rounded-xl bg-slate-900/90 hover:bg-amber-500/15 hover:border-amber-500/40 text-slate-200 hover:text-amber-300 font-bold text-[11px] text-left border border-slate-800/80 truncate transition-all active:scale-98">
                             Kunjungan
                         </button>
-                        <button onclick="quickRecordCategory('Pasang Baru QRIS')" class="p-2 rounded-xl bg-slate-900 hover:bg-amber-400/20 text-slate-200 hover:text-amber-300 font-bold text-[10px] text-left border border-slate-800/80 truncate transition-colors">
+                        <button type="button" onclick="quickRecordCategory('Pasang Baru QRIS')" class="p-2.5 rounded-xl bg-slate-900/90 hover:bg-amber-500/15 hover:border-amber-500/40 text-slate-200 hover:text-amber-300 font-bold text-[11px] text-left border border-slate-800/80 truncate transition-all active:scale-98">
                             Pasang Baru QRIS
                         </button>
-                        <button onclick="quickRecordCategory('Pemasangan EDC')" class="p-2 rounded-xl bg-slate-900 hover:bg-amber-400/20 text-slate-200 hover:text-amber-300 font-bold text-[10px] text-left border border-slate-800/80 truncate transition-colors">
+                        <button type="button" onclick="quickRecordCategory('Pemasangan EDC')" class="p-2.5 rounded-xl bg-slate-900/90 hover:bg-amber-500/15 hover:border-amber-500/40 text-slate-200 hover:text-amber-300 font-bold text-[11px] text-left border border-slate-800/80 truncate transition-all active:scale-98">
                             Pemasangan EDC
                         </button>
-                        <button onclick="quickRecordCategory('Penarikan EDC')" class="p-2 rounded-xl bg-slate-900 hover:bg-amber-400/20 text-slate-200 hover:text-amber-300 font-bold text-[10px] text-left border border-slate-800/80 truncate transition-colors">
+                        <button type="button" onclick="quickRecordCategory('Penarikan EDC')" class="p-2.5 rounded-xl bg-slate-900/90 hover:bg-amber-500/15 hover:border-amber-500/40 text-slate-200 hover:text-amber-300 font-bold text-[11px] text-left border border-slate-800/80 truncate transition-all active:scale-98">
                             Penarikan EDC
                         </button>
-                        <button onclick="quickRecordCategory('Proaktif Maintenance Dalam Mall')" class="p-2 rounded-xl bg-slate-900 hover:bg-amber-400/20 text-slate-200 hover:text-amber-300 font-bold text-[10px] text-left border border-slate-800/80 truncate transition-colors">
-                            Maintenance Dalam Mall
+                        <button type="button" onclick="quickRecordCategory('Proaktif Maintenance Dalam Mall')" class="p-2.5 rounded-xl bg-slate-900/90 hover:bg-amber-500/15 hover:border-amber-500/40 text-slate-200 hover:text-amber-300 font-bold text-[11px] text-left border border-slate-800/80 truncate transition-all active:scale-98">
+                            Maintenance Mall
                         </button>
-                        <button onclick="quickRecordCategory('Proaktif Maintenance Luar Mall')" class="p-2 rounded-xl bg-slate-900 hover:bg-amber-400/20 text-slate-200 hover:text-amber-300 font-bold text-[10px] text-left border border-slate-800/80 truncate transition-colors">
+                        <button type="button" onclick="quickRecordCategory('Proaktif Maintenance Luar Mall')" class="p-2.5 rounded-xl bg-slate-900/90 hover:bg-amber-500/15 hover:border-amber-500/40 text-slate-200 hover:text-amber-300 font-bold text-[11px] text-left border border-slate-800/80 truncate transition-all active:scale-98">
                             Maintenance Luar Mall
                         </button>
-                        <button onclick="quickRecordCategory('Piket Mall (Diluar JO)')" class="p-2 rounded-xl bg-slate-900 hover:bg-amber-400/20 text-cyan-300 font-bold text-[10px] text-left border border-slate-800/80 truncate transition-colors">
+                        <button type="button" onclick="quickRecordCategory('Piket Mall (Diluar JO)')" class="p-2.5 rounded-xl bg-slate-900/90 hover:bg-cyan-500/20 border border-slate-800 text-cyan-300 hover:text-cyan-200 font-bold text-[11px] text-left truncate transition-all active:scale-98">
                             Piket Mall (50k)
                         </button>
-                        <button onclick="quickRecordCategory('Piket Event')" class="p-2 rounded-xl bg-slate-900 hover:bg-amber-400/20 text-cyan-300 font-bold text-[10px] text-left border border-slate-800/80 truncate transition-colors">
+                        <button type="button" onclick="quickRecordCategory('Piket Event')" class="p-2.5 rounded-xl bg-slate-900/90 hover:bg-cyan-500/20 border border-slate-800 text-cyan-300 hover:text-cyan-200 font-bold text-[11px] text-left truncate transition-all active:scale-98">
                             Piket Event
                         </button>
                     </div>
@@ -288,33 +300,35 @@
             </div>
 
             <!-- Messages Stream Area -->
-            <div id="aiMessagesContainer" class="flex-1 p-3.5 space-y-3 overflow-y-auto text-xs">
+            <div id="aiMessagesContainer" class="flex-1 p-4 space-y-3.5 overflow-y-auto text-xs no-scrollbar">
                 <!-- Welcome AI Message -->
-                <div class="flex items-start gap-2">
-                    <div class="w-7 h-7 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-slate-950 flex items-center justify-center font-black flex-shrink-0 text-xs shadow">
-                        <span class="material-symbols-outlined text-sm">smart_toy</span>
+                <div class="flex items-start gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-400 to-orange-500 text-slate-950 flex items-center justify-center font-black shrink-0 text-sm shadow-md shadow-amber-500/20">
+                        <span class="material-symbols-outlined text-base">auto_awesome</span>
                     </div>
-                    <div class="bg-slate-800/80 border border-slate-700/70 rounded-2xl rounded-tl-none p-3.5 text-slate-200 space-y-1 max-w-[85%] shadow-lg">
-                        <p class="font-bold text-amber-400">Halo Mas!</p>
-                        <p>Saya Asisten AI Gajian ARMN. Ada pekerjaan atau piket yang mau dicatat, atau mau minta rekap gajian hari ini?</p>
+                    <div class="bg-slate-800/70 border border-slate-700/60 rounded-2xl rounded-tl-sm p-3.5 text-slate-200 space-y-1.5 max-w-[85%] shadow-md backdrop-blur-sm">
+                        <p class="font-extrabold text-amber-400 text-xs flex items-center gap-1">
+                            <span>Halo Mas!</span> 👋
+                        </p>
+                        <p class="text-slate-200 leading-relaxed">Saya Asisten AI Gajian ARMN. Ada pekerjaan atau piket yang mau dicatat, atau mau minta rekap gajian hari ini?</p>
                     </div>
                 </div>
             </div>
 
             <!-- Input Form -->
-            <form id="aiChatForm" onsubmit="handleAiChatSubmit(event)" class="p-3 bg-slate-950/90 border-t border-slate-800 flex items-center gap-2 flex-shrink-0">
+            <form id="aiChatForm" onsubmit="handleAiChatSubmit(event)" class="p-3 bg-slate-950/90 border-t border-slate-800/80 flex items-center gap-2 shrink-0 backdrop-blur-md">
                 <input 
                     type="text" 
                     id="aiInputText" 
                     placeholder="Tulis pesan atau catat job..." 
                     required
                     autocomplete="off"
-                    class="flex-1 px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700/80 text-white font-medium text-xs focus:border-amber-400 focus:outline-none transition-colors"
+                    class="flex-1 px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-800 text-white placeholder-slate-500 font-medium text-xs focus:border-amber-400/80 focus:ring-2 focus:ring-amber-400/20 focus:outline-none transition-all"
                 >
                 <button 
                     type="submit" 
                     id="aiSendBtn"
-                    class="p-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black flex items-center justify-center cursor-pointer transition-all shrink-0 min-h-[40px] min-w-[40px] shadow-lg shadow-amber-500/20"
+                    class="p-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 hover:from-amber-300 hover:to-orange-400 active:scale-95 text-slate-950 font-black flex items-center justify-center cursor-pointer transition-all shrink-0 min-h-[42px] min-w-[42px] shadow-lg shadow-amber-500/20"
                 >
                     <span class="material-symbols-outlined text-lg">send</span>
                 </button>
@@ -358,11 +372,11 @@
 
             if (btnBerhasil && btnGagal) {
                 if (status === 'berhasil') {
-                    btnBerhasil.className = 'px-2 py-0.5 rounded bg-emerald-500 text-slate-950 font-black text-[9px] uppercase tracking-wider transition-all cursor-pointer';
-                    btnGagal.className = 'px-2 py-0.5 rounded text-slate-400 hover:text-rose-400 font-black text-[9px] uppercase tracking-wider transition-all cursor-pointer';
+                    btnBerhasil.className = 'px-2.5 py-1 rounded-lg bg-emerald-500 text-slate-950 font-black text-[9px] uppercase tracking-wider transition-all cursor-pointer shadow-sm';
+                    btnGagal.className = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-rose-400 font-black text-[9px] uppercase tracking-wider transition-all cursor-pointer';
                 } else {
-                    btnGagal.className = 'px-2 py-0.5 rounded bg-rose-500 text-white font-black text-[9px] uppercase tracking-wider transition-all cursor-pointer';
-                    btnBerhasil.className = 'px-2 py-0.5 rounded text-slate-400 hover:text-emerald-400 font-black text-[9px] uppercase tracking-wider transition-all cursor-pointer';
+                    btnGagal.className = 'px-2.5 py-1 rounded-lg bg-rose-500 text-white font-black text-[9px] uppercase tracking-wider transition-all cursor-pointer shadow-sm';
+                    btnBerhasil.className = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-emerald-400 font-black text-[9px] uppercase tracking-wider transition-all cursor-pointer';
                 }
             }
         }
@@ -448,13 +462,15 @@
             const container = document.getElementById('aiMessagesContainer');
             if (container) {
                 container.innerHTML = `
-                    <div class="flex items-start gap-2">
-                        <div class="w-7 h-7 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-slate-950 flex items-center justify-center font-black flex-shrink-0 text-xs shadow">
-                            <span class="material-symbols-outlined text-sm">smart_toy</span>
+                    <div class="flex items-start gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-400 to-orange-500 text-slate-950 flex items-center justify-center font-black shrink-0 text-sm shadow-md shadow-amber-500/20">
+                            <span class="material-symbols-outlined text-base">auto_awesome</span>
                         </div>
-                        <div class="bg-slate-800/80 border border-slate-700/70 rounded-2xl rounded-tl-none p-3.5 text-slate-200 space-y-1 max-w-[85%] shadow-lg">
-                            <p class="font-bold text-amber-400">Halo Mas!</p>
-                            <p>Saya Asisten AI Gajian ARMN. Ada pekerjaan atau piket yang mau dicatat, atau mau minta rekap gajian hari ini?</p>
+                        <div class="bg-slate-800/70 border border-slate-700/60 rounded-2xl rounded-tl-sm p-3.5 text-slate-200 space-y-1.5 max-w-[85%] shadow-md backdrop-blur-sm">
+                            <p class="font-extrabold text-amber-400 text-xs flex items-center gap-1">
+                                <span>Halo Mas!</span> 👋
+                            </p>
+                            <p class="text-slate-200 leading-relaxed">Saya Asisten AI Gajian ARMN. Ada pekerjaan atau piket yang mau dicatat, atau mau minta rekap gajian hari ini?</p>
                         </div>
                     </div>
                 `;
@@ -467,7 +483,7 @@
 
             const isUser = role === 'user';
             const msgDiv = document.createElement('div');
-            msgDiv.className = `flex items-start gap-2 ${isUser ? 'justify-end' : ''}`;
+            msgDiv.className = `flex items-start gap-2.5 ${isUser ? 'justify-end' : ''}`;
 
             const formattedText = text.replace(/\n/g, '<br>');
 
@@ -497,25 +513,25 @@
 
             if (isUser) {
                 msgDiv.innerHTML = `
-                    <div class="bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 font-bold rounded-2xl rounded-tr-none p-3 max-w-[85%] shadow-lg">
+                    <div class="bg-gradient-to-r from-amber-400 via-amber-500 to-orange-400 text-slate-950 font-bold rounded-2xl rounded-tr-sm px-4 py-3 max-w-[85%] shadow-lg shadow-amber-500/10 text-xs">
                         ${formattedText}
                     </div>
                 `;
             } else if (isError) {
                 msgDiv.innerHTML = `
-                    <div class="w-7 h-7 rounded-xl bg-rose-500 text-white flex items-center justify-center font-black flex-shrink-0 text-xs shadow">
-                        <span class="material-symbols-outlined text-sm">warning</span>
+                    <div class="w-8 h-8 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-400 flex items-center justify-center font-black shrink-0 text-sm shadow">
+                        <span class="material-symbols-outlined text-base">warning</span>
                     </div>
-                    <div class="bg-rose-950/80 border border-rose-700/80 text-rose-200 rounded-2xl rounded-tl-none p-3.5 max-w-[85%] leading-relaxed shadow-lg">
+                    <div class="bg-rose-950/60 border border-rose-700/60 text-rose-200 rounded-2xl rounded-tl-sm p-3.5 max-w-[85%] leading-relaxed shadow-lg backdrop-blur-sm text-xs">
                         ${formattedText}
                     </div>
                 `;
             } else {
                 msgDiv.innerHTML = `
-                    <div class="w-7 h-7 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-slate-950 flex items-center justify-center font-black flex-shrink-0 text-xs shadow">
-                        <span class="material-symbols-outlined text-sm">smart_toy</span>
+                    <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-400 to-orange-500 text-slate-950 flex items-center justify-center font-black shrink-0 text-sm shadow-md shadow-amber-500/20">
+                        <span class="material-symbols-outlined text-base">auto_awesome</span>
                     </div>
-                    <div class="bg-slate-800/80 border border-slate-700/80 text-slate-200 rounded-2xl rounded-tl-none p-3.5 max-w-[85%] leading-relaxed shadow-lg">
+                    <div class="bg-slate-800/70 border border-slate-700/60 text-slate-200 rounded-2xl rounded-tl-sm p-3.5 max-w-[85%] leading-relaxed shadow-md backdrop-blur-sm text-xs space-y-1">
                         ${formattedText}
                         ${undoHtml}
                     </div>
@@ -628,14 +644,18 @@
 
             const indicatorDiv = document.createElement('div');
             indicatorDiv.id = 'aiTypingIndicator';
-            indicatorDiv.className = 'flex items-start gap-2';
+            indicatorDiv.className = 'flex items-start gap-2.5';
             indicatorDiv.innerHTML = `
-                <div class="w-7 h-7 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-slate-950 flex items-center justify-center font-black flex-shrink-0 text-xs shadow">
-                    <span class="material-symbols-outlined text-sm">smart_toy</span>
+                <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-400 to-orange-500 text-slate-950 flex items-center justify-center font-black shrink-0 text-sm shadow-md shadow-amber-500/20">
+                    <span class="material-symbols-outlined text-base">auto_awesome</span>
                 </div>
-                <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl rounded-tl-none px-4 py-3 text-slate-400 font-bold flex items-center gap-2 shadow">
-                    <span>Sedang memproses</span>
-                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                <div class="bg-slate-800/70 border border-slate-700/60 rounded-2xl rounded-tl-sm px-4 py-3 text-slate-400 font-bold flex items-center gap-2.5 shadow-md backdrop-blur-sm">
+                    <span class="text-xs text-slate-300">Sedang memproses</span>
+                    <div class="flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-bounce" style="animation-delay: 0ms;"></span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-bounce" style="animation-delay: 150ms;"></span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-bounce" style="animation-delay: 300ms;"></span>
+                    </div>
                 </div>
             `;
             container.appendChild(indicatorDiv);
