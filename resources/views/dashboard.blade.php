@@ -195,7 +195,7 @@
                     <span class="material-symbols-outlined text-lg">price_change</span>
                     <span class="text-[9px] font-extrabold uppercase tracking-wider">Tarif</span>
                 </a>
-                <a href="{{ route('reports.export', ['bulan' => $selectedBulan]) }}" class="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-slate-800 text-slate-300 hover:text-amber-400 transition-colors" title="Export Rekap CSV">
+                <a href="{{ route('export.csv', ['bulan' => $selectedBulan]) }}" class="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-slate-800 text-slate-300 hover:text-amber-400 transition-colors" title="Export Rekap CSV">
                     <span class="material-symbols-outlined text-lg">download</span>
                     <span class="text-[9px] font-extrabold uppercase tracking-wider">Export</span>
                 </a>
