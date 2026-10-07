@@ -38,6 +38,5 @@ $app = Application::configure(basePath: dirname(__DIR__))
     })->create();
 
 $app->useStoragePath('/tmp/storage');
-$app->register(Illuminate\View\ViewServiceProvider::class);
 
 return $app;
