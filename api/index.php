@@ -1,9 +1,5 @@
 <?php
 
-ini_set('display_errors', '1');
-ini_set('display_startup_errors', '1');
-error_reporting(E_ALL);
-
 // 1. Prepare writable storage directories in /tmp for Vercel Serverless
 $storageDirs = [
     '/tmp/storage/app/public',
@@ -24,6 +20,11 @@ foreach ($storageDirs as $dir) {
 // 2. Set environment variables for Vercel
 putenv('APP_STORAGE=/tmp/storage');
 putenv('VIEW_COMPILED_PATH=/tmp');
+putenv('APP_CONFIG_CACHE=/tmp/config.php');
+putenv('APP_EVENTS_CACHE=/tmp/events.php');
+putenv('APP_PACKAGES_CACHE=/tmp/packages.php');
+putenv('APP_ROUTES_CACHE=/tmp/routes.php');
+putenv('APP_SERVICES_CACHE=/tmp/services.php');
 putenv('APP_MAINTENANCE_STORE=array');
 putenv('CACHE_DRIVER=file');
 putenv('SESSION_DRIVER=file');
@@ -57,6 +58,11 @@ if ($dbConn === 'sqlite') {
 
 $_ENV['APP_STORAGE'] = '/tmp/storage';
 $_ENV['VIEW_COMPILED_PATH'] = '/tmp';
+$_ENV['APP_CONFIG_CACHE'] = '/tmp/config.php';
+$_ENV['APP_EVENTS_CACHE'] = '/tmp/events.php';
+$_ENV['APP_PACKAGES_CACHE'] = '/tmp/packages.php';
+$_ENV['APP_ROUTES_CACHE'] = '/tmp/routes.php';
+$_ENV['APP_SERVICES_CACHE'] = '/tmp/services.php';
 $_ENV['APP_MAINTENANCE_STORE'] = 'array';
 $_ENV['CACHE_DRIVER'] = 'file';
 $_ENV['SESSION_DRIVER'] = 'file';
@@ -65,6 +71,11 @@ $_ENV['APP_DEBUG'] = 'true';
 
 $_SERVER['APP_STORAGE'] = '/tmp/storage';
 $_SERVER['VIEW_COMPILED_PATH'] = '/tmp';
+$_SERVER['APP_CONFIG_CACHE'] = '/tmp/config.php';
+$_SERVER['APP_EVENTS_CACHE'] = '/tmp/events.php';
+$_SERVER['APP_PACKAGES_CACHE'] = '/tmp/packages.php';
+$_SERVER['APP_ROUTES_CACHE'] = '/tmp/routes.php';
+$_SERVER['APP_SERVICES_CACHE'] = '/tmp/services.php';
 $_SERVER['APP_MAINTENANCE_STORE'] = 'array';
 $_SERVER['CACHE_DRIVER'] = 'file';
 $_SERVER['SESSION_DRIVER'] = 'file';
@@ -86,16 +97,5 @@ if (empty(getenv('APP_KEY')) && empty($_ENV['APP_KEY'])) {
     $_SERVER['APP_KEY'] = $appKey;
 }
 
-// 3. Forward request directly to Laravel entry point with exception handling
-try {
-    require __DIR__ . '/../public/index.php';
-} catch (\Throwable $e) {
-    http_response_code(200);
-    echo '<div style="background:#0f172a;color:#f87171;padding:24px;font-family:sans-serif;border-radius:12px;max-width:900px;margin:40px auto;box-shadow:0 10px 30px rgba(0,0,0,0.5);">';
-    echo '<h2 style="color:#ef4444;margin-top:0;">⚠️ Vercel Application Error</h2>';
-    echo '<p style="color:#f8fafc;font-size:16px;"><strong>Message:</strong> ' . htmlspecialchars($e->getMessage()) . '</p>';
-    echo '<p style="color:#cbd5e1;font-size:14px;"><strong>File:</strong> ' . htmlspecialchars($e->getFile()) . ' : Line ' . $e->getLine() . '</p>';
-    echo '<h3 style="color:#38bdf8;margin-bottom:8px;">Stack Trace:</h3>';
-    echo '<pre style="background:#1e293b;color:#cbd5e1;padding:16px;border-radius:8px;overflow-x:auto;font-size:12px;max-height:400px;">' . htmlspecialchars($e->getTraceAsString()) . '</pre>';
-    echo '</div>';
-}
+// 3. Forward request directly to Laravel entry point
+require __DIR__ . '/../public/index.php';

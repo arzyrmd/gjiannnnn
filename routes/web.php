@@ -6,25 +6,6 @@ use App\Http\Controllers\JobOrderController;
 use App\Http\Controllers\TarifController;
 use Illuminate\Support\Facades\Route;
 
-// Migration Helper Route for Vercel / Remote Deployment
-Route::get('/migrate', function () {
-    try {
-        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-        $output = \Illuminate\Support\Facades::Artisan::output();
-        return response('<div style="background:#0f172a;color:#38bdf8;padding:24px;font-family:sans-serif;border-radius:12px;max-width:800px;margin:40px auto;box-shadow:0 10px 25px rgba(0,0,0,0.5);">'
-            . '<h2 style="color:#10b981;margin-top:0;">✅ Database Migration Executed Successfully</h2>'
-            . '<pre style="background:#1e293b;color:#f8fafc;padding:16px;border-radius:8px;overflow-x:auto;">' . htmlspecialchars($output ?: 'Nothing to migrate or migration completed cleanly.') . '</pre>'
-            . '<a href="/" style="display:inline-block;margin-top:16px;background:#3b82f6;color:white;padding:10px 20px;border-radius:6px;text-decoration:none;font-weight:bold;">Return to Dashboard &rarr;</a>'
-            . '</div>');
-    } catch (\Throwable $e) {
-        return response('<div style="background:#0f172a;color:#f87171;padding:24px;font-family:sans-serif;border-radius:12px;max-width:800px;margin:40px auto;box-shadow:0 10px 25px rgba(0,0,0,0.5);">'
-            . '<h2 style="color:#ef4444;margin-top:0;">❌ Migration Failed</h2>'
-            . '<pre style="background:#1e293b;color:#fca5a5;padding:16px;border-radius:8px;overflow-x:auto;">' . htmlspecialchars($e->getMessage()) . '</pre>'
-            . '<a href="/" style="display:inline-block;margin-top:16px;background:#64748b;color:white;padding:10px 20px;border-radius:6px;text-decoration:none;font-weight:bold;">Return to Dashboard &rarr;</a>'
-            . '</div>', 500);
-    }
-});
-
 // Auth Routes
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
