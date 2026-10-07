@@ -119,10 +119,15 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-end pt-2 relative z-10">
-                <div class="sm:col-span-7">
+                <div class="sm:col-span-7 space-y-1">
                     <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block">Total Pendapatan</span>
-                    <div id="metricPendapatanBulanIni" class="text-2xl sm:text-3xl md:text-4xl font-black font-mono-num text-gradient-cyan tracking-tight mt-1 transition-all break-words">
+                    <div id="metricPendapatanBulanIni" class="text-2xl sm:text-3xl md:text-4xl font-black font-mono-num text-gradient-cyan tracking-tight transition-all break-words">
                         Rp {{ number_format($pendapatanBulanIni, 0, ',', '.') }}
+                    </div>
+                    <div class="pt-1 flex items-center gap-2 flex-wrap">
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-lg border border-emerald-500/20">
+                            JO Murni: <span id="metricPendapatanJoBulanIni">Rp {{ number_format($pendapatanJoBulanIni, 0, ',', '.') }}</span>
+                        </span>
                     </div>
                 </div>
                 <div class="sm:col-span-5 text-left sm:text-right sm:border-l border-t sm:border-t-0 border-slate-800/80 pt-3 sm:pt-0 sm:pl-5 space-y-1.5">
@@ -131,12 +136,20 @@
                         <div id="metricTotalJobBulanIni" class="text-xl sm:text-2xl font-black font-mono-num text-indigo-300 tracking-tight transition-all">
                             {{ $totalJobBulanIni }} <span class="text-xs text-slate-400 font-bold">JO</span>
                         </div>
+                        <span id="metricRataRataJoPerHari" class="text-[10px] font-semibold text-slate-400 block">Rata-rata {{ $rataRataJoPerHari }} JO/Hari</span>
                     </div>
                     <div class="pt-1.5 border-t border-slate-800/60">
                         <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 block">Total Piket</span>
                         <div id="metricTotalPiketBulanIni" class="text-sm font-black font-mono-num text-amber-300 transition-all">
                             {{ $totalPiketBulanIni }} <span class="text-[11px] text-slate-400 font-bold">Kali</span>
                             <span id="metricPendapatanPiketBulanIni" class="text-[10px] text-slate-400 font-bold block">(Rp {{ number_format($pendapatanPiketBulanIni, 0, ',', '.') }})</span>
+                        </div>
+                    </div>
+                    <div class="pt-1.5 border-t border-slate-800/60">
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-400 block">Target JO/Hari (Tanpa Piket)</span>
+                        <div class="text-xs font-black font-mono-num text-emerald-300 transition-all">
+                            <span id="metricTargetJoPerHari">{{ ($sisaTargetJo > 0 && $sisaHari > 0) ? 'Rp ' . number_format($targetJoPerHari, 0, ',', '.') : 'Rp 0' }}</span>
+                            <span id="metricEstimasiJoQty" class="text-[10px] text-slate-400 font-semibold block sm:inline">({{ ($sisaTargetJo > 0 && $sisaHari > 0) ? '~' . $estimasiJoQtyPerHari . ' JO/Hari' : '0 JO' }})</span>
                         </div>
                     </div>
                 </div>
@@ -174,13 +187,13 @@
                 <div class="flex items-baseline justify-between mb-2">
                     <div>
                         <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Tercapai (Gaji Bersih)</span>
-                        <div class="text-2xl sm:text-3xl font-black font-mono-num text-emerald-400 tracking-tight">
+                        <div id="metricTercapaiPendapatan" class="text-2xl sm:text-3xl font-black font-mono-num text-emerald-400 tracking-tight">
                             Rp {{ number_format($tercapaiPendapatan, 0, ',', '.') }}
                         </div>
                     </div>
                     <div class="text-right">
                         <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Target Bulanan</span>
-                        <div class="text-lg font-extrabold font-mono-num text-slate-300">
+                        <div id="metricTargetPendapatan" class="text-lg font-extrabold font-mono-num text-slate-300">
                             Rp {{ number_format($targetPendapatan, 0, ',', '.') }}
                         </div>
                     </div>
@@ -190,26 +203,47 @@
                 <div class="space-y-1.5 my-4">
                     <div class="flex justify-between items-center text-xs font-black">
                         <span class="text-slate-400">Pencapaian Progress</span>
-                        <span class="{{ $persenTarget >= 100 ? 'text-emerald-400' : 'text-cyan-400' }} font-mono-num font-extrabold">{{ $persenTarget }}%</span>
+                        <span id="metricPersenTarget" class="{{ $persenTarget >= 100 ? 'text-emerald-400' : 'text-cyan-400' }} font-mono-num font-extrabold">{{ $persenTarget }}%</span>
                     </div>
                     <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-slate-800/80 shadow-inner">
-                        <div class="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 rounded-full transition-all duration-1000 shadow-sm" style="width: {{ min(100, $persenTarget) }}%"></div>
+                        <div id="metricProgressBar" class="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 rounded-full transition-all duration-1000 shadow-sm" style="width: {{ min(100, $persenTarget) }}%"></div>
                     </div>
                 </div>
 
                 <!-- Stats summary grid -->
                 <div class="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-slate-800/60">
                     <div class="p-3 rounded-2xl bg-slate-950/60 border border-slate-800/60">
-                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block mb-0.5">Sisa Target</span>
-                        <span class="text-sm sm:text-base font-black font-mono-num {{ $sisaTarget > 0 ? 'text-amber-400' : 'text-emerald-400' }}">
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block mb-0.5">Sisa Target Total</span>
+                        <span id="metricSisaTarget" class="text-sm sm:text-base font-black font-mono-num {{ $sisaTarget > 0 ? 'text-amber-400' : 'text-emerald-400' }}">
                             {{ $sisaTarget > 0 ? 'Rp ' . number_format($sisaTarget, 0, ',', '.') : 'Tercapai! 🎉' }}
                         </span>
                     </div>
                     <div class="p-3 rounded-2xl bg-slate-950/60 border border-slate-800/60">
-                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block mb-0.5">Perlu/Hari ({{ $sisaHari }} H Sisa)</span>
-                        <span class="text-sm sm:text-base font-black font-mono-num text-cyan-300">
-                            {{ $sisaTarget > 0 ? 'Rp ' . number_format($rataRataHarianDibutuhkan, 0, ',', '.') : 'Rp 0' }}
+                        <span id="labelSisaHari" class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block mb-0.5">
+                            {{ $sisaHari > 0 ? "Perlu/Hari ({$sisaHari} Hari Sisa)" : "Perlu/Hari (Selesai)" }}
                         </span>
+                        <span id="metricRataRataHarianDibutuhkan" class="text-sm sm:text-base font-black font-mono-num text-cyan-300">
+                            {{ ($sisaTarget > 0 && $sisaHari > 0) ? 'Rp ' . number_format($rataRataHarianDibutuhkan, 0, ',', '.') : 'Rp 0' }}
+                        </span>
+                    </div>
+
+                    <!-- Target Produktivitas JO Murni Card -->
+                    <div class="col-span-2 p-3 rounded-2xl bg-slate-950/80 border border-emerald-500/30 flex items-center justify-between gap-2 shadow-inner">
+                        <div>
+                            <span class="text-[10px] font-black uppercase tracking-wider text-emerald-400 flex items-center gap-1">
+                                <span class="material-symbols-outlined text-xs">trending_up</span>
+                                <span>Target Produktivitas JO (Tanpa Piket)</span>
+                            </span>
+                            <span class="text-[10px] font-bold text-slate-400 block">Kebutuhan JO murni per hari ({{ $sisaHari }} Hari Sisa)</span>
+                        </div>
+                        <div class="text-right">
+                            <span id="metricTargetJoPerHariCard" class="text-xs sm:text-sm font-black font-mono-num text-emerald-300 block">
+                                {{ ($sisaTargetJo > 0 && $sisaHari > 0) ? 'Rp ' . number_format($targetJoPerHari, 0, ',', '.') : 'Rp 0' }}
+                            </span>
+                            <span id="metricEstimasiJoQtyCard" class="text-[10px] font-extrabold font-mono-num text-amber-300 block">
+                                {{ ($sisaTargetJo > 0 && $sisaHari > 0) ? "~{$estimasiJoQtyPerHari} JO / Hari" : "0 JO" }}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>

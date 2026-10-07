@@ -561,6 +561,20 @@
                     const elemTotalJobBulanIni = document.getElementById('metricTotalJobBulanIni');
                     const elemTotalPiketBulanIni = document.getElementById('metricTotalPiketBulanIni');
                     const elemPendapatanPiketBulanIni = document.getElementById('metricPendapatanPiketBulanIni');
+                    const elemPendapatanJoBulanIni = document.getElementById('metricPendapatanJoBulanIni');
+                    const elemRataRataJoPerHari = document.getElementById('metricRataRataJoPerHari');
+                    const elemTargetJoPerHari = document.getElementById('metricTargetJoPerHari');
+                    const elemEstimasiJoQty = document.getElementById('metricEstimasiJoQty');
+
+                    const elemTercapai = document.getElementById('metricTercapaiPendapatan');
+                    const elemTarget = document.getElementById('metricTargetPendapatan');
+                    const elemPersen = document.getElementById('metricPersenTarget');
+                    const elemProgressBar = document.getElementById('metricProgressBar');
+                    const elemSisaTarget = document.getElementById('metricSisaTarget');
+                    const elemLabelSisaHari = document.getElementById('labelSisaHari');
+                    const elemRataRataHarian = document.getElementById('metricRataRataHarianDibutuhkan');
+                    const elemTargetJoCard = document.getElementById('metricTargetJoPerHariCard');
+                    const elemEstimasiJoCard = document.getElementById('metricEstimasiJoQtyCard');
 
                     if (elemPendapatanHariIni) elemPendapatanHariIni.textContent = data.pendapatan_hari_ini;
                     if (elemTotalJobHariIni) elemTotalJobHariIni.innerHTML = `${data.total_job_hari_ini} <span class="text-xs text-slate-400 font-bold">JO</span>`;
@@ -569,6 +583,20 @@
                     if (elemTotalJobBulanIni) elemTotalJobBulanIni.innerHTML = `${data.total_job_bulan_ini} <span class="text-xs text-slate-400 font-bold">JO</span>`;
                     if (elemTotalPiketBulanIni) elemTotalPiketBulanIni.innerHTML = `${data.total_piket_bulan_ini} <span class="text-[11px] text-slate-400 font-bold">Kali</span>`;
                     if (elemPendapatanPiketBulanIni) elemPendapatanPiketBulanIni.textContent = data.pendapatan_piket_bulan_ini;
+                    if (elemPendapatanJoBulanIni) elemPendapatanJoBulanIni.textContent = data.pendapatan_jo_bulan_ini;
+                    if (elemRataRataJoPerHari) elemRataRataJoPerHari.textContent = `Rata-rata ${data.rata_rata_jo_per_hari}`;
+                    if (elemTargetJoPerHari) elemTargetJoPerHari.textContent = data.target_jo_per_hari;
+                    if (elemEstimasiJoQty) elemEstimasiJoQty.textContent = `(${data.estimasi_jo_qty_per_hari})`;
+
+                    if (elemTercapai) elemTercapai.textContent = data.tercapai_pendapatan;
+                    if (elemTarget) elemTarget.textContent = data.target_pendapatan;
+                    if (elemPersen) elemPersen.textContent = data.persen_target;
+                    if (elemProgressBar) elemProgressBar.style.width = data.persen_target;
+                    if (elemSisaTarget) elemSisaTarget.textContent = data.sisa_target;
+                    if (elemLabelSisaHari) elemLabelSisaHari.textContent = data.label_sisa_hari;
+                    if (elemRataRataHarian) elemRataRataHarian.textContent = data.rata_rata_harian_dibutuhkan;
+                    if (elemTargetJoCard) elemTargetJoCard.textContent = data.target_jo_per_hari;
+                    if (elemEstimasiJoCard) elemEstimasiJoCard.textContent = data.estimasi_jo_qty_per_hari;
                 }
             } catch (e) {
                 console.error("Failed to refresh stats dynamically:", e);

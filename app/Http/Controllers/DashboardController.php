@@ -161,26 +161,59 @@ class DashboardController extends Controller
                 ->get();
         }
 
-        // Target Pendapatan Calculations
+        // Target Pendapatan & Productivity Calculations
         $activeUser = $targetUserId ? \App\Models\User::find($targetUserId) : $user;
         $targetPendapatan = $activeUser ? (float) ($activeUser->target_pendapatan ?? 5000000) : 5000000;
         $tercapaiPendapatan = (float) $pendapatanBulanIni;
         $sisaTarget = max(0, $targetPendapatan - $tercapaiPendapatan);
         $persenTarget = ($targetPendapatan > 0) ? min(100, round(($tercapaiPendapatan / $targetPendapatan) * 100, 1)) : 0;
 
-        $now = Carbon::now();
-        if ($selectedBulan === $now->format('Y-m') && !$hasCustomRange) {
-            $daysInMonth = $now->daysInMonth;
-            $sisaHari = max(1, $daysInMonth - $now->day + 1);
-        } elseif ($hasCustomRange) {
-            $startC = Carbon::parse($startDate);
-            $endC = Carbon::parse($endDate);
-            $sisaHari = max(1, $startC->diffInDays($endC) + 1);
+        // Pure JO Income (excluding Piket)
+        $pendapatanJoHariIni = $baseQuery()->whereDate('tanggal', $today)->where('kategori', 'not like', 'Piket%')->sum('tarif');
+        $pendapatanJoBulanIni = $periodQuery()->where('kategori', 'not like', 'Piket%')->sum('tarif');
+
+        $todayC = Carbon::today();
+
+        if ($hasCustomRange) {
+            $startC = Carbon::parse($startDate)->startOfDay();
+            $endC = Carbon::parse($endDate)->startOfDay();
+
+            if ($todayC->gt($endC)) {
+                $sisaHari = 0;
+                $passedDays = max(1, (int) $startC->diffInDays($endC) + 1);
+            } elseif ($todayC->lt($startC)) {
+                $sisaHari = (int) $startC->diffInDays($endC) + 1;
+                $passedDays = 1;
+            } else {
+                $sisaHari = (int) $todayC->diffInDays($endC) + 1;
+                $passedDays = max(1, (int) $startC->diffInDays($todayC) + 1);
+            }
         } else {
-            $sisaHari = Carbon::createFromDate($year, $month, 1)->daysInMonth;
+            $periodStart = Carbon::createFromDate((int) $year, (int) $month, 1)->startOfDay();
+            $periodEnd = $periodStart->copy()->endOfMonth()->startOfDay();
+
+            if ($todayC->gt($periodEnd)) {
+                $sisaHari = 0;
+                $passedDays = $periodStart->daysInMonth;
+            } elseif ($todayC->lt($periodStart)) {
+                $sisaHari = $periodStart->daysInMonth;
+                $passedDays = 1;
+            } else {
+                $sisaHari = (int) $todayC->diffInDays($periodEnd) + 1;
+                $passedDays = max(1, (int) $todayC->day);
+            }
         }
 
-        $rataRataHarianDibutuhkan = ($sisaTarget > 0) ? ceil($sisaTarget / $sisaHari) : 0;
+        $rataRataHarianDibutuhkan = ($sisaTarget > 0 && $sisaHari > 0) ? (int) ceil($sisaTarget / $sisaHari) : 0;
+
+        // Productivity JO Metrics
+        $rataRataJoPerHari = round($totalJobBulanIni / $passedDays, 1);
+        $rataRataPendapatanJoPerHari = (int) round($pendapatanJoBulanIni / $passedDays);
+
+        $sisaTargetJo = max(0, $targetPendapatan - $pendapatanJoBulanIni);
+        $targetJoPerHari = ($sisaTargetJo > 0 && $sisaHari > 0) ? (int) ceil($sisaTargetJo / $sisaHari) : 0;
+        $avgTarifPerJo = $totalJobBulanIni > 0 ? ($pendapatanJoBulanIni / $totalJobBulanIni) : 0;
+        $estimasiJoQtyPerHari = ($targetJoPerHari > 0 && $avgTarifPerJo > 0) ? (int) ceil($targetJoPerHari / $avgTarifPerJo) : 0;
 
         // Daily Trend Chart Data
         $chartLabels = $rekapHarian->map(fn($row) => Carbon::parse($row->tanggal)->format('d M'))->values()->toArray();
@@ -204,6 +237,14 @@ class DashboardController extends Controller
             'totalJobBulanIni',
             'totalPiketBulanIni',
             'pendapatanPiketBulanIni',
+            'pendapatanJoHariIni',
+            'pendapatanJoBulanIni',
+            'passedDays',
+            'rataRataJoPerHari',
+            'rataRataPendapatanJoPerHari',
+            'sisaTargetJo',
+            'targetJoPerHari',
+            'estimasiJoQtyPerHari',
             'rekapHarian',
             'detailJobOrders',
             'tarifs',
@@ -303,6 +344,58 @@ class DashboardController extends Controller
         $totalPiketBulanIni = $periodQuery()->where('kategori', 'like', 'Piket%')->count();
         $pendapatanPiketBulanIni = $periodQuery()->where('kategori', 'like', 'Piket%')->sum('tarif');
 
+        // Target metrics
+        $activeUser = $targetUserId ? \App\Models\User::find($targetUserId) : $user;
+        $targetPendapatan = $activeUser ? (float) ($activeUser->target_pendapatan ?? 5000000) : 5000000;
+        $tercapaiPendapatan = (float) $pendapatanBulanIni;
+        $sisaTarget = max(0, $targetPendapatan - $tercapaiPendapatan);
+        $persenTarget = ($targetPendapatan > 0) ? min(100, round(($tercapaiPendapatan / $targetPendapatan) * 100, 1)) : 0;
+
+        // Pure JO Income (excluding Piket)
+        $pendapatanJoHariIni = $baseQuery()->whereDate('tanggal', $today)->where('kategori', 'not like', 'Piket%')->sum('tarif');
+        $pendapatanJoBulanIni = $periodQuery()->where('kategori', 'not like', 'Piket%')->sum('tarif');
+
+        $todayC = Carbon::today();
+
+        if ($hasCustomRange) {
+            $startC = Carbon::parse($startDate)->startOfDay();
+            $endC = Carbon::parse($endDate)->startOfDay();
+
+            if ($todayC->gt($endC)) {
+                $sisaHari = 0;
+                $passedDays = max(1, (int) $startC->diffInDays($endC) + 1);
+            } elseif ($todayC->lt($startC)) {
+                $sisaHari = (int) $startC->diffInDays($endC) + 1;
+                $passedDays = 1;
+            } else {
+                $sisaHari = (int) $todayC->diffInDays($endC) + 1;
+                $passedDays = max(1, (int) $startC->diffInDays($todayC) + 1);
+            }
+        } else {
+            $periodStart = Carbon::createFromDate((int) $year, (int) $month, 1)->startOfDay();
+            $periodEnd = $periodStart->copy()->endOfMonth()->startOfDay();
+
+            if ($todayC->gt($periodEnd)) {
+                $sisaHari = 0;
+                $passedDays = $periodStart->daysInMonth;
+            } elseif ($todayC->lt($periodStart)) {
+                $sisaHari = $periodStart->daysInMonth;
+                $passedDays = 1;
+            } else {
+                $sisaHari = (int) $todayC->diffInDays($periodEnd) + 1;
+                $passedDays = max(1, (int) $todayC->day);
+            }
+        }
+
+        $rataRataHarianDibutuhkan = ($sisaTarget > 0 && $sisaHari > 0) ? (int) ceil($sisaTarget / $sisaHari) : 0;
+
+        // Productivity JO Metrics
+        $rataRataJoPerHari = round($totalJobBulanIni / $passedDays, 1);
+        $sisaTargetJo = max(0, $targetPendapatan - $pendapatanJoBulanIni);
+        $targetJoPerHari = ($sisaTargetJo > 0 && $sisaHari > 0) ? (int) ceil($sisaTargetJo / $sisaHari) : 0;
+        $avgTarifPerJo = $totalJobBulanIni > 0 ? ($pendapatanJoBulanIni / $totalJobBulanIni) : 0;
+        $estimasiJoQtyPerHari = ($targetJoPerHari > 0 && $avgTarifPerJo > 0) ? (int) ceil($targetJoPerHari / $avgTarifPerJo) : 0;
+
         return response()->json([
             'success' => true,
             'pendapatan_hari_ini' => 'Rp ' . number_format($pendapatanHariIni, 0, ',', '.'),
@@ -312,6 +405,17 @@ class DashboardController extends Controller
             'total_job_bulan_ini' => $totalJobBulanIni . ' JO',
             'total_piket_bulan_ini' => $totalPiketBulanIni . ' Kali',
             'pendapatan_piket_bulan_ini' => '(Rp ' . number_format($pendapatanPiketBulanIni, 0, ',', '.') . ')',
+            'pendapatan_jo_bulan_ini' => 'Rp ' . number_format($pendapatanJoBulanIni, 0, ',', '.'),
+            'target_pendapatan' => 'Rp ' . number_format($targetPendapatan, 0, ',', '.'),
+            'tercapai_pendapatan' => 'Rp ' . number_format($tercapaiPendapatan, 0, ',', '.'),
+            'sisa_target' => $sisaTarget > 0 ? 'Rp ' . number_format($sisaTarget, 0, ',', '.') : 'Tercapai! 🎉',
+            'persen_target' => $persenTarget . '%',
+            'sisa_hari' => $sisaHari,
+            'label_sisa_hari' => $sisaHari > 0 ? "Perlu/Hari ({$sisaHari} Hari Sisa)" : "Perlu/Hari (Selesai)",
+            'rata_rata_harian_dibutuhkan' => ($sisaTarget > 0 && $sisaHari > 0) ? 'Rp ' . number_format($rataRataHarianDibutuhkan, 0, ',', '.') : 'Rp 0',
+            'target_jo_per_hari' => ($sisaTargetJo > 0 && $sisaHari > 0) ? 'Rp ' . number_format($targetJoPerHari, 0, ',', '.') : 'Rp 0',
+            'estimasi_jo_qty_per_hari' => ($sisaTargetJo > 0 && $sisaHari > 0) ? "~{$estimasiJoQtyPerHari} JO/Hari" : "0 JO",
+            'rata_rata_jo_per_hari' => $rataRataJoPerHari . ' JO/Hari',
         ]);
     }
 }
