@@ -563,8 +563,8 @@
                     const elemPendapatanPiketBulanIni = document.getElementById('metricPendapatanPiketBulanIni');
                     const elemPendapatanJoBulanIni = document.getElementById('metricPendapatanJoBulanIni');
                     const elemRataRataJoPerHari = document.getElementById('metricRataRataJoPerHari');
-                    const elemTargetJoPerHari = document.getElementById('metricTargetJoPerHari');
-                    const elemEstimasiJoQty = document.getElementById('metricEstimasiJoQty');
+                    const elemTargetJoQtyPerHari = document.getElementById('metricTargetJoQtyPerHari');
+                    const elemTargetJoRevenuePerHari = document.getElementById('metricTargetJoRevenuePerHari');
 
                     const elemTercapai = document.getElementById('metricTercapaiPendapatan');
                     const elemTarget = document.getElementById('metricTargetPendapatan');
@@ -573,8 +573,10 @@
                     const elemSisaTarget = document.getElementById('metricSisaTarget');
                     const elemLabelSisaHari = document.getElementById('labelSisaHari');
                     const elemRataRataHarian = document.getElementById('metricRataRataHarianDibutuhkan');
-                    const elemTargetJoCard = document.getElementById('metricTargetJoPerHariCard');
-                    const elemEstimasiJoCard = document.getElementById('metricEstimasiJoQtyCard');
+                    const elemSisaJoVolume = document.getElementById('metricSisaJoVolume');
+                    const elemPersenJoVolume = document.getElementById('metricPersenJoVolume');
+                    const elemTargetJoQtyCard = document.getElementById('metricTargetJoQtyPerHariCard');
+                    const elemTargetJoRevenueCard = document.getElementById('metricTargetJoRevenuePerHariCard');
 
                     if (elemPendapatanHariIni) elemPendapatanHariIni.textContent = data.pendapatan_hari_ini;
                     if (elemTotalJobHariIni) elemTotalJobHariIni.innerHTML = `${data.total_job_hari_ini} <span class="text-xs text-slate-400 font-bold">JO</span>`;
@@ -585,8 +587,8 @@
                     if (elemPendapatanPiketBulanIni) elemPendapatanPiketBulanIni.textContent = data.pendapatan_piket_bulan_ini;
                     if (elemPendapatanJoBulanIni) elemPendapatanJoBulanIni.textContent = data.pendapatan_jo_bulan_ini;
                     if (elemRataRataJoPerHari) elemRataRataJoPerHari.textContent = `Rata-rata ${data.rata_rata_jo_per_hari}`;
-                    if (elemTargetJoPerHari) elemTargetJoPerHari.textContent = data.target_jo_per_hari;
-                    if (elemEstimasiJoQty) elemEstimasiJoQty.textContent = `(${data.estimasi_jo_qty_per_hari})`;
+                    if (elemTargetJoQtyPerHari) elemTargetJoQtyPerHari.textContent = data.target_jo_qty_per_hari;
+                    if (elemTargetJoRevenuePerHari) elemTargetJoRevenuePerHari.textContent = `(${data.target_jo_revenue_per_hari}/Hari)`;
 
                     if (elemTercapai) elemTercapai.textContent = data.tercapai_pendapatan;
                     if (elemTarget) elemTarget.textContent = data.target_pendapatan;
@@ -595,8 +597,10 @@
                     if (elemSisaTarget) elemSisaTarget.textContent = data.sisa_target;
                     if (elemLabelSisaHari) elemLabelSisaHari.textContent = data.label_sisa_hari;
                     if (elemRataRataHarian) elemRataRataHarian.textContent = data.rata_rata_harian_dibutuhkan;
-                    if (elemTargetJoCard) elemTargetJoCard.textContent = data.target_jo_per_hari;
-                    if (elemEstimasiJoCard) elemEstimasiJoCard.textContent = data.estimasi_jo_qty_per_hari;
+                    if (elemSisaJoVolume) elemSisaJoVolume.textContent = data.sisa_jo_volume;
+                    if (elemPersenJoVolume) elemPersenJoVolume.textContent = data.persen_jo_volume;
+                    if (elemTargetJoQtyCard) elemTargetJoQtyCard.textContent = data.target_jo_qty_per_hari;
+                    if (elemTargetJoRevenueCard) elemTargetJoRevenueCard.textContent = `${data.target_jo_revenue_per_hari}/Hari`;
                 }
             } catch (e) {
                 console.error("Failed to refresh stats dynamically:", e);

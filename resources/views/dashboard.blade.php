@@ -146,10 +146,10 @@
                         </div>
                     </div>
                     <div class="pt-1.5 border-t border-slate-800/60">
-                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-400 block">Target JO/Hari (Tanpa Piket)</span>
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-400 block">Target Produktivitas JO</span>
                         <div class="text-xs font-black font-mono-num text-emerald-300 transition-all">
-                            <span id="metricTargetJoPerHari">{{ ($sisaTargetJo > 0 && $sisaHari > 0) ? 'Rp ' . number_format($targetJoPerHari, 0, ',', '.') : 'Rp 0' }}</span>
-                            <span id="metricEstimasiJoQty" class="text-[10px] text-slate-400 font-semibold block sm:inline">({{ ($sisaTargetJo > 0 && $sisaHari > 0) ? '~' . $estimasiJoQtyPerHari . ' JO/Hari' : '0 JO' }})</span>
+                            <span id="metricTargetJoQtyPerHari">{{ ($sisaJoVolume > 0 && $sisaHari > 0) ? $targetJoQtyPerHari . ' JO / Hari' : 'Tercapai! 🎉' }}</span>
+                            <span id="metricTargetJoRevenuePerHari" class="text-[10px] text-slate-400 font-semibold block sm:inline">({{ ($sisaJoVolume > 0 && $sisaHari > 0) ? 'Rp ' . number_format($targetJoRevenuePerHari, 0, ',', '.') . '/Hari' : 'Rp 0' }})</span>
                         </div>
                     </div>
                 </div>
@@ -227,21 +227,23 @@
                         </span>
                     </div>
 
-                    <!-- Target Produktivitas JO Murni Card -->
-                    <div class="col-span-2 p-3 rounded-2xl bg-slate-950/80 border border-emerald-500/30 flex items-center justify-between gap-2 shadow-inner">
+                    <!-- Target Produktivitas 330 JO Card -->
+                    <div class="col-span-2 p-3 rounded-2xl bg-slate-950/80 border border-emerald-500/30 flex items-center justify-between gap-3 shadow-inner">
                         <div>
                             <span class="text-[10px] font-black uppercase tracking-wider text-emerald-400 flex items-center gap-1">
                                 <span class="material-symbols-outlined text-xs">trending_up</span>
-                                <span>Target Produktivitas JO (Tanpa Piket)</span>
+                                <span>Target Produktivitas JO (Target {{ $targetJoVolume }} JO)</span>
                             </span>
-                            <span class="text-[10px] font-bold text-slate-400 block">Kebutuhan JO murni per hari ({{ $sisaHari }} Hari Sisa)</span>
+                            <span class="text-[10px] font-bold text-slate-400 block">
+                                Sisa <span id="metricSisaJoVolume" class="text-amber-400 font-extrabold">{{ $sisaJoVolume > 0 ? $sisaJoVolume . ' JO' : 'Tercapai! 🎉' }}</span> lagi dari target {{ $targetJoVolume }} JO (<span id="metricPersenJoVolume" class="text-emerald-400 font-extrabold">{{ $persenJoVolume }}%</span>)
+                            </span>
                         </div>
-                        <div class="text-right">
-                            <span id="metricTargetJoPerHariCard" class="text-xs sm:text-sm font-black font-mono-num text-emerald-300 block">
-                                {{ ($sisaTargetJo > 0 && $sisaHari > 0) ? 'Rp ' . number_format($targetJoPerHari, 0, ',', '.') : 'Rp 0' }}
+                        <div class="text-right shrink-0">
+                            <span id="metricTargetJoQtyPerHariCard" class="text-xs sm:text-sm font-black font-mono-num text-emerald-300 block">
+                                {{ ($sisaJoVolume > 0 && $sisaHari > 0) ? $targetJoQtyPerHari . ' JO / Hari' : 'Tercapai! 🎉' }}
                             </span>
-                            <span id="metricEstimasiJoQtyCard" class="text-[10px] font-extrabold font-mono-num text-amber-300 block">
-                                {{ ($sisaTargetJo > 0 && $sisaHari > 0) ? "~{$estimasiJoQtyPerHari} JO / Hari" : "0 JO" }}
+                            <span id="metricTargetJoRevenuePerHariCard" class="text-[10px] font-extrabold font-mono-num text-amber-300 block">
+                                {{ ($sisaJoVolume > 0 && $sisaHari > 0) ? 'Rp ' . number_format($targetJoRevenuePerHari, 0, ',', '.') . '/Hari' : 'Rp 0' }}
                             </span>
                         </div>
                     </div>

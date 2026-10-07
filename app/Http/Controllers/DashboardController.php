@@ -206,14 +206,19 @@ class DashboardController extends Controller
 
         $rataRataHarianDibutuhkan = ($sisaTarget > 0 && $sisaHari > 0) ? (int) ceil($sisaTarget / $sisaHari) : 0;
 
-        // Productivity JO Metrics
-        $rataRataJoPerHari = round($totalJobBulanIni / $passedDays, 1);
+        // Productivity JO Metrics (Target 330 JO per Bulan)
+        $targetJoVolume = 330;
+        $tercapaiJoVolume = (int) $totalJobBulanIni;
+        $sisaJoVolume = max(0, $targetJoVolume - $tercapaiJoVolume);
+        $persenJoVolume = ($targetJoVolume > 0) ? min(100, round(($tercapaiJoVolume / $targetJoVolume) * 100, 1)) : 0;
+
+        $rataRataJoPerHari = round($tercapaiJoVolume / $passedDays, 1);
         $rataRataPendapatanJoPerHari = (int) round($pendapatanJoBulanIni / $passedDays);
 
-        $sisaTargetJo = max(0, $targetPendapatan - $pendapatanJoBulanIni);
-        $targetJoPerHari = ($sisaTargetJo > 0 && $sisaHari > 0) ? (int) ceil($sisaTargetJo / $sisaHari) : 0;
-        $avgTarifPerJo = $totalJobBulanIni > 0 ? ($pendapatanJoBulanIni / $totalJobBulanIni) : 0;
-        $estimasiJoQtyPerHari = ($targetJoPerHari > 0 && $avgTarifPerJo > 0) ? (int) ceil($targetJoPerHari / $avgTarifPerJo) : 0;
+        // Kebutuhan Target JO per Hari berdasarkan Target 330 JO
+        $targetJoQtyPerHari = ($sisaJoVolume > 0 && $sisaHari > 0) ? (int) ceil($sisaJoVolume / $sisaHari) : 0;
+        $avgTarifPerJo = $tercapaiJoVolume > 0 ? ($pendapatanJoBulanIni / $tercapaiJoVolume) : 0;
+        $targetJoRevenuePerHari = (int) ceil($targetJoQtyPerHari * $avgTarifPerJo);
 
         // Daily Trend Chart Data
         $chartLabels = $rekapHarian->map(fn($row) => Carbon::parse($row->tanggal)->format('d M'))->values()->toArray();
@@ -240,11 +245,14 @@ class DashboardController extends Controller
             'pendapatanJoHariIni',
             'pendapatanJoBulanIni',
             'passedDays',
+            'targetJoVolume',
+            'tercapaiJoVolume',
+            'sisaJoVolume',
+            'persenJoVolume',
             'rataRataJoPerHari',
             'rataRataPendapatanJoPerHari',
-            'sisaTargetJo',
-            'targetJoPerHari',
-            'estimasiJoQtyPerHari',
+            'targetJoQtyPerHari',
+            'targetJoRevenuePerHari',
             'rekapHarian',
             'detailJobOrders',
             'tarifs',
@@ -389,12 +397,16 @@ class DashboardController extends Controller
 
         $rataRataHarianDibutuhkan = ($sisaTarget > 0 && $sisaHari > 0) ? (int) ceil($sisaTarget / $sisaHari) : 0;
 
-        // Productivity JO Metrics
-        $rataRataJoPerHari = round($totalJobBulanIni / $passedDays, 1);
-        $sisaTargetJo = max(0, $targetPendapatan - $pendapatanJoBulanIni);
-        $targetJoPerHari = ($sisaTargetJo > 0 && $sisaHari > 0) ? (int) ceil($sisaTargetJo / $sisaHari) : 0;
-        $avgTarifPerJo = $totalJobBulanIni > 0 ? ($pendapatanJoBulanIni / $totalJobBulanIni) : 0;
-        $estimasiJoQtyPerHari = ($targetJoPerHari > 0 && $avgTarifPerJo > 0) ? (int) ceil($targetJoPerHari / $avgTarifPerJo) : 0;
+        // Productivity JO Metrics (Target 330 JO per Bulan)
+        $targetJoVolume = 330;
+        $tercapaiJoVolume = (int) $totalJobBulanIni;
+        $sisaJoVolume = max(0, $targetJoVolume - $tercapaiJoVolume);
+        $persenJoVolume = ($targetJoVolume > 0) ? min(100, round(($tercapaiJoVolume / $targetJoVolume) * 100, 1)) : 0;
+
+        $rataRataJoPerHari = round($tercapaiJoVolume / $passedDays, 1);
+        $targetJoQtyPerHari = ($sisaJoVolume > 0 && $sisaHari > 0) ? (int) ceil($sisaJoVolume / $sisaHari) : 0;
+        $avgTarifPerJo = $tercapaiJoVolume > 0 ? ($pendapatanJoBulanIni / $tercapaiJoVolume) : 0;
+        $targetJoRevenuePerHari = (int) ceil($targetJoQtyPerHari * $avgTarifPerJo);
 
         return response()->json([
             'success' => true,
@@ -413,8 +425,12 @@ class DashboardController extends Controller
             'sisa_hari' => $sisaHari,
             'label_sisa_hari' => $sisaHari > 0 ? "Perlu/Hari ({$sisaHari} Hari Sisa)" : "Perlu/Hari (Selesai)",
             'rata_rata_harian_dibutuhkan' => ($sisaTarget > 0 && $sisaHari > 0) ? 'Rp ' . number_format($rataRataHarianDibutuhkan, 0, ',', '.') : 'Rp 0',
-            'target_jo_per_hari' => ($sisaTargetJo > 0 && $sisaHari > 0) ? 'Rp ' . number_format($targetJoPerHari, 0, ',', '.') : 'Rp 0',
-            'estimasi_jo_qty_per_hari' => ($sisaTargetJo > 0 && $sisaHari > 0) ? "~{$estimasiJoQtyPerHari} JO/Hari" : "0 JO",
+            'target_jo_volume' => $targetJoVolume . ' JO',
+            'tercapai_jo_volume' => $tercapaiJoVolume . ' JO',
+            'sisa_jo_volume' => $sisaJoVolume > 0 ? $sisaJoVolume . ' JO' : 'Tercapai! 🎉',
+            'persen_jo_volume' => $persenJoVolume . '%',
+            'target_jo_qty_per_hari' => ($sisaJoVolume > 0 && $sisaHari > 0) ? $targetJoQtyPerHari . ' JO / Hari' : '0 JO',
+            'target_jo_revenue_per_hari' => ($sisaJoVolume > 0 && $sisaHari > 0) ? 'Rp ' . number_format($targetJoRevenuePerHari, 0, ',', '.') : 'Rp 0',
             'rata_rata_jo_per_hari' => $rataRataJoPerHari . ' JO/Hari',
         ]);
     }
