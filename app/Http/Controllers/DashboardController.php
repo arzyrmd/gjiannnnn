@@ -283,7 +283,9 @@ class DashboardController extends Controller
         $chartIncomeData = $rekapHarian->map(fn($row) => (float) $row->total_pendapatan)->values()->toArray();
         $chartJobData = $rekapHarian->map(fn($row) => (int) $row->total_job)->values()->toArray();
 
-        return view('dashboard', compact(
+        $viewName = $user->isAdmin() ? 'admin.dashboard' : 'dashboard';
+
+        return view($viewName, compact(
             'today',
             'selectedBulan',
             'year',

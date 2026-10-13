@@ -5,61 +5,26 @@
 @section('content')
 <div class="space-y-6 sm:space-y-8">
 
-    @if(auth()->user()->isAdmin())
-        <!-- ADMIN PANEL HEADER & TECHNICIAN FILTER BAR -->
-        <div class="rounded-3xl bg-slate-900/80 backdrop-blur-xl border border-amber-500/30 p-4 sm:p-5 shadow-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative overflow-hidden">
-            <div class="absolute -top-12 -left-12 w-36 h-36 bg-amber-500/10 rounded-full blur-2xl"></div>
-            <div class="flex items-center gap-3.5 relative z-10">
-                <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 text-slate-950 flex items-center justify-center font-black shadow-lg shadow-amber-500/20 shrink-0">
-                    <span class="material-symbols-outlined text-2xl">admin_panel_settings</span>
-                </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs font-black uppercase tracking-wider text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-lg border border-amber-500/30">PANEL UTAMA ADMIN</span>
-                        <span class="text-xs font-bold text-slate-300 font-mono">| {{ auth()->user()->name }}</span>
-                    </div>
-                    <p class="text-xs text-slate-400 font-medium mt-0.5">Monitoring Rekap Gaji &amp; Job Order Seluruh Teknisi Lapangan</p>
-                </div>
+    <!-- TECHNICIAN PANEL HEADER -->
+    <div class="rounded-3xl bg-slate-900/80 backdrop-blur-xl border border-cyan-500/30 p-4 sm:p-5 shadow-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative overflow-hidden">
+        <div class="absolute -top-12 -left-12 w-36 h-36 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="flex items-center gap-3.5 relative z-10">
+            <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-500 text-slate-950 flex items-center justify-center font-black shadow-lg shadow-cyan-500/20 shrink-0">
+                <span class="material-symbols-outlined text-2xl">badge</span>
             </div>
-
-            <form method="GET" action="{{ route('dashboard') }}" class="flex items-center gap-2 w-full sm:w-auto relative z-10">
-                @if(request('bulan'))
-                    <input type="hidden" name="bulan" value="{{ request('bulan') }}">
-                @endif
-                @if(request('start_date'))
-                    <input type="hidden" name="start_date" value="{{ request('start_date') }}">
-                    <input type="hidden" name="end_date" value="{{ request('end_date') }}">
-                @endif
-
-                <label for="teknisi_id" class="text-xs font-extrabold text-slate-300 uppercase tracking-wider whitespace-nowrap hidden sm:inline">Kabin Teknisi:</label>
-                <select name="teknisi_id" id="teknisi_id" onchange="this.form.submit()" class="w-full sm:w-auto px-4 py-2.5 rounded-2xl bg-slate-950 border border-amber-500/40 text-amber-300 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-amber-400 transition-all cursor-pointer shadow-inner">
-                    <option value="all" {{ ($targetUserId === null) ? 'selected' : '' }}>👥 Semua Teknisi (Ringkasan Global)</option>
-                    @foreach($allTeknisi as $teknisiItem)
-                        <option value="{{ $teknisiItem->id }}" {{ ($targetUserId == $teknisiItem->id) ? 'selected' : '' }}>
-                            👤 {{ $teknisiItem->name }} ({{ $teknisiItem->email }})
-                        </option>
-                    @endforeach
-                </select>
-            </form>
-        </div>
-    @else
-        <!-- TECHNICIAN PANEL HEADER -->
-        <div class="rounded-3xl bg-slate-900/80 backdrop-blur-xl border border-cyan-500/30 p-4 sm:p-5 shadow-2xl flex items-center justify-between gap-4 relative overflow-hidden">
-            <div class="absolute -top-12 -left-12 w-36 h-36 bg-cyan-500/10 rounded-full blur-2xl"></div>
-            <div class="flex items-center gap-3.5 relative z-10">
-                <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-500 text-slate-950 flex items-center justify-center font-black shadow-lg shadow-cyan-500/20 shrink-0">
-                    <span class="material-symbols-outlined text-2xl">badge</span>
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-black uppercase tracking-wider text-cyan-300 bg-cyan-500/10 px-2.5 py-0.5 rounded-lg border border-cyan-500/30">KABIN KERJA TEKNISI</span>
+                    <span class="text-xs font-extrabold text-white font-mono">| {{ auth()->user()->name }}</span>
                 </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs font-black uppercase tracking-wider text-cyan-300 bg-cyan-500/10 px-2.5 py-0.5 rounded-lg border border-cyan-500/30">KABIN GAJIAN TEKNISI</span>
-                        <span class="text-xs font-extrabold text-white font-mono">| {{ auth()->user()->name }}</span>
-                    </div>
-                    <p class="text-xs text-slate-400 mt-0.5">Kalkulator, AI Input &amp; Rekap Pendapatan Pribadi Teknisi</p>
-                </div>
+                <p class="text-xs text-slate-400 mt-0.5">Kalkulator Gaji, Pencatatan Cepat &amp; Monitoring Target 330 JO</p>
             </div>
         </div>
-    @endif
+
+        <form method="GET" action="{{ route('dashboard') }}" class="flex items-center gap-2 w-full sm:w-auto relative z-10">
+            <input type="month" name="bulan" value="{{ $selectedBulan }}" onchange="this.form.submit()" class="w-full sm:w-auto px-4 py-2.5 rounded-2xl bg-slate-950 border border-slate-800 text-slate-200 text-xs font-mono font-bold focus:outline-none focus:border-cyan-400 transition-all cursor-pointer">
+        </form>
+    </div>
 
     <!-- 1. TOP METRICS SPOTLIGHT (2 MASTER CARDS: HARI INI & BULAN INI) -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
@@ -317,405 +282,7 @@
         </div>
     </div>
 
-    @if(auth()->user()->isAdmin())
-    <!-- ADMIN EXECUTIVE ANALYTICS SPOTLIGHT -->
-    <div class="space-y-6">
-        <!-- 1. ADMIN KPI METRIC CARDS -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            <!-- KPI 1: Total Teknisi -->
-            <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800/80 shadow-xl flex items-center gap-3 relative overflow-hidden group hover:border-amber-500/40 transition-all">
-                <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center font-black shrink-0 shadow-sm">
-                    <span class="material-symbols-outlined text-xl">engineering</span>
-                </div>
-                <div class="min-w-0">
-                    <span class="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider text-slate-400 block truncate">Total Teknisi</span>
-                    <span class="text-base sm:text-xl font-black font-mono-num text-white">{{ $totalTeknisiCount }} <span class="text-xs text-slate-400 font-semibold">Orang</span></span>
-                </div>
-            </div>
-
-            <!-- KPI 2: Success Rate -->
-            <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800/80 shadow-xl flex items-center gap-3 relative overflow-hidden group hover:border-emerald-500/40 transition-all">
-                <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-black shrink-0 shadow-sm">
-                    <span class="material-symbols-outlined text-xl">verified</span>
-                </div>
-                <div class="min-w-0">
-                    <span class="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider text-slate-400 block truncate">Rate Success</span>
-                    <span class="text-base sm:text-xl font-black font-mono-num text-emerald-400">{{ $successRate }}%</span>
-                </div>
-            </div>
-
-            <!-- KPI 3: Job Berhasil vs Gagal -->
-            <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800/80 shadow-xl flex items-center gap-3 relative overflow-hidden group hover:border-cyan-500/40 transition-all">
-                <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center font-black shrink-0 shadow-sm">
-                    <span class="material-symbols-outlined text-xl">task_alt</span>
-                </div>
-                <div class="min-w-0">
-                    <span class="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider text-slate-400 block truncate">Berhasil / Gagal</span>
-                    <span class="text-xs sm:text-sm font-black font-mono-num text-slate-200">
-                        <span class="text-emerald-400 font-extrabold">{{ $totalSuccessJobs }}</span> / <span class="text-rose-400 font-extrabold">{{ $totalFailedJobs }}</span>
-                    </span>
-                </div>
-            </div>
-
-            <!-- KPI 4: Quick Action Nav Hub -->
-            <div class="p-3 rounded-2xl bg-slate-900/80 border border-amber-500/30 shadow-xl flex items-center justify-around gap-1">
-                <a href="{{ route('users.index') }}" class="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-slate-800 text-slate-300 hover:text-amber-400 transition-colors" title="Kelola User &amp; Teknisi">
-                    <span class="material-symbols-outlined text-lg">group_add</span>
-                    <span class="text-[9px] font-extrabold uppercase tracking-wider">User</span>
-                </a>
-                <a href="{{ route('tarifs.index') }}" class="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-slate-800 text-slate-300 hover:text-amber-400 transition-colors" title="Pengaturan Master Tarif">
-                    <span class="material-symbols-outlined text-lg">price_change</span>
-                    <span class="text-[9px] font-extrabold uppercase tracking-wider">Tarif</span>
-                </a>
-                <a href="{{ route('export.csv', ['bulan' => $selectedBulan]) }}" class="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-slate-800 text-slate-300 hover:text-amber-400 transition-colors" title="Export Rekap CSV">
-                    <span class="material-symbols-outlined text-lg">download</span>
-                    <span class="text-[9px] font-extrabold uppercase tracking-wider">Export</span>
-                </a>
-            </div>
-        </div>
-
-        <!-- 2. MONITORING JO SELESAI HARI INI PER TEKNISI -->
-        <div class="rounded-3xl bg-slate-900/80 backdrop-blur-xl border border-amber-500/30 p-5 sm:p-6 shadow-2xl space-y-5 relative overflow-hidden">
-            <!-- Background Ambient Glow -->
-            <div class="absolute -top-20 -right-20 w-60 h-60 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-            <!-- Header Section -->
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-4 relative z-10">
-                <div class="flex items-center gap-3.5">
-                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-400 to-orange-500 text-slate-950 flex items-center justify-center font-black shadow-lg shadow-amber-500/20 shrink-0">
-                        <span class="material-symbols-outlined text-2xl">assignment_turned_in</span>
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <h2 class="text-base sm:text-lg font-black uppercase tracking-wider text-white">Monitoring JO Selesai Hari Ini per Teknisi</h2>
-                            <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1">
-                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                                Live Hari Ini
-                            </span>
-                        </div>
-                        <p class="text-xs text-slate-400 font-medium mt-0.5">
-                            Rekap real-time pekerjaan tanggal <span class="text-amber-400 font-bold font-mono">{{ \Carbon\Carbon::parse($today)->translatedFormat('l, d F Y') }}</span> (Target Produktivitas: 330 JO / teknisi)
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Right Side Summary Badges -->
-                <div class="flex items-center gap-2 flex-wrap shrink-0">
-                    <div class="px-3 py-1.5 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center gap-2 shadow-inner">
-                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Total Hari Ini:</span>
-                        <span class="text-xs font-black font-mono-num text-amber-400">{{ $totalJobHariIni }} JO</span>
-                    </div>
-                    <div class="px-3 py-1.5 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center gap-2 shadow-inner">
-                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Teknisi Aktif:</span>
-                        <span class="text-xs font-black font-mono-num text-emerald-400">{{ $teknisiAktifHariIniCount }} / {{ $totalTeknisiCount }}</span>
-                    </div>
-                    <div class="px-3 py-1.5 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center gap-2 shadow-inner">
-                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Gaji Hari Ini:</span>
-                        <span class="text-xs font-black font-mono-num text-cyan-300">Rp {{ number_format($pendapatanHariIni, 0, ',', '.') }}</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Controls: Search Input & Filter Tabs -->
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-10">
-                <!-- Filter Tabs -->
-                <div class="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-950 border border-slate-800/80 shrink-0 w-fit">
-                    <button type="button" onclick="setTeknisiTabFilter('all', this)" class="teknisi-tab-btn active px-3 py-1.5 rounded-xl text-[11px] font-extrabold uppercase tracking-wider transition-all bg-amber-400 text-slate-950 shadow-sm">
-                        Semua ({{ $teknisiHariIni->count() }})
-                    </button>
-                    <button type="button" onclick="setTeknisiTabFilter('active', this)" class="teknisi-tab-btn px-3 py-1.5 rounded-xl text-[11px] font-extrabold uppercase tracking-wider transition-all text-slate-400 hover:text-white">
-                        Aktif Hari Ini ({{ $teknisiAktifHariIniCount }})
-                    </button>
-                    <button type="button" onclick="setTeknisiTabFilter('inactive', this)" class="teknisi-tab-btn px-3 py-1.5 rounded-xl text-[11px] font-extrabold uppercase tracking-wider transition-all text-slate-400 hover:text-white">
-                        Belum Input ({{ $teknisiHariIni->count() - $teknisiAktifHariIniCount }})
-                    </button>
-                </div>
-
-                <!-- Instant Search Input -->
-                <div class="relative w-full sm:w-64">
-                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-base pointer-events-none">search</span>
-                    <input type="text" id="searchTeknisiHariIni" oninput="filterTeknisiCards()" placeholder="Cari nama / email teknisi..." class="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400 transition-all font-medium">
-                </div>
-            </div>
-
-            <!-- List of Technicians Cards -->
-            <div class="space-y-3 relative z-10" id="teknisiHariIniContainer">
-                @forelse($teknisiHariIni as $tek)
-                    @php
-                        $isAktif = ($tek->total_jo_hari_ini > 0 || $tek->total_piket_hari_ini > 0);
-                        $persenProd = min(100, round((($tek->total_jo_bulan_ini ?? 0) / 330) * 100, 1));
-                        $sisaProd = max(0, 330 - ($tek->total_jo_bulan_ini ?? 0));
-                        
-                        // Palette for technician avatar initials
-                        $initials = strtoupper(substr(trim($tek->name), 0, 2));
-                        $avatarGradients = [
-                            'from-amber-400 to-orange-500 text-slate-950',
-                            'from-cyan-400 to-blue-500 text-slate-950',
-                            'from-emerald-400 to-teal-500 text-slate-950',
-                            'from-purple-400 to-pink-500 text-slate-950',
-                            'from-rose-400 to-red-500 text-white',
-                            'from-indigo-400 to-cyan-500 text-white',
-                        ];
-                        $avatarClass = $avatarGradients[$tek->id % count($avatarGradients)];
-                    @endphp
-
-                    <div class="teknisi-card rounded-2xl bg-slate-950/70 border border-slate-800/80 p-4 transition-all duration-200 hover:border-amber-500/40 hover:bg-slate-950/90 shadow-lg"
-                        data-name="{{ strtolower($tek->name) }}"
-                        data-email="{{ strtolower($tek->email) }}"
-                        data-status="{{ $isAktif ? 'active' : 'inactive' }}"
-                        data-total-jo="{{ $tek->total_jo_hari_ini }}">
-                        
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
-                            <!-- Col 1: Profil Teknisi (4 cols) -->
-                            <div class="lg:col-span-4 flex items-center gap-3 min-w-0">
-                                <div class="w-11 h-11 rounded-2xl bg-gradient-to-br {{ $avatarClass }} flex items-center justify-center font-black text-xs shrink-0 shadow-md">
-                                    {{ $initials }}
-                                </div>
-                                <div class="min-w-0 flex-1">
-                                    <div class="flex items-center gap-2 flex-wrap">
-                                        <h3 class="text-sm font-bold text-white truncate">{{ $tek->name }}</h3>
-                                        @if($targetUserId == $tek->id)
-                                            <span class="px-1.5 py-0.5 text-[9px] rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold uppercase">Terfilter</span>
-                                        @endif
-                                    </div>
-                                    <p class="text-xs text-slate-400 truncate">{{ $tek->email }}</p>
-                                    <div class="mt-1">
-                                        @if($isAktif)
-                                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-extrabold uppercase tracking-wider">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                                                <span>Aktif Hari Ini ({{ $tek->total_jo_hari_ini }} JO)</span>
-                                            </span>
-                                        @else
-                                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-800/60 border border-slate-700/50 text-slate-400 text-[10px] font-bold uppercase tracking-wider">
-                                                <span>Belum Ada JO Hari Ini</span>
-                                            </span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Col 2: JO Selesai Hari Ini & Pendapatan Hari Ini (3 cols) -->
-                            <div class="lg:col-span-3 grid grid-cols-2 gap-2 border-t lg:border-t-0 lg:border-l border-slate-800/80 pt-3 lg:pt-0 lg:pl-4">
-                                <div>
-                                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">JO Hari Ini</span>
-                                    <div class="text-xl font-black font-mono-num {{ $tek->total_jo_hari_ini > 0 ? 'text-amber-400' : 'text-slate-500' }}">
-                                        {{ $tek->total_jo_hari_ini }} <span class="text-xs text-slate-400 font-bold">JO</span>
-                                    </div>
-                                    <div class="text-[10px] space-y-0.5 mt-0.5">
-                                        <span class="text-emerald-400 font-bold block">{{ $tek->jo_berhasil_hari_ini }} Berhasil</span>
-                                        @if($tek->jo_gagal_hari_ini > 0)
-                                            <span class="text-rose-400 font-bold block">{{ $tek->jo_gagal_hari_ini }} Gagal</span>
-                                        @endif
-                                        @if($tek->total_piket_hari_ini > 0)
-                                            <span class="text-cyan-300 font-bold block">{{ $tek->total_piket_hari_ini }} Piket</span>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div>
-                                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Gaji Hari Ini</span>
-                                    <div class="text-sm font-black font-mono-num {{ ($tek->pendapatan_hari_ini ?? 0) > 0 ? 'text-emerald-400' : 'text-slate-500' }}">
-                                        Rp {{ number_format($tek->pendapatan_hari_ini ?? 0, 0, ',', '.') }}
-                                    </div>
-                                    <span class="text-[10px] text-slate-400 font-medium block mt-0.5">Pendapatan hari ini</span>
-                                </div>
-                            </div>
-
-                            <!-- Col 3: Produktivitas Bulan Ini (Target 330 JO) (3 cols) -->
-                            <div class="lg:col-span-3 border-t lg:border-t-0 lg:border-l border-slate-800/80 pt-3 lg:pt-0 lg:pl-4">
-                                <div class="flex items-center justify-between text-[11px] font-extrabold mb-1">
-                                    <span class="text-slate-400 uppercase tracking-wider text-[10px]">Produktivitas (Target 330 JO)</span>
-                                    <span class="{{ $persenProd >= 100 ? 'text-emerald-400' : 'text-amber-400' }} font-mono-num">{{ $persenProd }}%</span>
-                                </div>
-                                <div class="w-full h-2 bg-slate-900 rounded-full overflow-hidden border border-slate-800 shadow-inner">
-                                    <div class="h-full bg-gradient-to-r {{ $persenProd >= 100 ? 'from-emerald-500 to-teal-400' : 'from-amber-400 to-orange-400' }} rounded-full transition-all duration-700" style="width: {{ $persenProd }}%"></div>
-                                </div>
-                                <div class="flex items-center justify-between text-[10px] mt-1">
-                                    <span class="font-mono-num font-bold text-slate-300">{{ $tek->total_jo_bulan_ini ?? 0 }} / 330 JO</span>
-                                    <span class="text-slate-400 font-semibold">{{ $sisaProd > 0 ? "Sisa {$sisaProd} JO" : "Target Tercapai! 🎉" }}</span>
-                                </div>
-                            </div>
-
-                            <!-- Col 4: Action Buttons (2 cols) -->
-                            <div class="lg:col-span-2 flex items-center justify-end gap-2 border-t lg:border-t-0 lg:border-l border-slate-800/80 pt-3 lg:pt-0 lg:pl-4 flex-wrap">
-                                <a href="{{ route('dashboard', ['teknisi_id' => $tek->id, 'tanggal' => $today]) }}" 
-                                    class="px-2.5 py-1.5 rounded-xl bg-amber-400/10 hover:bg-amber-400 text-amber-300 hover:text-slate-950 text-[10px] font-extrabold uppercase tracking-wider border border-amber-400/30 transition-all flex items-center gap-1 shadow-sm"
-                                    title="Lihat JO Hari Ini di Dashboard">
-                                    <span class="material-symbols-outlined text-xs">calendar_today</span>
-                                    <span>Hari Ini</span>
-                                </a>
-
-                                <a href="{{ route('dashboard', ['teknisi_id' => $tek->id, 'bulan' => $selectedBulan]) }}" 
-                                    class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-[10px] font-bold uppercase tracking-wider transition-all"
-                                    title="Filter Kabin Teknisi">
-                                    <span>Kabin</span>
-                                </a>
-
-                                @if($tek->jobOrders->count() > 0)
-                                    <button type="button" onclick="toggleTodayJobsList('jobs_tek_{{ $tek->id }}', this)" 
-                                        class="px-2 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-slate-200 text-[10px] font-bold border border-slate-800 transition-all flex items-center gap-0.5"
-                                        title="Rincian JO Hari Ini">
-                                        <span class="material-symbols-outlined text-sm transition-transform duration-200">expand_more</span>
-                                    </button>
-                                @endif
-                            </div>
-                        </div>
-
-                        <!-- Accordion Detail JO Hari Ini -->
-                        @if($tek->jobOrders->count() > 0)
-                            <div id="jobs_tek_{{ $tek->id }}" class="hidden pt-3 mt-3 border-t border-slate-800/80">
-                                <div class="bg-slate-900/90 rounded-xl p-3 border border-slate-800/80 space-y-2">
-                                    <div class="flex items-center justify-between text-xs font-bold text-slate-300 border-b border-slate-800/60 pb-1.5">
-                                        <span class="flex items-center gap-1.5">
-                                            <span class="material-symbols-outlined text-sm text-amber-400">format_list_bulleted</span>
-                                            <span>Rincian {{ $tek->jobOrders->count() }} JO Selesai Hari Ini ({{ \Carbon\Carbon::parse($today)->translatedFormat('d M Y') }}):</span>
-                                        </span>
-                                        <span class="text-[11px] font-mono-num text-emerald-400">Total: Rp {{ number_format($tek->pendapatan_hari_ini ?? 0, 0, ',', '.') }}</span>
-                                    </div>
-
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 pt-1 max-h-56 overflow-y-auto no-scrollbar">
-                                        @foreach($tek->jobOrders as $joItem)
-                                            <div class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800/60 flex flex-col justify-between text-xs space-y-1">
-                                                <div class="flex items-center justify-between gap-1">
-                                                    <span class="font-extrabold text-white truncate">{{ $joItem->kategori }}</span>
-                                                    @if($joItem->status === 'berhasil')
-                                                        <span class="px-1.5 py-0.2 rounded text-[9px] font-black uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shrink-0">Berhasil</span>
-                                                    @else
-                                                        <span class="px-1.5 py-0.2 rounded text-[9px] font-black uppercase bg-rose-500/20 text-rose-300 border border-rose-500/30 shrink-0">Gagal</span>
-                                                    @endif
-                                                </div>
-                                                <div class="flex items-center justify-between text-[11px] font-mono-num">
-                                                    <span class="text-amber-400 font-bold">Rp {{ number_format($joItem->tarif, 0, ',', '.') }}</span>
-                                                    <span class="text-slate-400 text-[10px]">{{ $joItem->created_at ? $joItem->created_at->format('H:i') : '-' }}</span>
-                                                </div>
-                                                @if($joItem->catatan)
-                                                    <p class="text-[10px] text-slate-400 truncate italic">"{{ $joItem->catatan }}"</p>
-                                                @endif
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            </div>
-                        @endif
-                    </div>
-                @empty
-                    <div class="p-8 text-center text-slate-400 text-xs font-bold bg-slate-950/50 rounded-2xl border border-slate-800">
-                        Belum ada data teknisi terdaftar dalam sistem.
-                    </div>
-                @endforelse
-            </div>
-        </div>
-
-        <!-- 3. ADMIN GRID: LEADERBOARD TEKNISI & CATEGORY ANALYTICS -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-            <!-- LEADERBOARD TEKNISI TERBAIK (7 cols) -->
-            <div class="lg:col-span-7 rounded-3xl bg-slate-900/70 backdrop-blur-xl border border-slate-800/80 p-5 shadow-2xl space-y-4">
-                <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-400 to-orange-500 text-slate-950 flex items-center justify-center font-black text-sm shadow-md">
-                            <span class="material-symbols-outlined text-base">trophy</span>
-                        </div>
-                        <div>
-                            <h3 class="text-sm font-black uppercase tracking-wider text-white">Leaderboard Performance Teknisi</h3>
-                            <p class="text-[10px] text-slate-400 font-medium">Peringkat perolehan gaji terbanyak ({{ $periodLabel }})</p>
-                        </div>
-                    </div>
-                    <span class="px-2.5 py-0.5 rounded-full bg-amber-400/10 text-amber-300 text-[10px] font-bold uppercase tracking-wider border border-amber-400/30">Top 5</span>
-                </div>
-
-                <div class="space-y-2.5">
-                    @forelse($teknisiLeaderboard as $index => $leader)
-                        @php
-                            $rankColors = [
-                                0 => 'from-amber-400 to-orange-400 text-slate-950 border-amber-300',
-                                1 => 'from-slate-300 to-slate-400 text-slate-950 border-slate-200',
-                                2 => 'from-amber-700 to-amber-800 text-white border-amber-600',
-                            ];
-                            $badgeClass = $rankColors[$index] ?? 'bg-slate-800 text-slate-400 border-slate-700';
-                        @endphp
-                        <div class="p-3 rounded-2xl bg-slate-950/70 border border-slate-800/80 flex items-center justify-between gap-3 hover:border-slate-700 transition-all">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-7 h-7 rounded-xl bg-gradient-to-br {{ $badgeClass }} flex items-center justify-center font-black text-xs shrink-0 shadow-sm border">
-                                    {{ $index + 1 }}
-                                </div>
-                                <div class="min-w-0">
-                                    <h4 class="text-xs font-bold text-white truncate flex items-center gap-1.5">
-                                        <span>{{ $leader->name }}</span>
-                                        @if($targetUserId == $leader->id)
-                                            <span class="px-1.5 py-0.2 text-[9px] rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold uppercase">Terfilter</span>
-                                        @endif
-                                    </h4>
-                                    <p class="text-[10px] text-slate-400 truncate">{{ $leader->email }}</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-3 shrink-0 text-right">
-                                <div class="hidden sm:block text-left w-28">
-                                    <div class="flex justify-between text-[10px] font-bold">
-                                        <span class="text-slate-400">Target 330 JO</span>
-                                        <span class="{{ ($leader->total_job ?? 0) >= 330 ? 'text-emerald-400' : 'text-amber-400' }} font-mono-num">{{ round((($leader->total_job ?? 0) / 330) * 100) }}%</span>
-                                    </div>
-                                    <div class="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden mt-0.5 border border-slate-800">
-                                        <div class="h-full bg-gradient-to-r {{ ($leader->total_job ?? 0) >= 330 ? 'from-emerald-400 to-teal-400' : 'from-amber-400 to-orange-400' }}" style="width: {{ min(100, round((($leader->total_job ?? 0) / 330) * 100)) }}%"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <span class="text-xs font-black font-mono-num text-amber-400 block">Rp {{ number_format($leader->total_pendapatan ?? 0, 0, ',', '.') }}</span>
-                                    <span class="text-[10px] font-bold text-slate-400 block">{{ $leader->total_job ?? 0 }} JO</span>
-                                </div>
-                                <a href="{{ route('dashboard', ['teknisi_id' => $leader->id, 'bulan' => $selectedBulan]) }}" class="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-amber-400 hover:text-slate-950 text-slate-300 text-[10px] font-bold uppercase tracking-wider transition-all" title="Filter Kabin Teknisi Ini">
-                                    Kabin
-                                </a>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="p-6 text-center text-slate-500 text-xs font-bold bg-slate-950/40 rounded-2xl border border-slate-800">
-                            Belum ada aktivitas job order pada bulan ini.
-                        </div>
-                    @endforelse
-                </div>
-            </div>
-
-            <!-- ANALYTICS KATEGORI PEKERJAAN (5 cols) -->
-            <div class="lg:col-span-5 rounded-3xl bg-slate-900/70 backdrop-blur-xl border border-slate-800/80 p-5 shadow-2xl space-y-4">
-                <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-500 text-slate-950 flex items-center justify-center font-black text-sm shadow-md">
-                            <span class="material-symbols-outlined text-base">pie_chart</span>
-                        </div>
-                        <div>
-                            <h3 class="text-sm font-black uppercase tracking-wider text-white">Breakdown Pekerjaan</h3>
-                            <p class="text-[10px] text-slate-400 font-medium">Distribusi kategori job order teknisi</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="space-y-3 max-h-72 overflow-y-auto no-scrollbar pr-1">
-                    @forelse($kategoriBreakdown as $kat)
-                        @php
-                            $maxCount = $kategoriBreakdown->max('count') ?: 1;
-                            $percent = round(($kat->count / $maxCount) * 100);
-                        @endphp
-                        <div class="space-y-1.5 p-2.5 rounded-xl bg-slate-950/60 border border-slate-800/60">
-                            <div class="flex items-center justify-between text-xs">
-                                <span class="font-bold text-slate-200 truncate max-w-[60%]">{{ $kat->kategori }}</span>
-                                <span class="font-black font-mono-num text-cyan-300 text-[11px]">{{ $kat->count }} JO <span class="text-slate-400 font-normal">(Rp {{ number_format($kat->total_tarif, 0, ',', '.') }})</span></span>
-                            </div>
-                            <div class="w-full h-2 rounded-full bg-slate-900 overflow-hidden">
-                                <div class="h-full rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-500" style="width: {{ $percent }}%;"></div>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="p-6 text-center text-slate-500 text-xs font-bold bg-slate-950/40 rounded-2xl border border-slate-800">
-                            Belum ada data kategori untuk bulan ini.
-                        </div>
-                    @endforelse
-                </div>
-            </div>
-        </div>
-    </div>
-    @endif
-
-    @unless(auth()->user()->isAdmin())
-    <!-- 2. QUICK INPUT JOB ORDER FORM -->
+    <!-- 2. QUICK INPUT JOB ORDER FORM UNTUK TEKNISI -->
     <div class="relative rounded-3xl bg-slate-900/80 backdrop-blur-2xl border border-slate-800/90 p-5 sm:p-6 md:p-7 shadow-2xl space-y-6 overflow-hidden group hover:border-amber-500/30 transition-all duration-300">
         <!-- Background Ambient Glow Orbs -->
         <div class="absolute -top-24 -right-24 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-amber-500/15 transition-all duration-500"></div>
@@ -733,12 +300,32 @@
                     <h2 class="text-base sm:text-lg font-black uppercase tracking-wider text-white flex items-center gap-2">
                         <span>Catat Job Order Baru</span>
                     </h2>
-                    <p class="text-xs text-slate-400 mt-0.5 font-medium">Input pekerjaan atau piket harian teknisi dengan dukungan akumulasi kuantitas (batch JO).</p>
+                    <p class="text-xs text-slate-400 mt-0.5 font-medium">Input pekerjaan atau piket harian teknisi dengan dukungan 1-tap kategori &amp; kuantitas cepat.</p>
                 </div>
             </div>
             <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-400/10 border border-amber-400/30 text-amber-400 text-xs font-extrabold uppercase tracking-wider shrink-0 shadow-sm">
                 <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
                 <span>Input Cepat</span>
+            </div>
+        </div>
+
+        <!-- KEMUDAHAN INPUT: Quick Chips Kategori Terpopuler (1-Tap Selection) -->
+        <div class="space-y-2 relative z-10">
+            <div class="flex items-center justify-between">
+                <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-sm text-amber-400">bolt</span>
+                    <span>Pilih Cepat Kategori Populer (1-Sentuhan):</span>
+                </span>
+            </div>
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth py-1">
+                @foreach($tarifs->take(6) as $chipTarif)
+                    <button type="button" 
+                        onclick="selectQuickCategory({{ $chipTarif->id }})" 
+                        class="quick-category-chip px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-amber-400 text-slate-300 hover:text-amber-300 text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 shadow-sm active:scale-95 cursor-pointer">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                        <span>{{ $chipTarif->kategori }}</span>
+                    </button>
+                @endforeach
             </div>
         </div>
 
@@ -818,25 +405,41 @@
                     </div>
                 </div>
 
-                <!-- 3. Jumlah (Quantity) Input (Width 2 col) -->
+                <!-- 3. Jumlah (Quantity) Input dengan Stepper +/- (Width 2 col) -->
                 <div class="space-y-2 md:col-span-2">
-                    <label for="quantity" class="flex items-center gap-1.5 text-xs font-extrabold text-slate-300 uppercase tracking-wider">
-                        <span class="material-symbols-outlined text-sm text-amber-400">tag</span>
-                        <span>Jumlah (JO)</span>
-                        <span class="text-amber-400">*</span>
-                    </label>
-                    <input 
-                        type="number" 
-                        name="quantity" 
-                        id="quantity" 
-                        value="{{ old('quantity', 1) }}" 
-                        min="1" 
-                        max="100" 
-                        required 
-                        oninput="updatePricePreview()"
-                        onchange="updatePricePreview()"
-                        class="w-full px-3 py-3 rounded-2xl bg-slate-950/90 border border-slate-700/80 text-white font-mono-num font-black text-center focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 focus:outline-none transition-all text-sm min-h-[48px]"
-                    >
+                    <div class="flex items-center justify-between">
+                        <label for="quantity" class="flex items-center gap-1 text-xs font-extrabold text-slate-300 uppercase tracking-wider">
+                            <span class="material-symbols-outlined text-sm text-amber-400">tag</span>
+                            <span>Jumlah</span>
+                            <span class="text-amber-400">*</span>
+                        </label>
+                        <!-- Quick Quantity Presets -->
+                        <div class="flex items-center gap-1">
+                            <button type="button" onclick="adjustQuickQuantity(1)" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-bold cursor-pointer" title="Tambah 1">+1</button>
+                            <button type="button" onclick="adjustQuickQuantity(5)" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-amber-300 text-[10px] font-bold cursor-pointer" title="Tambah 5">+5</button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center rounded-2xl bg-slate-950/90 border border-slate-700/80 overflow-hidden min-h-[48px]">
+                        <button type="button" onclick="stepQuantity(-1)" class="px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors font-black text-base cursor-pointer">
+                            −
+                        </button>
+                        <input 
+                            type="number" 
+                            name="quantity" 
+                            id="quantity" 
+                            value="{{ old('quantity', 1) }}" 
+                            min="1" 
+                            max="100" 
+                            required 
+                            oninput="updatePricePreview()"
+                            onchange="updatePricePreview()"
+                            class="w-full bg-transparent text-white font-mono-num font-black text-center text-sm focus:outline-none py-2"
+                        >
+                        <button type="button" onclick="stepQuantity(1)" class="px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors font-black text-base cursor-pointer">
+                            +
+                        </button>
+                    </div>
                 </div>
 
                 <!-- 4. Tanggal Input (Width 3 col) -->
@@ -863,17 +466,22 @@
                 </div>
             </div>
 
-            <!-- Form Row 2: Catatan & Custom Nominal Input -->
+            <!-- Form Row 2: Catatan dengan Voice-to-Text Microphone & Custom Nominal Input -->
             <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center pt-1">
                 <div class="sm:col-span-8 relative">
                     <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-lg">edit_note</span>
                     <input 
                         type="text" 
                         name="catatan" 
+                        id="catatanInput"
                         placeholder="Catatan tambahan / No. Merchant / Lokasi (opsional)" 
                         value="{{ old('catatan') }}"
-                        class="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/90 border border-slate-800 text-slate-200 text-xs focus:border-amber-400 focus:outline-none transition-all min-h-[44px]"
+                        class="w-full pl-10 pr-12 py-3 rounded-2xl bg-slate-950/90 border border-slate-800 text-slate-200 text-xs focus:border-amber-400 focus:outline-none transition-all min-h-[44px]"
                     >
+                    <!-- Voice-to-Text Button -->
+                    <button type="button" onclick="toggleVoiceInput('catatanInput', this)" class="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-amber-400 transition-colors cursor-pointer" title="Input suara (Speech-to-Text)">
+                        <span class="material-symbols-outlined text-lg">mic</span>
+                    </button>
                 </div>
 
                 <!-- Custom Nominal Input (Tampil jika Piket Event dipilih) -->
@@ -914,7 +522,6 @@
             </div>
         </form>
     </div>
-    @endunless
 
 
     <!-- MOBILE TAB SWITCHER (Rekap Harian vs Detail Transaksi) -->
@@ -1642,52 +1249,108 @@
         }
     }
 
-    let currentTeknisiTab = 'all';
+    // Quick category selection chip handler
+    function selectQuickCategory(id) {
+        const select = document.getElementById('tarif_id');
+        if (!select) return;
+        select.value = id;
 
-    function setTeknisiTabFilter(tab, btn) {
-        currentTeknisiTab = tab;
-        document.querySelectorAll('.teknisi-tab-btn').forEach(b => {
-            b.className = "teknisi-tab-btn px-3 py-1.5 rounded-xl text-[11px] font-extrabold uppercase tracking-wider transition-all text-slate-400 hover:text-white";
+        // Visual active indicator on quick chips
+        document.querySelectorAll('.quick-category-chip').forEach(chip => {
+            chip.classList.remove('border-amber-400', 'bg-amber-400/20', 'text-amber-300');
+            chip.classList.add('border-slate-800', 'bg-slate-950', 'text-slate-300');
         });
-        btn.className = "teknisi-tab-btn active px-3 py-1.5 rounded-xl text-[11px] font-extrabold uppercase tracking-wider transition-all bg-amber-400 text-slate-950 shadow-sm";
-        filterTeknisiCards();
+
+        const activeChip = Array.from(document.querySelectorAll('.quick-category-chip')).find(c => c.getAttribute('onclick')?.includes(`(${id})`));
+        if (activeChip) {
+            activeChip.classList.remove('border-slate-800', 'bg-slate-950', 'text-slate-300');
+            activeChip.classList.add('border-amber-400', 'bg-amber-400/20', 'text-amber-300');
+        }
+
+        updatePricePreview();
     }
 
-    function filterTeknisiCards() {
-        const query = (document.getElementById('searchTeknisiHariIni')?.value || '').toLowerCase().trim();
-        const cards = document.querySelectorAll('.teknisi-card');
-
-        cards.forEach(card => {
-            const name = card.getAttribute('data-name') || '';
-            const email = card.getAttribute('data-email') || '';
-            const status = card.getAttribute('data-status') || '';
-
-            const matchesQuery = !query || name.includes(query) || email.includes(query);
-            const matchesTab = (currentTeknisiTab === 'all') || (status === currentTeknisiTab);
-
-            if (matchesQuery && matchesTab) {
-                card.style.display = '';
-            } else {
-                card.style.display = 'none';
-            }
-        });
+    // Step quantity +/-
+    function stepQuantity(delta) {
+        const qtyInput = document.getElementById('quantity');
+        if (!qtyInput) return;
+        let val = parseInt(qtyInput.value || 1) + delta;
+        val = Math.max(1, Math.min(100, val));
+        qtyInput.value = val;
+        updatePricePreview();
     }
 
-    function toggleTodayJobsList(id, btn) {
-        const target = document.getElementById(id);
-        if (!target) return;
-        const isHidden = target.classList.contains('hidden');
-        if (isHidden) {
-            target.classList.remove('hidden');
+    // Quick add presets (+1, +5)
+    function adjustQuickQuantity(delta) {
+        const qtyInput = document.getElementById('quantity');
+        if (!qtyInput) return;
+        let val = parseInt(qtyInput.value || 0) + delta;
+        val = Math.max(1, Math.min(100, val));
+        qtyInput.value = val;
+        updatePricePreview();
+    }
+
+    // Voice-to-Text Speech Recognition for Notes
+    let recognitionInstance = null;
+    let isRecognizing = false;
+
+    function toggleVoiceInput(inputId, btn) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            alert('Browser Anda belum mendukung fitur pengenalan suara (Speech Recognition). Silakan gunakan browser Google Chrome atau Microsoft Edge.');
+            return;
+        }
+
+        const input = document.getElementById(inputId);
+        if (!input) return;
+
+        if (isRecognizing && recognitionInstance) {
+            recognitionInstance.stop();
+            return;
+        }
+
+        try {
+            const recognition = new SpeechRecognition();
+            recognitionInstance = recognition;
+            recognition.lang = 'id-ID';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.onstart = function() {
+                isRecognizing = true;
+                if (btn) {
+                    btn.classList.add('text-rose-400', 'animate-pulse');
+                    btn.classList.remove('text-slate-400');
+                }
+            };
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                if (transcript) {
+                    const existing = input.value.trim();
+                    input.value = existing ? `${existing} ${transcript}` : transcript;
+                }
+            };
+
+            recognition.onerror = function(event) {
+                console.error('Speech recognition error:', event.error);
+            };
+
+            recognition.onend = function() {
+                isRecognizing = false;
+                if (btn) {
+                    btn.classList.remove('text-rose-400', 'animate-pulse');
+                    btn.classList.add('text-slate-400');
+                }
+            };
+
+            recognition.start();
+        } catch (err) {
+            console.error('Error starting speech recognition:', err);
+            isRecognizing = false;
             if (btn) {
-                const icon = btn.querySelector('.material-symbols-outlined');
-                if (icon) icon.style.transform = 'rotate(180deg)';
-            }
-        } else {
-            target.classList.add('hidden');
-            if (btn) {
-                const icon = btn.querySelector('.material-symbols-outlined');
-                if (icon) icon.style.transform = 'rotate(0deg)';
+                btn.classList.remove('text-rose-400', 'animate-pulse');
+                btn.classList.add('text-slate-400');
             }
         }
     }
