@@ -113,9 +113,57 @@ class DashboardController extends Controller
         $successRate = 100;
         $teknisiLeaderboard = collect();
         $kategoriBreakdown = collect();
+        $teknisiHariIni = collect();
+        $teknisiAktifHariIniCount = 0;
 
         if ($user->isAdmin()) {
             $totalTeknisiCount = \App\Models\User::where('role', 'teknisi')->count();
+
+            // Monitoring JO Selesai Hari Ini per Teknisi & Akumulasi Produktivitas Bulanan (Target 330 JO / teknisi)
+            $teknisiHariIni = \App\Models\User::where('role', 'teknisi')
+                ->withCount([
+                    'jobOrders as total_jo_hari_ini' => function ($query) use ($today) {
+                        $query->whereDate('tanggal', $today)->where('kategori', 'not like', 'Piket%');
+                    },
+                    'jobOrders as jo_berhasil_hari_ini' => function ($query) use ($today) {
+                        $query->whereDate('tanggal', $today)->where('status', 'berhasil')->where('kategori', 'not like', 'Piket%');
+                    },
+                    'jobOrders as jo_gagal_hari_ini' => function ($query) use ($today) {
+                        $query->whereDate('tanggal', $today)->where('status', 'gagal')->where('kategori', 'not like', 'Piket%');
+                    },
+                    'jobOrders as total_piket_hari_ini' => function ($query) use ($today) {
+                        $query->whereDate('tanggal', $today)->where('kategori', 'like', 'Piket%');
+                    },
+                    'jobOrders as total_jo_bulan_ini' => function ($query) use ($hasCustomRange, $startDate, $endDate, $year, $month) {
+                        if ($hasCustomRange) {
+                            $query->whereBetween('tanggal', [$startDate, $endDate])->where('kategori', 'not like', 'Piket%');
+                        } else {
+                            $query->whereYear('tanggal', $year)->whereMonth('tanggal', $month)->where('kategori', 'not like', 'Piket%');
+                        }
+                    },
+                ])
+                ->withSum([
+                    'jobOrders as pendapatan_hari_ini' => function ($query) use ($today) {
+                        $query->whereDate('tanggal', $today);
+                    },
+                    'jobOrders as pendapatan_bulan_ini' => function ($query) use ($hasCustomRange, $startDate, $endDate, $year, $month) {
+                        if ($hasCustomRange) {
+                            $query->whereBetween('tanggal', [$startDate, $endDate]);
+                        } else {
+                            $query->whereYear('tanggal', $year)->whereMonth('tanggal', $month);
+                        }
+                    },
+                ], 'tarif')
+                ->with([
+                    'jobOrders' => function ($query) use ($today) {
+                        $query->whereDate('tanggal', $today)->orderBy('id', 'desc');
+                    }
+                ])
+                ->orderByDesc('total_jo_hari_ini')
+                ->orderBy('name', 'asc')
+                ->get();
+
+            $teknisiAktifHariIniCount = $teknisiHariIni->filter(fn($t) => ($t->total_jo_hari_ini > 0 || $t->total_piket_hari_ini > 0))->count();
 
             $adminPeriodQuery = function () use ($hasCustomRange, $startDate, $endDate, $year, $month) {
                 $q = JobOrder::query();
@@ -206,8 +254,18 @@ class DashboardController extends Controller
 
         $rataRataHarianDibutuhkan = ($sisaTarget > 0 && $sisaHari > 0) ? (int) ceil($sisaTarget / $sisaHari) : 0;
 
-        // Productivity JO Metrics (Target 330 JO per Bulan)
-        $targetJoVolume = 330;
+        // Productivity JO Metrics (Target 330 JO per Teknisi)
+        $targetJoVolumePerTeknisi = 330;
+        if ($targetUserId || $user->isTeknisi()) {
+            $targetJoVolume = $targetJoVolumePerTeknisi;
+            $targetJoLabel = "Target {$targetJoVolume} JO";
+        } else {
+            // Admin global view (Semua Teknisi)
+            $activeTeknisiCount = max(1, $totalTeknisiCount);
+            $targetJoVolume = $activeTeknisiCount * $targetJoVolumePerTeknisi;
+            $targetJoLabel = "Target 330 JO / Teknisi ({$targetJoVolume} JO untuk {$activeTeknisiCount} Teknisi)";
+        }
+
         $tercapaiJoVolume = (int) $totalJobBulanIni;
         $sisaJoVolume = max(0, $targetJoVolume - $tercapaiJoVolume);
         $persenJoVolume = ($targetJoVolume > 0) ? min(100, round(($tercapaiJoVolume / $targetJoVolume) * 100, 1)) : 0;
@@ -215,7 +273,7 @@ class DashboardController extends Controller
         $rataRataJoPerHari = round($tercapaiJoVolume / $passedDays, 1);
         $rataRataPendapatanJoPerHari = (int) round($pendapatanJoBulanIni / $passedDays);
 
-        // Kebutuhan Target JO per Hari berdasarkan Target 330 JO
+        // Kebutuhan Target JO per Hari berdasarkan Target 330 JO per teknisi
         $targetJoQtyPerHari = ($sisaJoVolume > 0 && $sisaHari > 0) ? (int) ceil($sisaJoVolume / $sisaHari) : 0;
         $avgTarifPerJo = $tercapaiJoVolume > 0 ? ($pendapatanJoBulanIni / $tercapaiJoVolume) : 0;
         $targetJoRevenuePerHari = (int) ceil($targetJoQtyPerHari * $avgTarifPerJo);
@@ -246,6 +304,8 @@ class DashboardController extends Controller
             'pendapatanJoBulanIni',
             'passedDays',
             'targetJoVolume',
+            'targetJoVolumePerTeknisi',
+            'targetJoLabel',
             'tercapaiJoVolume',
             'sisaJoVolume',
             'persenJoVolume',
@@ -259,6 +319,8 @@ class DashboardController extends Controller
             'allTeknisi',
             'targetUserId',
             'totalTeknisiCount',
+            'teknisiHariIni',
+            'teknisiAktifHariIniCount',
             'totalSuccessJobs',
             'totalFailedJobs',
             'successRate',
@@ -397,8 +459,16 @@ class DashboardController extends Controller
 
         $rataRataHarianDibutuhkan = ($sisaTarget > 0 && $sisaHari > 0) ? (int) ceil($sisaTarget / $sisaHari) : 0;
 
-        // Productivity JO Metrics (Target 330 JO per Bulan)
-        $targetJoVolume = 330;
+        // Productivity JO Metrics (Target 330 JO per Teknisi)
+        $totalTeknisiCount = $user->isAdmin() ? \App\Models\User::where('role', 'teknisi')->count() : 1;
+        $targetJoVolumePerTeknisi = 330;
+        if ($targetUserId || $user->isTeknisi()) {
+            $targetJoVolume = $targetJoVolumePerTeknisi;
+        } else {
+            $activeTeknisiCount = max(1, $totalTeknisiCount);
+            $targetJoVolume = $activeTeknisiCount * $targetJoVolumePerTeknisi;
+        }
+
         $tercapaiJoVolume = (int) $totalJobBulanIni;
         $sisaJoVolume = max(0, $targetJoVolume - $tercapaiJoVolume);
         $persenJoVolume = ($targetJoVolume > 0) ? min(100, round(($tercapaiJoVolume / $targetJoVolume) * 100, 1)) : 0;

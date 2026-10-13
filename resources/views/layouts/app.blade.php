@@ -573,6 +573,7 @@
                     const elemSisaTarget = document.getElementById('metricSisaTarget');
                     const elemLabelSisaHari = document.getElementById('labelSisaHari');
                     const elemRataRataHarian = document.getElementById('metricRataRataHarianDibutuhkan');
+                    const elemTargetJoVolume = document.getElementById('metricTargetJoVolume');
                     const elemSisaJoVolume = document.getElementById('metricSisaJoVolume');
                     const elemPersenJoVolume = document.getElementById('metricPersenJoVolume');
                     const elemTargetJoQtyCard = document.getElementById('metricTargetJoQtyPerHariCard');
@@ -597,6 +598,7 @@
                     if (elemSisaTarget) elemSisaTarget.textContent = data.sisa_target;
                     if (elemLabelSisaHari) elemLabelSisaHari.textContent = data.label_sisa_hari;
                     if (elemRataRataHarian) elemRataRataHarian.textContent = data.rata_rata_harian_dibutuhkan;
+                    if (elemTargetJoVolume) elemTargetJoVolume.textContent = data.target_jo_volume;
                     if (elemSisaJoVolume) elemSisaJoVolume.textContent = data.sisa_jo_volume;
                     if (elemPersenJoVolume) elemPersenJoVolume.textContent = data.persen_jo_volume;
                     if (elemTargetJoQtyCard) elemTargetJoQtyCard.textContent = data.target_jo_qty_per_hari;

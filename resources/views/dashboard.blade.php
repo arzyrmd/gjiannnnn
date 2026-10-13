@@ -232,10 +232,10 @@
                         <div>
                             <span class="text-[10px] font-black uppercase tracking-wider text-emerald-400 flex items-center gap-1">
                                 <span class="material-symbols-outlined text-xs">trending_up</span>
-                                <span>Target Produktivitas JO (Target {{ $targetJoVolume }} JO)</span>
+                                <span>Target Produktivitas JO ({{ $targetJoLabel ?? 'Target ' . $targetJoVolume . ' JO' }})</span>
                             </span>
                             <span class="text-[10px] font-bold text-slate-400 block">
-                                Sisa <span id="metricSisaJoVolume" class="text-amber-400 font-extrabold">{{ $sisaJoVolume > 0 ? $sisaJoVolume . ' JO' : 'Tercapai! 🎉' }}</span> lagi dari target {{ $targetJoVolume }} JO (<span id="metricPersenJoVolume" class="text-emerald-400 font-extrabold">{{ $persenJoVolume }}%</span>)
+                                Sisa <span id="metricSisaJoVolume" class="text-amber-400 font-extrabold">{{ $sisaJoVolume > 0 ? $sisaJoVolume . ' JO' : 'Tercapai! 🎉' }}</span> lagi dari target <span id="metricTargetJoVolume">{{ $targetJoVolume }} JO</span> (<span id="metricPersenJoVolume" class="text-emerald-400 font-extrabold">{{ $persenJoVolume }}%</span>)
                             </span>
                         </div>
                         <div class="text-right shrink-0">
@@ -374,7 +374,238 @@
             </div>
         </div>
 
-        <!-- 2. ADMIN GRID: LEADERBOARD TEKNISI & CATEGORY ANALYTICS -->
+        <!-- 2. MONITORING JO SELESAI HARI INI PER TEKNISI -->
+        <div class="rounded-3xl bg-slate-900/80 backdrop-blur-xl border border-amber-500/30 p-5 sm:p-6 shadow-2xl space-y-5 relative overflow-hidden">
+            <!-- Background Ambient Glow -->
+            <div class="absolute -top-20 -right-20 w-60 h-60 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <!-- Header Section -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-4 relative z-10">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-400 to-orange-500 text-slate-950 flex items-center justify-center font-black shadow-lg shadow-amber-500/20 shrink-0">
+                        <span class="material-symbols-outlined text-2xl">assignment_turned_in</span>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h2 class="text-base sm:text-lg font-black uppercase tracking-wider text-white">Monitoring JO Selesai Hari Ini per Teknisi</h2>
+                            <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                Live Hari Ini
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-400 font-medium mt-0.5">
+                            Rekap real-time pekerjaan tanggal <span class="text-amber-400 font-bold font-mono">{{ \Carbon\Carbon::parse($today)->translatedFormat('l, d F Y') }}</span> (Target Produktivitas: 330 JO / teknisi)
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Right Side Summary Badges -->
+                <div class="flex items-center gap-2 flex-wrap shrink-0">
+                    <div class="px-3 py-1.5 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center gap-2 shadow-inner">
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Total Hari Ini:</span>
+                        <span class="text-xs font-black font-mono-num text-amber-400">{{ $totalJobHariIni }} JO</span>
+                    </div>
+                    <div class="px-3 py-1.5 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center gap-2 shadow-inner">
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Teknisi Aktif:</span>
+                        <span class="text-xs font-black font-mono-num text-emerald-400">{{ $teknisiAktifHariIniCount }} / {{ $totalTeknisiCount }}</span>
+                    </div>
+                    <div class="px-3 py-1.5 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center gap-2 shadow-inner">
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Gaji Hari Ini:</span>
+                        <span class="text-xs font-black font-mono-num text-cyan-300">Rp {{ number_format($pendapatanHariIni, 0, ',', '.') }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls: Search Input & Filter Tabs -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-10">
+                <!-- Filter Tabs -->
+                <div class="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-950 border border-slate-800/80 shrink-0 w-fit">
+                    <button type="button" onclick="setTeknisiTabFilter('all', this)" class="teknisi-tab-btn active px-3 py-1.5 rounded-xl text-[11px] font-extrabold uppercase tracking-wider transition-all bg-amber-400 text-slate-950 shadow-sm">
+                        Semua ({{ $teknisiHariIni->count() }})
+                    </button>
+                    <button type="button" onclick="setTeknisiTabFilter('active', this)" class="teknisi-tab-btn px-3 py-1.5 rounded-xl text-[11px] font-extrabold uppercase tracking-wider transition-all text-slate-400 hover:text-white">
+                        Aktif Hari Ini ({{ $teknisiAktifHariIniCount }})
+                    </button>
+                    <button type="button" onclick="setTeknisiTabFilter('inactive', this)" class="teknisi-tab-btn px-3 py-1.5 rounded-xl text-[11px] font-extrabold uppercase tracking-wider transition-all text-slate-400 hover:text-white">
+                        Belum Input ({{ $teknisiHariIni->count() - $teknisiAktifHariIniCount }})
+                    </button>
+                </div>
+
+                <!-- Instant Search Input -->
+                <div class="relative w-full sm:w-64">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-base pointer-events-none">search</span>
+                    <input type="text" id="searchTeknisiHariIni" oninput="filterTeknisiCards()" placeholder="Cari nama / email teknisi..." class="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400 transition-all font-medium">
+                </div>
+            </div>
+
+            <!-- List of Technicians Cards -->
+            <div class="space-y-3 relative z-10" id="teknisiHariIniContainer">
+                @forelse($teknisiHariIni as $tek)
+                    @php
+                        $isAktif = ($tek->total_jo_hari_ini > 0 || $tek->total_piket_hari_ini > 0);
+                        $persenProd = min(100, round((($tek->total_jo_bulan_ini ?? 0) / 330) * 100, 1));
+                        $sisaProd = max(0, 330 - ($tek->total_jo_bulan_ini ?? 0));
+                        
+                        // Palette for technician avatar initials
+                        $initials = strtoupper(substr(trim($tek->name), 0, 2));
+                        $avatarGradients = [
+                            'from-amber-400 to-orange-500 text-slate-950',
+                            'from-cyan-400 to-blue-500 text-slate-950',
+                            'from-emerald-400 to-teal-500 text-slate-950',
+                            'from-purple-400 to-pink-500 text-slate-950',
+                            'from-rose-400 to-red-500 text-white',
+                            'from-indigo-400 to-cyan-500 text-white',
+                        ];
+                        $avatarClass = $avatarGradients[$tek->id % count($avatarGradients)];
+                    @endphp
+
+                    <div class="teknisi-card rounded-2xl bg-slate-950/70 border border-slate-800/80 p-4 transition-all duration-200 hover:border-amber-500/40 hover:bg-slate-950/90 shadow-lg"
+                        data-name="{{ strtolower($tek->name) }}"
+                        data-email="{{ strtolower($tek->email) }}"
+                        data-status="{{ $isAktif ? 'active' : 'inactive' }}"
+                        data-total-jo="{{ $tek->total_jo_hari_ini }}">
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+                            <!-- Col 1: Profil Teknisi (4 cols) -->
+                            <div class="lg:col-span-4 flex items-center gap-3 min-w-0">
+                                <div class="w-11 h-11 rounded-2xl bg-gradient-to-br {{ $avatarClass }} flex items-center justify-center font-black text-xs shrink-0 shadow-md">
+                                    {{ $initials }}
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <h3 class="text-sm font-bold text-white truncate">{{ $tek->name }}</h3>
+                                        @if($targetUserId == $tek->id)
+                                            <span class="px-1.5 py-0.5 text-[9px] rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold uppercase">Terfilter</span>
+                                        @endif
+                                    </div>
+                                    <p class="text-xs text-slate-400 truncate">{{ $tek->email }}</p>
+                                    <div class="mt-1">
+                                        @if($isAktif)
+                                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-extrabold uppercase tracking-wider">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                                <span>Aktif Hari Ini ({{ $tek->total_jo_hari_ini }} JO)</span>
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-800/60 border border-slate-700/50 text-slate-400 text-[10px] font-bold uppercase tracking-wider">
+                                                <span>Belum Ada JO Hari Ini</span>
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Col 2: JO Selesai Hari Ini & Pendapatan Hari Ini (3 cols) -->
+                            <div class="lg:col-span-3 grid grid-cols-2 gap-2 border-t lg:border-t-0 lg:border-l border-slate-800/80 pt-3 lg:pt-0 lg:pl-4">
+                                <div>
+                                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">JO Hari Ini</span>
+                                    <div class="text-xl font-black font-mono-num {{ $tek->total_jo_hari_ini > 0 ? 'text-amber-400' : 'text-slate-500' }}">
+                                        {{ $tek->total_jo_hari_ini }} <span class="text-xs text-slate-400 font-bold">JO</span>
+                                    </div>
+                                    <div class="text-[10px] space-y-0.5 mt-0.5">
+                                        <span class="text-emerald-400 font-bold block">{{ $tek->jo_berhasil_hari_ini }} Berhasil</span>
+                                        @if($tek->jo_gagal_hari_ini > 0)
+                                            <span class="text-rose-400 font-bold block">{{ $tek->jo_gagal_hari_ini }} Gagal</span>
+                                        @endif
+                                        @if($tek->total_piket_hari_ini > 0)
+                                            <span class="text-cyan-300 font-bold block">{{ $tek->total_piket_hari_ini }} Piket</span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Gaji Hari Ini</span>
+                                    <div class="text-sm font-black font-mono-num {{ ($tek->pendapatan_hari_ini ?? 0) > 0 ? 'text-emerald-400' : 'text-slate-500' }}">
+                                        Rp {{ number_format($tek->pendapatan_hari_ini ?? 0, 0, ',', '.') }}
+                                    </div>
+                                    <span class="text-[10px] text-slate-400 font-medium block mt-0.5">Pendapatan hari ini</span>
+                                </div>
+                            </div>
+
+                            <!-- Col 3: Produktivitas Bulan Ini (Target 330 JO) (3 cols) -->
+                            <div class="lg:col-span-3 border-t lg:border-t-0 lg:border-l border-slate-800/80 pt-3 lg:pt-0 lg:pl-4">
+                                <div class="flex items-center justify-between text-[11px] font-extrabold mb-1">
+                                    <span class="text-slate-400 uppercase tracking-wider text-[10px]">Produktivitas (Target 330 JO)</span>
+                                    <span class="{{ $persenProd >= 100 ? 'text-emerald-400' : 'text-amber-400' }} font-mono-num">{{ $persenProd }}%</span>
+                                </div>
+                                <div class="w-full h-2 bg-slate-900 rounded-full overflow-hidden border border-slate-800 shadow-inner">
+                                    <div class="h-full bg-gradient-to-r {{ $persenProd >= 100 ? 'from-emerald-500 to-teal-400' : 'from-amber-400 to-orange-400' }} rounded-full transition-all duration-700" style="width: {{ $persenProd }}%"></div>
+                                </div>
+                                <div class="flex items-center justify-between text-[10px] mt-1">
+                                    <span class="font-mono-num font-bold text-slate-300">{{ $tek->total_jo_bulan_ini ?? 0 }} / 330 JO</span>
+                                    <span class="text-slate-400 font-semibold">{{ $sisaProd > 0 ? "Sisa {$sisaProd} JO" : "Target Tercapai! 🎉" }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Col 4: Action Buttons (2 cols) -->
+                            <div class="lg:col-span-2 flex items-center justify-end gap-2 border-t lg:border-t-0 lg:border-l border-slate-800/80 pt-3 lg:pt-0 lg:pl-4 flex-wrap">
+                                <a href="{{ route('dashboard', ['teknisi_id' => $tek->id, 'tanggal' => $today]) }}" 
+                                    class="px-2.5 py-1.5 rounded-xl bg-amber-400/10 hover:bg-amber-400 text-amber-300 hover:text-slate-950 text-[10px] font-extrabold uppercase tracking-wider border border-amber-400/30 transition-all flex items-center gap-1 shadow-sm"
+                                    title="Lihat JO Hari Ini di Dashboard">
+                                    <span class="material-symbols-outlined text-xs">calendar_today</span>
+                                    <span>Hari Ini</span>
+                                </a>
+
+                                <a href="{{ route('dashboard', ['teknisi_id' => $tek->id, 'bulan' => $selectedBulan]) }}" 
+                                    class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-[10px] font-bold uppercase tracking-wider transition-all"
+                                    title="Filter Kabin Teknisi">
+                                    <span>Kabin</span>
+                                </a>
+
+                                @if($tek->jobOrders->count() > 0)
+                                    <button type="button" onclick="toggleTodayJobsList('jobs_tek_{{ $tek->id }}', this)" 
+                                        class="px-2 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-slate-200 text-[10px] font-bold border border-slate-800 transition-all flex items-center gap-0.5"
+                                        title="Rincian JO Hari Ini">
+                                        <span class="material-symbols-outlined text-sm transition-transform duration-200">expand_more</span>
+                                    </button>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Accordion Detail JO Hari Ini -->
+                        @if($tek->jobOrders->count() > 0)
+                            <div id="jobs_tek_{{ $tek->id }}" class="hidden pt-3 mt-3 border-t border-slate-800/80">
+                                <div class="bg-slate-900/90 rounded-xl p-3 border border-slate-800/80 space-y-2">
+                                    <div class="flex items-center justify-between text-xs font-bold text-slate-300 border-b border-slate-800/60 pb-1.5">
+                                        <span class="flex items-center gap-1.5">
+                                            <span class="material-symbols-outlined text-sm text-amber-400">format_list_bulleted</span>
+                                            <span>Rincian {{ $tek->jobOrders->count() }} JO Selesai Hari Ini ({{ \Carbon\Carbon::parse($today)->translatedFormat('d M Y') }}):</span>
+                                        </span>
+                                        <span class="text-[11px] font-mono-num text-emerald-400">Total: Rp {{ number_format($tek->pendapatan_hari_ini ?? 0, 0, ',', '.') }}</span>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 pt-1 max-h-56 overflow-y-auto no-scrollbar">
+                                        @foreach($tek->jobOrders as $joItem)
+                                            <div class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800/60 flex flex-col justify-between text-xs space-y-1">
+                                                <div class="flex items-center justify-between gap-1">
+                                                    <span class="font-extrabold text-white truncate">{{ $joItem->kategori }}</span>
+                                                    @if($joItem->status === 'berhasil')
+                                                        <span class="px-1.5 py-0.2 rounded text-[9px] font-black uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shrink-0">Berhasil</span>
+                                                    @else
+                                                        <span class="px-1.5 py-0.2 rounded text-[9px] font-black uppercase bg-rose-500/20 text-rose-300 border border-rose-500/30 shrink-0">Gagal</span>
+                                                    @endif
+                                                </div>
+                                                <div class="flex items-center justify-between text-[11px] font-mono-num">
+                                                    <span class="text-amber-400 font-bold">Rp {{ number_format($joItem->tarif, 0, ',', '.') }}</span>
+                                                    <span class="text-slate-400 text-[10px]">{{ $joItem->created_at ? $joItem->created_at->format('H:i') : '-' }}</span>
+                                                </div>
+                                                @if($joItem->catatan)
+                                                    <p class="text-[10px] text-slate-400 truncate italic">"{{ $joItem->catatan }}"</p>
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                @empty
+                    <div class="p-8 text-center text-slate-400 text-xs font-bold bg-slate-950/50 rounded-2xl border border-slate-800">
+                        Belum ada data teknisi terdaftar dalam sistem.
+                    </div>
+                @endforelse
+            </div>
+        </div>
+
+        <!-- 3. ADMIN GRID: LEADERBOARD TEKNISI & CATEGORY ANALYTICS -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
             <!-- LEADERBOARD TEKNISI TERBAIK (7 cols) -->
             <div class="lg:col-span-7 rounded-3xl bg-slate-900/70 backdrop-blur-xl border border-slate-800/80 p-5 shadow-2xl space-y-4">
@@ -417,6 +648,15 @@
                                 </div>
                             </div>
                             <div class="flex items-center gap-3 shrink-0 text-right">
+                                <div class="hidden sm:block text-left w-28">
+                                    <div class="flex justify-between text-[10px] font-bold">
+                                        <span class="text-slate-400">Target 330 JO</span>
+                                        <span class="{{ ($leader->total_job ?? 0) >= 330 ? 'text-emerald-400' : 'text-amber-400' }} font-mono-num">{{ round((($leader->total_job ?? 0) / 330) * 100) }}%</span>
+                                    </div>
+                                    <div class="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden mt-0.5 border border-slate-800">
+                                        <div class="h-full bg-gradient-to-r {{ ($leader->total_job ?? 0) >= 330 ? 'from-emerald-400 to-teal-400' : 'from-amber-400 to-orange-400' }}" style="width: {{ min(100, round((($leader->total_job ?? 0) / 330) * 100)) }}%"></div>
+                                    </div>
+                                </div>
                                 <div>
                                     <span class="text-xs font-black font-mono-num text-amber-400 block">Rp {{ number_format($leader->total_pendapatan ?? 0, 0, ',', '.') }}</span>
                                     <span class="text-[10px] font-bold text-slate-400 block">{{ $leader->total_job ?? 0 }} JO</span>
@@ -1398,6 +1638,56 @@
             if (btnRekap && btnDetail) {
                 btnDetail.className = "py-3 px-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950";
                 btnRekap.className = "py-3 px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 text-slate-400 bg-slate-950 hover:bg-slate-800";
+            }
+        }
+    }
+
+    let currentTeknisiTab = 'all';
+
+    function setTeknisiTabFilter(tab, btn) {
+        currentTeknisiTab = tab;
+        document.querySelectorAll('.teknisi-tab-btn').forEach(b => {
+            b.className = "teknisi-tab-btn px-3 py-1.5 rounded-xl text-[11px] font-extrabold uppercase tracking-wider transition-all text-slate-400 hover:text-white";
+        });
+        btn.className = "teknisi-tab-btn active px-3 py-1.5 rounded-xl text-[11px] font-extrabold uppercase tracking-wider transition-all bg-amber-400 text-slate-950 shadow-sm";
+        filterTeknisiCards();
+    }
+
+    function filterTeknisiCards() {
+        const query = (document.getElementById('searchTeknisiHariIni')?.value || '').toLowerCase().trim();
+        const cards = document.querySelectorAll('.teknisi-card');
+
+        cards.forEach(card => {
+            const name = card.getAttribute('data-name') || '';
+            const email = card.getAttribute('data-email') || '';
+            const status = card.getAttribute('data-status') || '';
+
+            const matchesQuery = !query || name.includes(query) || email.includes(query);
+            const matchesTab = (currentTeknisiTab === 'all') || (status === currentTeknisiTab);
+
+            if (matchesQuery && matchesTab) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    function toggleTodayJobsList(id, btn) {
+        const target = document.getElementById(id);
+        if (!target) return;
+        const isHidden = target.classList.contains('hidden');
+        if (isHidden) {
+            target.classList.remove('hidden');
+            if (btn) {
+                const icon = btn.querySelector('.material-symbols-outlined');
+                if (icon) icon.style.transform = 'rotate(180deg)';
+            }
+        } else {
+            target.classList.add('hidden');
+            if (btn) {
+                const icon = btn.querySelector('.material-symbols-outlined');
+                if (icon) icon.style.transform = 'rotate(0deg)';
             }
         }
     }
