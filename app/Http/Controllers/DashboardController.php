@@ -100,6 +100,12 @@ class DashboardController extends Controller
             ->paginate(15)
             ->withQueryString();
 
+        // Today's Job Orders specifically for technician quick input overview
+        $todayJobOrders = $baseQuery()
+            ->whereDate('tanggal', $today)
+            ->orderBy('id', 'desc')
+            ->get();
+
         // Tarifs for quick job order input
         $tarifs = Tarif::orderBy('kategori', 'asc')->get();
 
@@ -317,6 +323,7 @@ class DashboardController extends Controller
             'targetJoRevenuePerHari',
             'rekapHarian',
             'detailJobOrders',
+            'todayJobOrders',
             'tarifs',
             'allTeknisi',
             'targetUserId',

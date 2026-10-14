@@ -1,995 +1,1072 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard & Rekap Gajian')
+@section('title', 'Kabin Kerja Teknisi - GajianARMN')
 
 @section('content')
-<div class="space-y-6 sm:space-y-8">
+<div class="space-y-4 sm:space-y-5">
 
-    <!-- TECHNICIAN PANEL HEADER -->
-    <div class="rounded-3xl bg-slate-900/80 backdrop-blur-xl border border-cyan-500/30 p-4 sm:p-5 shadow-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative overflow-hidden">
-        <div class="absolute -top-12 -left-12 w-36 h-36 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none"></div>
-        <div class="flex items-center gap-3.5 relative z-10">
-            <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-500 text-slate-950 flex items-center justify-center font-black shadow-lg shadow-cyan-500/20 shrink-0">
-                <span class="material-symbols-outlined text-2xl">badge</span>
+    <!-- 1. COMPACT HEADER BAR (Kabin Teknisi & Filter Bulan) -->
+    <div class="rounded-2xl sm:rounded-3xl bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 p-3.5 sm:p-4 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 relative overflow-hidden">
+        <div class="absolute -top-10 -left-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="flex items-center gap-3 relative z-10">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 text-slate-950 flex items-center justify-center font-black shadow-md shadow-cyan-500/20 shrink-0">
+                <span class="material-symbols-outlined text-xl">badge</span>
             </div>
             <div>
                 <div class="flex items-center gap-2">
-                    <span class="text-xs font-black uppercase tracking-wider text-cyan-300 bg-cyan-500/10 px-2.5 py-0.5 rounded-lg border border-cyan-500/30">KABIN KERJA TEKNISI</span>
-                    <span class="text-xs font-extrabold text-white font-mono">| {{ auth()->user()->name }}</span>
+                    <span class="text-[11px] font-black uppercase tracking-wider text-cyan-300 bg-cyan-500/10 px-2 py-0.5 rounded-md border border-cyan-500/30">TEKNISI</span>
+                    <span class="text-xs sm:text-sm font-extrabold text-white font-mono">{{ auth()->user()->name }}</span>
                 </div>
-                <p class="text-xs text-slate-400 mt-0.5">Kalkulator Gaji, Pencatatan Cepat &amp; Monitoring Target 330 JO</p>
+                <p class="text-[11px] text-slate-400">Pencatatan Cepat &bull; Rekap Gaji &bull; Target 330 JO</p>
             </div>
         </div>
 
         <form method="GET" action="{{ route('dashboard') }}" class="flex items-center gap-2 w-full sm:w-auto relative z-10">
-            <input type="month" name="bulan" value="{{ $selectedBulan }}" onchange="this.form.submit()" class="w-full sm:w-auto px-4 py-2.5 rounded-2xl bg-slate-950 border border-slate-800 text-slate-200 text-xs font-mono font-bold focus:outline-none focus:border-cyan-400 transition-all cursor-pointer">
+            <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 hidden sm:inline">Periode:</span>
+            <input 
+                type="month" 
+                name="bulan" 
+                value="{{ $selectedBulan }}" 
+                onchange="this.form.submit()" 
+                class="w-full sm:w-auto px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-xs font-mono font-bold focus:outline-none focus:border-cyan-400 transition-all cursor-pointer"
+            >
         </form>
     </div>
 
-    <!-- 1. TOP METRICS SPOTLIGHT (2 MASTER CARDS: HARI INI & BULAN INI) -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+    <!-- 2. COMPACT BENTO KPI GRID (4 KARTU RINGKAS DI PALING ATAS - TIDAK PANJANG!) -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
         
-        <!-- Master Card 1: Hari Ini -->
-        <div class="group relative rounded-3xl bg-slate-900/70 backdrop-blur-xl border border-emerald-500/30 p-5 sm:p-6 shadow-2xl shadow-emerald-950/20 flex flex-col justify-between space-y-4 overflow-hidden hover:border-emerald-500/50 transition-all duration-300">
-            <!-- Ambient Card Glow -->
-            <div class="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl group-hover:bg-emerald-500/20 transition-all"></div>
-            
-            <div class="flex items-center justify-between gap-2 relative z-10">
-                <div class="flex items-center gap-2.5">
-                    <span class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse shrink-0 shadow-lg shadow-emerald-400/50"></span>
-                    <span class="text-xs font-black uppercase tracking-wider text-emerald-400">Ringkasan Hari Ini</span>
+        <!-- Bento 1: Hari Ini -->
+        <div class="rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-emerald-500/30 p-3.5 sm:p-4 shadow-lg flex flex-col justify-between hover:border-emerald-500/50 transition-all relative overflow-hidden group">
+            <div class="flex items-center justify-between gap-1 mb-1.5">
+                <div class="flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-emerald-400">Hari Ini</span>
                 </div>
-                <span class="text-[11px] sm:text-xs font-mono-num font-bold text-slate-300 bg-slate-950/80 px-3 py-1 rounded-xl border border-slate-800 shrink-0 shadow-inner">
-                    {{ \Carbon\Carbon::parse($today)->translatedFormat('d M Y') }}
+                <span class="text-[10px] font-mono-num font-bold text-slate-400">
+                    {{ \Carbon\Carbon::parse($today)->translatedFormat('d M') }}
                 </span>
             </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-end pt-2 relative z-10">
-                <div class="sm:col-span-7">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block">Total Pendapatan</span>
-                    <div id="metricPendapatanHariIni" class="text-2xl sm:text-3xl md:text-4xl font-black font-mono-num text-gradient-emerald tracking-tight mt-1 transition-all break-words">
-                        Rp {{ number_format($pendapatanHariIni, 0, ',', '.') }}
-                    </div>
+            <div>
+                <div id="metricPendapatanHariIni" class="text-lg sm:text-2xl font-black font-mono-num text-gradient-emerald tracking-tight truncate">
+                    Rp {{ number_format($pendapatanHariIni, 0, ',', '.') }}
                 </div>
-                <div class="sm:col-span-5 text-left sm:text-right sm:border-l border-t sm:border-t-0 border-slate-800/80 pt-3 sm:pt-0 sm:pl-5 space-y-1.5">
-                    <div>
-                        <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 block">Volume Job (JO)</span>
-                        <div id="metricTotalJobHariIni" class="text-xl sm:text-2xl font-black font-mono-num text-amber-400 tracking-tight transition-all">
-                            {{ $totalJobHariIni }} <span class="text-xs text-slate-400 font-bold">JO</span>
-                        </div>
-                    </div>
-                    <div class="pt-1.5 border-t border-slate-800/60">
-                        <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 block">Total Piket</span>
-                        <div id="metricTotalPiketHariIni" class="text-sm font-black font-mono-num text-cyan-300 transition-all">
-                            {{ $totalPiketHariIni }} <span class="text-[11px] text-slate-400 font-bold">Kali</span>
-                        </div>
-                    </div>
+                <div class="flex items-center gap-2 text-[11px] mt-1 text-slate-400">
+                    <span id="metricTotalJobHariIni" class="font-extrabold text-amber-400 font-mono-num">
+                        {{ $totalJobHariIni }} <span class="text-[10px] text-slate-400 font-bold">JO</span>
+                    </span>
+                    <span>&bull;</span>
+                    <span id="metricTotalPiketHariIni" class="font-extrabold text-cyan-300 font-mono-num">
+                        {{ $totalPiketHariIni }} <span class="text-[10px] text-slate-400 font-bold">Piket</span>
+                    </span>
                 </div>
             </div>
         </div>
 
-        <!-- Master Card 2: Bulan Ini -->
-        <div class="group relative rounded-3xl bg-slate-900/70 backdrop-blur-xl border border-cyan-500/30 p-5 sm:p-6 shadow-2xl shadow-cyan-950/20 flex flex-col justify-between space-y-4 overflow-hidden hover:border-cyan-500/50 transition-all duration-300">
-            <!-- Ambient Card Glow -->
-            <div class="absolute -top-24 -right-24 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl group-hover:bg-cyan-500/20 transition-all"></div>
-            
-            <div class="flex items-center justify-between gap-2 relative z-10">
-                <div class="flex items-center gap-2.5">
-                    <span class="w-3 h-3 rounded-full bg-cyan-400 shrink-0 shadow-lg shadow-cyan-400/50"></span>
-                    <span class="text-xs font-black uppercase tracking-wider text-cyan-400">{{ $periodTitleCard }}</span>
+        <!-- Bento 2: Bulan Ini -->
+        <div class="rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-cyan-500/30 p-3.5 sm:p-4 shadow-lg flex flex-col justify-between hover:border-cyan-500/50 transition-all relative overflow-hidden group">
+            <div class="flex items-center justify-between gap-1 mb-1.5">
+                <div class="flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+                    <span class="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-cyan-400">{{ $periodTitleCard }}</span>
                 </div>
-                <span class="text-[11px] sm:text-xs font-mono-num font-bold text-slate-300 bg-slate-950/80 px-3 py-1 rounded-xl border border-slate-800 shrink-0 shadow-inner">
+                <span class="text-[10px] font-mono-num font-bold text-slate-400 truncate max-w-[90px]">
                     {{ $periodLabel }}
                 </span>
             </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-end pt-2 relative z-10">
-                <div class="sm:col-span-7 space-y-1">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block">Total Pendapatan</span>
-                    <div id="metricPendapatanBulanIni" class="text-2xl sm:text-3xl md:text-4xl font-black font-mono-num text-gradient-cyan tracking-tight transition-all break-words">
-                        Rp {{ number_format($pendapatanBulanIni, 0, ',', '.') }}
-                    </div>
-                    <div class="pt-1 flex items-center gap-2 flex-wrap">
-                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-lg border border-emerald-500/20">
-                            JO Murni: <span id="metricPendapatanJoBulanIni">Rp {{ number_format($pendapatanJoBulanIni, 0, ',', '.') }}</span>
-                        </span>
-                    </div>
+            <div>
+                <div id="metricPendapatanBulanIni" class="text-lg sm:text-2xl font-black font-mono-num text-gradient-cyan tracking-tight truncate">
+                    Rp {{ number_format($pendapatanBulanIni, 0, ',', '.') }}
                 </div>
-                <div class="sm:col-span-5 text-left sm:text-right sm:border-l border-t sm:border-t-0 border-slate-800/80 pt-3 sm:pt-0 sm:pl-5 space-y-1.5">
-                    <div>
-                        <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 block">Volume Job (JO)</span>
-                        <div id="metricTotalJobBulanIni" class="text-xl sm:text-2xl font-black font-mono-num text-indigo-300 tracking-tight transition-all">
-                            {{ $totalJobBulanIni }} <span class="text-xs text-slate-400 font-bold">JO</span>
-                        </div>
-                        <span id="metricRataRataJoPerHari" class="text-[10px] font-semibold text-slate-400 block">Rata-rata {{ $rataRataJoPerHari }} JO/Hari</span>
-                    </div>
-                    <div class="pt-1.5 border-t border-slate-800/60">
-                        <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 block">Total Piket</span>
-                        <div id="metricTotalPiketBulanIni" class="text-sm font-black font-mono-num text-amber-300 transition-all">
-                            {{ $totalPiketBulanIni }} <span class="text-[11px] text-slate-400 font-bold">Kali</span>
-                            <span id="metricPendapatanPiketBulanIni" class="text-[10px] text-slate-400 font-bold block">(Rp {{ number_format($pendapatanPiketBulanIni, 0, ',', '.') }})</span>
-                        </div>
-                    </div>
-                    <div class="pt-1.5 border-t border-slate-800/60">
-                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-400 block">Target Produktivitas JO</span>
-                        <div class="text-xs font-black font-mono-num text-emerald-300 transition-all">
-                            <span id="metricTargetJoQtyPerHari">{{ ($sisaJoVolume > 0 && $sisaHari > 0) ? $targetJoQtyPerHari . ' JO / Hari' : 'Tercapai! 🎉' }}</span>
-                            <span id="metricTargetJoRevenuePerHari" class="text-[10px] text-slate-400 font-semibold block sm:inline">({{ ($sisaJoVolume > 0 && $sisaHari > 0) ? 'Rp ' . number_format($targetJoRevenuePerHari, 0, ',', '.') . '/Hari' : 'Rp 0' }})</span>
-                        </div>
-                    </div>
+                <div class="flex items-center gap-2 text-[11px] mt-1 text-slate-400">
+                    <span id="metricTotalJobBulanIni" class="font-extrabold text-indigo-300 font-mono-num">
+                        {{ $totalJobBulanIni }} <span class="text-[10px] text-slate-400 font-bold">JO</span>
+                    </span>
+                    <span>&bull;</span>
+                    <span id="metricTotalPiketBulanIni" class="font-extrabold text-amber-300 font-mono-num">
+                        {{ $totalPiketBulanIni }} <span class="text-[10px] text-slate-400 font-bold">Piket</span>
+                    </span>
                 </div>
             </div>
+            <!-- Hidden elements for dynamic Ajax sync -->
+            <span id="metricRataRataJoPerHari" class="hidden">Rata-rata {{ $rataRataJoPerHari }} JO/Hari</span>
+            <span id="metricPendapatanJoBulanIni" class="hidden">Rp {{ number_format($pendapatanJoBulanIni, 0, ',', '.') }}</span>
+            <span id="metricPendapatanPiketBulanIni" class="hidden">(Rp {{ number_format($pendapatanPiketBulanIni, 0, ',', '.') }})</span>
+        </div>
+
+        <!-- Bento 3: Target Gaji Bulanan -->
+        <div class="rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-slate-800/90 p-3.5 sm:p-4 shadow-lg flex flex-col justify-between hover:border-emerald-500/40 transition-all relative overflow-hidden group">
+            <div class="flex items-center justify-between gap-1 mb-1.5">
+                <div class="flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-xs text-emerald-400">workspace_premium</span>
+                    <span class="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-slate-300">Target Gaji</span>
+                </div>
+                <button type="button" onclick="openTargetModal()" class="text-[10px] text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-0.5" title="Ubah target gaji">
+                    <span class="material-symbols-outlined text-[13px]">edit</span>
+                    <span>Ubah</span>
+                </button>
+            </div>
+            <div>
+                <div id="metricTercapaiPendapatan" class="text-lg sm:text-2xl font-black font-mono-num text-emerald-400 tracking-tight truncate">
+                    Rp {{ number_format($tercapaiPendapatan, 0, ',', '.') }}
+                </div>
+                <!-- Mini Progress Bar -->
+                <div class="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800 my-1.5">
+                    <div id="metricProgressBar" class="h-full bg-gradient-to-r from-emerald-500 to-cyan-400 rounded-full transition-all duration-700" style="width: {{ min(100, $persenTarget) }}%"></div>
+                </div>
+                <div class="flex items-center justify-between text-[10px] text-slate-400">
+                    <span class="truncate">Goal: <span id="metricTargetPendapatan" class="font-bold font-mono-num text-slate-300">Rp {{ number_format($targetPendapatan, 0, ',', '.') }}</span></span>
+                    <span id="metricPersenTarget" class="font-black font-mono-num text-emerald-400 shrink-0 ml-1">{{ $persenTarget }}%</span>
+                </div>
+            </div>
+            <!-- Hidden elements for dynamic Ajax sync -->
+            <span id="metricSisaTarget" class="hidden">{{ $sisaTarget > 0 ? 'Rp ' . number_format($sisaTarget, 0, ',', '.') : 'Tercapai! 🎉' }}</span>
+            <span id="labelSisaHari" class="hidden">{{ $sisaHari > 0 ? "Perlu/Hari ({$sisaHari} Hari Sisa)" : "Perlu/Hari (Selesai)" }}</span>
+            <span id="metricRataRataHarianDibutuhkan" class="hidden">{{ ($sisaTarget > 0 && $sisaHari > 0) ? 'Rp ' . number_format($rataRataHarianDibutuhkan, 0, ',', '.') : 'Rp 0' }}</span>
+        </div>
+
+        <!-- Bento 4: Target Produktivitas 330 JO -->
+        <div class="rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-slate-800/90 p-3.5 sm:p-4 shadow-lg flex flex-col justify-between hover:border-amber-500/40 transition-all relative overflow-hidden group">
+            <div class="flex items-center justify-between gap-1 mb-1.5">
+                <div class="flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-xs text-amber-400">trending_up</span>
+                    <span class="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-amber-400">Target 330 JO</span>
+                </div>
+                <span id="metricPersenJoVolume" class="text-[10px] font-black font-mono-num text-amber-400">
+                    {{ $persenJoVolume }}%
+                </span>
+            </div>
+            <div>
+                <div class="text-lg sm:text-2xl font-black font-mono-num text-amber-400 tracking-tight truncate">
+                    <span id="metricTercapaiJoVolumeText">{{ $tercapaiJoVolume }}</span> <span class="text-xs text-slate-400 font-bold">/ <span id="metricTargetJoVolume">{{ $targetJoVolume }} JO</span></span>
+                </div>
+                <div class="flex items-center justify-between text-[10px] text-slate-400 mt-1.5">
+                    <span id="metricTargetJoQtyPerHari" class="font-bold text-emerald-300 font-mono-num truncate">
+                        {{ ($sisaJoVolume > 0 && $sisaHari > 0) ? $targetJoQtyPerHari . ' JO / Hari' : 'Tercapai! 🎉' }}
+                    </span>
+                    <span class="text-slate-500 truncate ml-1">Sisa <span id="metricSisaJoVolume" class="text-amber-300 font-bold">{{ $sisaJoVolume > 0 ? $sisaJoVolume : 0 }}</span> JO</span>
+                </div>
+            </div>
+            <!-- Hidden elements for dynamic Ajax sync -->
+            <span id="metricTargetJoRevenuePerHari" class="hidden">{{ ($sisaJoVolume > 0 && $sisaHari > 0) ? 'Rp ' . number_format($targetJoRevenuePerHari, 0, ',', '.') . '/Hari' : 'Rp 0' }}</span>
+            <span id="metricTargetJoQtyPerHariCard" class="hidden">{{ ($sisaJoVolume > 0 && $sisaHari > 0) ? $targetJoQtyPerHari . ' JO / Hari' : 'Tercapai! 🎉' }}</span>
+            <span id="metricTargetJoRevenuePerHariCard" class="hidden">{{ ($sisaJoVolume > 0 && $sisaHari > 0) ? 'Rp ' . number_format($targetJoRevenuePerHari, 0, ',', '.') . '/Hari' : 'Rp 0' }}</span>
+        </div>
+
+    </div>
+
+    <!-- 3. USER-FRIENDLY SEGMENTED TABS (MENGURANGI PANJANG SCROLL HALAMAN!) -->
+    <div class="sticky top-[60px] z-30 pt-1 pb-2">
+        <div class="grid grid-cols-4 gap-1.5 sm:gap-2 p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-2xl backdrop-blur-xl">
+            <!-- Tab 1: Catat Job -->
+            <button 
+                type="button" 
+                id="tabBtn_input" 
+                onclick="switchDashboardTab('input')" 
+                class="dashboard-tab-btn py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1 sm:gap-2 cursor-pointer bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 font-black shadow-lg shadow-amber-500/20"
+            >
+                <span class="material-symbols-outlined text-base sm:text-lg">post_add</span>
+                <span class="truncate">Catat Job</span>
+            </button>
+
+            <!-- Tab 2: Rekap Harian -->
+            <button 
+                type="button" 
+                id="tabBtn_rekap" 
+                onclick="switchDashboardTab('rekap')" 
+                class="dashboard-tab-btn py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1 sm:gap-2 cursor-pointer text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-bold"
+            >
+                <span class="material-symbols-outlined text-base sm:text-lg">calendar_month</span>
+                <span class="truncate">Rekap Harian</span>
+            </button>
+
+            <!-- Tab 3: Riwayat Job -->
+            <button 
+                type="button" 
+                id="tabBtn_riwayat" 
+                onclick="switchDashboardTab('riwayat')" 
+                class="dashboard-tab-btn py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1 sm:gap-2 cursor-pointer text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-bold relative"
+            >
+                <span class="material-symbols-outlined text-base sm:text-lg">receipt_long</span>
+                <span class="truncate">Riwayat</span>
+                @if($detailJobOrders->total() > 0)
+                    <span class="hidden sm:inline-block px-1.5 py-0.2 rounded-md bg-amber-400/20 text-amber-300 text-[10px] font-mono-num font-extrabold border border-amber-400/30">
+                        {{ $detailJobOrders->total() }}
+                    </span>
+                @endif
+            </button>
+
+            <!-- Tab 4: Target & Tren -->
+            <button 
+                type="button" 
+                id="tabBtn_target" 
+                onclick="switchDashboardTab('target')" 
+                class="dashboard-tab-btn py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1 sm:gap-2 cursor-pointer text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-bold"
+            >
+                <span class="material-symbols-outlined text-base sm:text-lg">insights</span>
+                <span class="truncate">Target &amp; Tren</span>
+            </button>
         </div>
     </div>
 
-    <!-- GOAL METER & DAILY TREND ANALYTICS SECTION -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 my-6">
-        <!-- 1. GOAL METER & PROGRESS CARD (5 cols) -->
-        <div class="lg:col-span-5 rounded-3xl bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 p-5 sm:p-6 shadow-2xl flex flex-col justify-between relative overflow-hidden group">
-            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-gradient-to-br from-emerald-500/10 to-cyan-500/10 rounded-full blur-2xl pointer-events-none"></div>
 
-            <div>
-                <div class="flex items-center justify-between border-b border-slate-800/80 pb-3 mb-4">
+    <!-- ========================================================================= -->
+    <!-- TAB PANEL 1: CATAT JOB (FORMULIR CEPAT + DAFTAR INPUT HARI INI)            -->
+    <!-- ========================================================================= -->
+    <div id="tabPanel_input" class="dashboard-tab-panel space-y-4">
+        
+        <!-- Input Job Form Card (Sleek, Compact, User-Friendly) -->
+        <div class="rounded-3xl bg-slate-900/80 backdrop-blur-xl border border-slate-800/90 p-4 sm:p-6 shadow-2xl relative overflow-hidden">
+            <div class="absolute -top-16 -right-16 w-56 h-56 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="flex items-center justify-between border-b border-slate-800/80 pb-3 mb-4">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-amber-400/10 border border-amber-400/30 text-amber-400 flex items-center justify-center font-black">
+                        <span class="material-symbols-outlined text-lg">bolt</span>
+                    </div>
+                    <div>
+                        <h2 class="text-sm sm:text-base font-black uppercase tracking-wider text-white">Form Input Job Order</h2>
+                        <p class="text-[11px] text-slate-400">Pilih kategori, atur kuantitas, lalu simpan.</p>
+                    </div>
+                </div>
+                <span class="text-[10px] font-black uppercase tracking-wider text-amber-400 bg-amber-400/10 px-2.5 py-1 rounded-lg border border-amber-400/20">
+                    1-Tap Entry
+                </span>
+            </div>
+
+            <!-- Quick Category Chips (1-Sentuhan) -->
+            <div class="space-y-1.5 mb-4">
+                <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-xs text-amber-400">touch_app</span>
+                    <span>Kategori Populer:</span>
+                </span>
+                <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth py-1">
+                    @foreach($tarifs->take(6) as $chipTarif)
+                        <button type="button" 
+                            onclick="selectQuickCategory({{ $chipTarif->id }})" 
+                            class="quick-category-chip px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-amber-400 text-slate-300 hover:text-amber-300 text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 shadow-sm active:scale-95 cursor-pointer">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                            <span>{{ $chipTarif->kategori }}</span>
+                        </button>
+                    @endforeach
+                </div>
+            </div>
+
+            <form action="{{ route('job-orders.store') }}" method="POST" class="space-y-4" id="quickJobForm" onsubmit="handleQuickJobFormSubmit(event)">
+                @csrf
+
+                <!-- Form Grid: 4 Kolom di Desktop -->
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-start">
+                    
+                    <!-- 1. Kategori Dropdown (Col 4) -->
+                    <div class="sm:col-span-4 space-y-1">
+                        <label for="tarif_id" class="text-[11px] font-extrabold text-slate-300 uppercase tracking-wider flex items-center gap-1">
+                            <span>Kategori Tugas</span>
+                            <span class="text-amber-400">*</span>
+                        </label>
+                        <div class="relative">
+                            <select 
+                                name="tarif_id" 
+                                id="tarif_id" 
+                                required 
+                                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700/80 text-white font-bold text-xs focus:border-amber-400 focus:outline-none transition-all min-h-[44px] cursor-pointer appearance-none pr-8"
+                                onchange="updatePricePreview()"
+                            >
+                                <option value="" disabled selected>Pilih Kategori Pekerjaan</option>
+                                @foreach($tarifs as $tarif)
+                                    <option 
+                                        value="{{ $tarif->id }}" 
+                                        data-berhasil="{{ $tarif->tarif_berhasil }}" 
+                                        data-gagal="{{ $tarif->tarif_gagal ?? 0 }}"
+                                        {{ old('tarif_id') == $tarif->id ? 'selected' : '' }}
+                                    >
+                                        {{ $tarif->kategori }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-lg">unfold_more</span>
+                        </div>
+                    </div>
+
+                    <!-- 2. Status Berhasil / Gagal (Col 3) -->
+                    <div class="sm:col-span-3 space-y-1">
+                        <label class="text-[11px] font-extrabold text-slate-300 uppercase tracking-wider flex items-center gap-1">
+                            <span>Status Job</span>
+                            <span class="text-amber-400">*</span>
+                        </label>
+                        <div class="grid grid-cols-2 gap-1.5 min-h-[44px]">
+                            <label class="cursor-pointer">
+                                <input 
+                                    type="radio" 
+                                    name="status" 
+                                    value="berhasil" 
+                                    class="peer sr-only" 
+                                    checked 
+                                    onchange="updatePricePreview()"
+                                >
+                                <div class="w-full h-full py-2 px-1 rounded-xl bg-slate-950 border border-slate-800 peer-checked:border-emerald-400 peer-checked:bg-emerald-500/15 peer-checked:text-emerald-300 text-slate-400 font-extrabold text-center text-[11px] uppercase tracking-wider transition-all flex items-center justify-center gap-1">
+                                    <span class="material-symbols-outlined text-sm">check_circle</span>
+                                    <span>BERHASIL</span>
+                                </div>
+                            </label>
+
+                            <label class="cursor-pointer">
+                                <input 
+                                    type="radio" 
+                                    name="status" 
+                                    value="gagal" 
+                                    class="peer sr-only" 
+                                    {{ old('status') === 'gagal' ? 'checked' : '' }}
+                                    onchange="updatePricePreview()"
+                                >
+                                <div class="w-full h-full py-2 px-1 rounded-xl bg-slate-950 border border-slate-800 peer-checked:border-rose-500 peer-checked:bg-rose-500/15 peer-checked:text-rose-300 text-slate-400 font-extrabold text-center text-[11px] uppercase tracking-wider transition-all flex items-center justify-center gap-1">
+                                    <span class="material-symbols-outlined text-sm">cancel</span>
+                                    <span>GAGAL</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 3. Quantity Stepper (Col 2) -->
+                    <div class="sm:col-span-2 space-y-1">
+                        <div class="flex items-center justify-between">
+                            <label for="quantity" class="text-[11px] font-extrabold text-slate-300 uppercase tracking-wider">Jumlah</label>
+                            <div class="flex items-center gap-1">
+                                <button type="button" onclick="adjustQuickQuantity(1)" class="px-1 py-0.2 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-bold cursor-pointer" title="Tambah 1">+1</button>
+                                <button type="button" onclick="adjustQuickQuantity(5)" class="px-1 py-0.2 rounded bg-slate-800 hover:bg-slate-700 text-amber-300 text-[10px] font-bold cursor-pointer" title="Tambah 5">+5</button>
+                            </div>
+                        </div>
+                        <div class="flex items-center rounded-xl bg-slate-950 border border-slate-700/80 overflow-hidden min-h-[44px]">
+                            <button type="button" onclick="stepQuantity(-1)" class="px-2.5 py-2 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors font-black text-sm cursor-pointer">−</button>
+                            <input 
+                                type="number" 
+                                name="quantity" 
+                                id="quantity" 
+                                value="{{ old('quantity', 1) }}" 
+                                min="1" 
+                                max="100" 
+                                required 
+                                oninput="updatePricePreview()"
+                                onchange="updatePricePreview()"
+                                class="w-full bg-transparent text-white font-mono-num font-black text-center text-xs focus:outline-none py-1"
+                            >
+                            <button type="button" onclick="stepQuantity(1)" class="px-2.5 py-2 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors font-black text-sm cursor-pointer">+</button>
+                        </div>
+                    </div>
+
+                    <!-- 4. Tanggal (Col 3) -->
+                    <div class="sm:col-span-3 space-y-1">
+                        <div class="flex items-center justify-between">
+                            <label for="tanggal" class="text-[11px] font-extrabold text-slate-300 uppercase tracking-wider flex items-center gap-1">
+                                <span>Tanggal</span>
+                                <span class="text-amber-400">*</span>
+                            </label>
+                            <div class="flex items-center gap-1 text-[10px]">
+                                <button type="button" onclick="setQuickFormDate('today')" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-amber-400/20 hover:text-amber-300 text-slate-300 font-bold transition-all cursor-pointer border border-slate-700">Hari Ini</button>
+                                <button type="button" onclick="setQuickFormDate('yesterday')" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-amber-400/20 hover:text-amber-300 text-slate-300 font-bold transition-all cursor-pointer border border-slate-700">Kemarin</button>
+                            </div>
+                        </div>
+                        <input 
+                            type="date" 
+                            name="tanggal" 
+                            id="tanggal" 
+                            value="{{ old('tanggal', $today) }}" 
+                            required 
+                            class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700/80 text-white font-mono font-bold text-xs focus:border-amber-400 focus:outline-none transition-all min-h-[44px]"
+                        >
+                    </div>
+                </div>
+
+                <!-- Form Row 2: Catatan (Voice-to-Text) & Custom Tarif (Piket Event) -->
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                    <div class="sm:col-span-8 relative">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-base">edit_note</span>
+                        <input 
+                            type="text" 
+                            name="catatan" 
+                            id="catatanInput"
+                            placeholder="Catatan tambahan / No. Merchant / Lokasi (opsional)" 
+                            value="{{ old('catatan') }}"
+                            class="w-full pl-9 pr-10 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-xs focus:border-amber-400 focus:outline-none transition-all min-h-[42px]"
+                        >
+                        <button type="button" onclick="toggleVoiceInput('catatanInput', this)" class="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-amber-400 transition-colors cursor-pointer" title="Input suara (Speech-to-Text)">
+                            <span class="material-symbols-outlined text-base">mic</span>
+                        </button>
+                    </div>
+
+                    <!-- Custom Nominal Input (Piket Event) -->
+                    <div id="customTarifContainer" class="sm:col-span-4 hidden">
+                        <div class="relative">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-amber-400 font-bold text-xs">Rp</span>
+                            <input 
+                                type="number" 
+                                name="custom_tarif" 
+                                id="custom_tarif" 
+                                min="0" 
+                                step="1000"
+                                placeholder="Nominal Custom (Rp)" 
+                                oninput="updatePricePreview()"
+                                class="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-950 border border-amber-400 text-amber-300 font-mono-num font-extrabold text-xs focus:outline-none min-h-[42px]"
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action & Price Preview Row -->
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 border-t border-slate-800/80">
+                    <div class="px-4 py-2 rounded-xl bg-slate-950 border border-emerald-500/30 flex items-center justify-between sm:justify-start gap-3 shadow-inner">
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                            <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Snapshot Tarif:</span>
+                        </div>
+                        <span id="pricePreview" class="text-base sm:text-lg font-black font-mono-num text-gradient-emerald tracking-tight">Rp 0</span>
+                    </div>
+
+                    <button 
+                        type="submit" 
+                        class="py-3 px-6 rounded-xl bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 hover:from-amber-300 hover:to-orange-300 active:scale-[0.98] text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-amber-500/20 transition-all cursor-pointer flex items-center justify-center gap-2 border border-amber-300/30 min-h-[46px]"
+                    >
+                        <span class="material-symbols-outlined text-lg">save</span>
+                        <span>SIMPAN JOB ORDER</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- DAFTAR JOB TERCATAT HARI INI (Langsung terlihat di bawah form tanpa perlu scroll ke bawah!) -->
+        <div class="rounded-3xl bg-slate-900/70 backdrop-blur-xl border border-slate-800/80 p-4 sm:p-5 shadow-xl space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-amber-400 text-lg">history_toggle_off</span>
+                    <h3 class="text-xs sm:text-sm font-black uppercase text-white tracking-wider">Job Tercatat Hari Ini</h3>
+                    <span class="text-[10px] font-mono-num font-bold text-slate-400">({{ \Carbon\Carbon::parse($today)->translatedFormat('d M Y') }})</span>
+                </div>
+                <span class="px-2.5 py-0.5 rounded-lg bg-emerald-400/10 text-emerald-300 text-[10px] font-mono-num font-extrabold border border-emerald-400/20">
+                    {{ $todayJobOrders->count() }} JO &bull; Rp {{ number_format($pendapatanHariIni, 0, ',', '.') }}
+                </span>
+            </div>
+
+            @if($todayJobOrders->count() > 0)
+                <div class="space-y-2">
+                    @foreach($todayJobOrders as $tJob)
+                        <div class="p-3 rounded-2xl bg-slate-950/80 border border-slate-800/80 hover:border-slate-700 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-1.5 h-1.5 rounded-full {{ $tJob->status === 'berhasil' ? 'bg-emerald-400' : 'bg-rose-400' }}"></span>
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs font-bold text-white">{{ $tJob->kategori }}</span>
+                                        <span class="px-1.5 py-0.2 rounded text-[9px] font-black uppercase tracking-wider {{ $tJob->status === 'berhasil' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-300 border border-rose-500/30' }}">
+                                            {{ $tJob->status }}
+                                        </span>
+                                    </div>
+                                    @if($tJob->catatan)
+                                        <p class="text-[11px] text-slate-400 mt-0.5">{{ $tJob->catatan }}</p>
+                                    @endif
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto pt-1 sm:pt-0 border-t sm:border-t-0 border-slate-800/60">
+                                <span class="text-xs font-black font-mono-num text-amber-400">
+                                    Rp {{ number_format($tJob->tarif, 0, ',', '.') }}
+                                </span>
+                                <div class="flex items-center gap-1">
+                                    <button 
+                                        type="button" 
+                                        onclick="openEditModal({{ json_encode($tJob) }})" 
+                                        class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 transition-all" 
+                                        title="Edit"
+                                    >
+                                        <span class="material-symbols-outlined text-sm">edit</span>
+                                    </button>
+                                    <form action="{{ route('job-orders.destroy', $tJob->id) }}" method="POST" onsubmit="return confirm('Hapus job order ini?');" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="p-1.5 rounded-lg bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 transition-all" title="Hapus">
+                                            <span class="material-symbols-outlined text-sm">delete</span>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="py-6 px-4 text-center rounded-2xl bg-slate-950/60 border border-slate-800/60">
+                    <span class="material-symbols-outlined text-slate-600 text-3xl mb-1">note_alt</span>
+                    <p class="text-xs text-slate-400 font-medium">Belum ada job order yang dicatat hari ini.</p>
+                    <p class="text-[11px] text-slate-500 mt-0.5">Gunakan formulir di atas untuk mulai mencatat pekerjaan harian Anda.</p>
+                </div>
+            @endif
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================================= -->
+    <!-- TAB PANEL 2: REKAP HARIAN (RINGKASAN TANGGAL & EKSPOR CSV/PDF)            -->
+    <!-- ========================================================================= -->
+    <div id="tabPanel_rekap" class="dashboard-tab-panel space-y-4 hidden">
+        
+        <div class="rounded-3xl bg-slate-900/70 backdrop-blur-xl border border-slate-800/80 p-4 sm:p-6 shadow-2xl space-y-4">
+            
+            <!-- Header & Export Action -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-3">
+                <div>
+                    <h3 class="text-sm sm:text-base font-black uppercase text-white tracking-wider flex items-center gap-2">
+                        <span class="material-symbols-outlined text-amber-400 text-lg">calendar_month</span>
+                        <span>Rekap Harian ({{ $periodLabel }})</span>
+                    </h3>
+                    <p class="text-[11px] text-slate-400">Total job dan akumulasi pendapatan per tanggal.</p>
+                </div>
+
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <a 
+                        href="{{ route('export.csv', ['bulan' => $selectedBulan, 'start_date' => $startDate, 'end_date' => $endDate, 'teknisi_id' => request('teknisi_id')]) }}" 
+                        class="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-emerald-950/80 hover:bg-emerald-900/80 border border-emerald-500/40 text-emerald-300 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all shadow-sm"
+                    >
+                        <span class="material-symbols-outlined text-base">download</span>
+                        <span>CSV</span>
+                    </a>
+
+                    <a 
+                        href="{{ route('export.pdf', ['bulan' => $selectedBulan, 'start_date' => $startDate, 'end_date' => $endDate, 'teknisi_id' => request('teknisi_id')]) }}" 
+                        target="_blank"
+                        class="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-cyan-950/80 hover:bg-cyan-900/80 border border-cyan-500/40 text-cyan-300 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all shadow-sm"
+                    >
+                        <span class="material-symbols-outlined text-base">print</span>
+                        <span>PDF</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Filter Controls (Bulan vs Rentang Tanggal) -->
+            <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3 sm:p-4 space-y-3">
+                <div class="flex items-center gap-2 border-b border-slate-800/80 pb-2.5">
+                    <button 
+                        type="button"
+                        onclick="switchFilterMode('bulan')"
+                        id="tabBulan"
+                        class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer {{ (!$startDate && !$endDate) ? 'bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 font-black shadow' : 'bg-slate-800/80 text-slate-400 hover:text-slate-200' }}"
+                    >
+                        Per Bulan
+                    </button>
+                    <button 
+                        type="button"
+                        onclick="switchFilterMode('rentang')"
+                        id="tabRentang"
+                        class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer {{ ($startDate || $endDate) ? 'bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 font-black shadow' : 'bg-slate-800/80 text-slate-400 hover:text-slate-200' }}"
+                    >
+                        Rentang Tanggal
+                    </button>
+                    
+                    @if($startDate || $endDate || $selectedBulan !== \Carbon\Carbon::now()->format('Y-m'))
+                        <a href="{{ route('dashboard') }}" class="ml-auto text-[11px] text-rose-400 hover:underline font-bold uppercase tracking-wider">
+                            Reset Filter
+                        </a>
+                    @endif
+                </div>
+
+                <!-- Form Filter Per Bulan -->
+                <form id="formFilterBulan" method="GET" action="{{ route('dashboard') }}" class="{{ ($startDate || $endDate) ? 'hidden' : 'block' }}">
+                    <div class="flex flex-col sm:flex-row items-end gap-2.5">
+                        <div class="w-full sm:w-60 space-y-1">
+                            <label for="bulan" class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Bulan &amp; Tahun</label>
+                            <input 
+                                type="month" 
+                                name="bulan" 
+                                id="bulan" 
+                                value="{{ $selectedBulan }}" 
+                                onchange="this.form.submit()"
+                                class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700/80 text-white font-mono font-bold text-xs focus:border-amber-400 focus:outline-none"
+                            >
+                        </div>
+                        <button type="submit" class="w-full sm:w-auto px-5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider transition-all">
+                            Tampilkan
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Form Filter Rentang Tanggal -->
+                <form id="formFilterRentang" method="GET" action="{{ route('dashboard') }}" class="{{ ($startDate || $endDate) ? 'block' : 'hidden' }}">
+                    <input type="hidden" name="bulan" value="{{ $selectedBulan }}">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 items-end">
+                        <div class="space-y-1">
+                            <label for="start_date" class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Dari Tanggal</label>
+                            <input 
+                                type="date" 
+                                name="start_date" 
+                                id="start_date" 
+                                value="{{ $startDate }}" 
+                                required
+                                class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700/80 text-white font-mono font-bold text-xs focus:border-amber-400 focus:outline-none"
+                            >
+                        </div>
+
+                        <div class="space-y-1">
+                            <label for="end_date" class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Sampai Tanggal</label>
+                            <input 
+                                type="date" 
+                                name="end_date" 
+                                id="end_date" 
+                                value="{{ $endDate }}" 
+                                required
+                                class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700/80 text-white font-mono font-bold text-xs focus:border-amber-400 focus:outline-none"
+                            >
+                        </div>
+
+                        <div>
+                            <button 
+                                type="submit" 
+                                class="w-full py-2 px-5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider transition-all"
+                            >
+                                Terapkan Rentang
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Table Desktop -->
+            <div class="hidden sm:block overflow-x-auto rounded-2xl border border-slate-800/80 shadow-inner">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-slate-950/80 text-slate-400 font-extrabold uppercase tracking-wider border-b border-slate-800">
+                        <tr>
+                            <th class="py-3 px-4">Tanggal Pekerjaan</th>
+                            <th class="py-3 px-4 text-center">Volume JO</th>
+                            <th class="py-3 px-4 text-right">Pendapatan Harian</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800/80 font-medium">
+                        @forelse($rekapHarian as $rekap)
+                            <tr class="hover:bg-slate-800/40 transition-colors">
+                                <td class="py-3 px-4 font-bold text-slate-200">
+                                    <span class="flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-amber-400/80 text-sm">event</span>
+                                        <span>{{ \Carbon\Carbon::parse($rekap->tanggal)->translatedFormat('d F Y') }}</span>
+                                    </span>
+                                </td>
+                                <td class="py-3 px-4 text-center font-mono-num font-bold text-amber-300">
+                                    {{ $rekap->total_job }} JO
+                                    @if(($rekap->total_piket ?? 0) > 0)
+                                        <span class="text-cyan-400 text-[11px] ml-1">(+{{ $rekap->total_piket }} Piket)</span>
+                                    @endif
+                                </td>
+                                <td class="py-3 px-4 text-right font-mono-num font-black text-emerald-400">
+                                    Rp {{ number_format($rekap->total_pendapatan, 0, ',', '.') }}
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3" class="py-8 text-center text-slate-500 uppercase tracking-widest font-bold text-xs">
+                                    Belum ada transaksi job order di periode ini.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                    <tfoot class="bg-slate-950/90 border-t-2 border-amber-400/50 font-black text-xs text-slate-100">
+                        <tr>
+                            <td class="py-3.5 px-4 uppercase tracking-wider text-amber-400">
+                                TOTAL AKUMULASI
+                            </td>
+                            <td class="py-3.5 px-4 text-center font-mono-num text-amber-300 font-black">
+                                {{ $rekapHarian->sum('total_job') }} JO
+                                @if($rekapHarian->sum('total_piket') > 0)
+                                    <span class="text-cyan-400 text-[11px] block">+ {{ $rekapHarian->sum('total_piket') }} Piket</span>
+                                @endif
+                            </td>
+                            <td class="py-3.5 px-4 text-right font-mono-num text-emerald-400 text-sm sm:text-base font-black">
+                                Rp {{ number_format($rekapHarian->sum('total_pendapatan'), 0, ',', '.') }}
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- Cards Mobile -->
+            <div class="block sm:hidden space-y-2">
+                @forelse($rekapHarian as $rekap)
+                    <div class="p-3 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1.5">
+                        <div class="flex items-center justify-between border-b border-slate-800/80 pb-1.5">
+                            <span class="font-bold text-slate-200 text-xs flex items-center gap-1">
+                                <span class="material-symbols-outlined text-amber-400 text-xs">event</span>
+                                <span>{{ \Carbon\Carbon::parse($rekap->tanggal)->translatedFormat('d M Y') }}</span>
+                            </span>
+                            <span class="text-xs font-mono-num font-black text-emerald-400">
+                                Rp {{ number_format($rekap->total_pendapatan, 0, ',', '.') }}
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between text-[11px]">
+                            <span class="text-slate-400 font-medium">Volume:</span>
+                            <span class="font-mono-num font-bold text-amber-400">
+                                {{ $rekap->total_job }} JO
+                                @if(($rekap->total_piket ?? 0) > 0)
+                                    <span class="text-cyan-300 ml-1">+ {{ $rekap->total_piket }} Piket</span>
+                                @endif
+                            </span>
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-5 text-center text-slate-500 font-bold uppercase tracking-widest text-xs rounded-xl bg-slate-950/80 border border-slate-800">
+                        Belum ada transaksi di periode ini.
+                    </div>
+                @endforelse
+
+                @if($rekapHarian->count() > 0)
+                    <div class="p-3.5 rounded-xl bg-slate-950/90 border border-amber-400/50 space-y-1.5 shadow-lg">
+                        <div class="text-[11px] font-black uppercase text-amber-400 tracking-wider">
+                            Total Akumulasi Periode
+                        </div>
+                        <div class="flex items-center justify-between border-t border-slate-800/80 pt-1.5">
+                            <span class="font-mono-num text-xs font-bold text-amber-300">
+                                {{ $rekapHarian->sum('total_job') }} JO
+                                @if($rekapHarian->sum('total_piket') > 0)
+                                    <span class="text-cyan-400 text-[10px] block">+ {{ $rekapHarian->sum('total_piket') }} Piket</span>
+                                @endif
+                            </span>
+                            <span class="text-base font-black font-mono-num text-emerald-400">
+                                Rp {{ number_format($rekapHarian->sum('total_pendapatan'), 0, ',', '.') }}
+                            </span>
+                        </div>
+                    </div>
+                @endif
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================================= -->
+    <!-- TAB PANEL 3: RIWAYAT TRANSAKSI (DETAIL JO, EDIT & HAPUS)                  -->
+    <!-- ========================================================================= -->
+    <div id="tabPanel_riwayat" class="dashboard-tab-panel space-y-4 hidden">
+        
+        <div class="rounded-3xl bg-slate-900/70 backdrop-blur-xl border border-slate-800/80 p-4 sm:p-6 shadow-2xl space-y-4">
+            
+            <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+                <div>
+                    <h3 class="text-sm sm:text-base font-black uppercase text-white tracking-wider flex items-center gap-2">
+                        <span class="material-symbols-outlined text-amber-400 text-lg">receipt_long</span>
+                        <span>Detail Riwayat Job Order</span>
+                    </h3>
+                    <p class="text-[11px] text-slate-400">Rincian seluruh transaksi dengan tombol edit &amp; hapus.</p>
+                </div>
+                <span class="px-2.5 py-1 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 text-xs font-mono font-bold">
+                    Total: {{ $detailJobOrders->total() }} Data
+                </span>
+            </div>
+
+            <!-- Desktop View Table -->
+            <div class="hidden sm:block overflow-x-auto rounded-2xl border border-slate-800/80 shadow-inner">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-slate-950/80 text-slate-400 font-extrabold uppercase tracking-wider border-b border-slate-800">
+                        <tr>
+                            <th class="py-3 px-3.5">#</th>
+                            <th class="py-3 px-3.5">Tanggal</th>
+                            <th class="py-3 px-3.5">Kategori</th>
+                            <th class="py-3 px-3.5 text-center">Status</th>
+                            <th class="py-3 px-3.5 text-right">Tarif</th>
+                            <th class="py-3 px-3.5">Catatan</th>
+                            <th class="py-3 px-3.5 text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800/80 font-medium">
+                        @forelse($detailJobOrders as $index => $job)
+                            <tr class="hover:bg-slate-800/40 transition-colors">
+                                <td class="py-3 px-3.5 text-slate-500 font-mono-num">
+                                    {{ $detailJobOrders->firstItem() + $index }}
+                                </td>
+                                <td class="py-3 px-3.5 font-mono-num text-slate-300 font-bold whitespace-nowrap">
+                                    {{ $job->tanggal->format('d/m/Y') }}
+                                </td>
+                                <td class="py-3 px-3.5 font-bold text-white">
+                                    {{ $job->kategori }}
+                                </td>
+                                <td class="py-3 px-3.5 text-center">
+                                    @if($job->status === 'berhasil')
+                                        <span class="px-2.5 py-0.5 rounded-lg bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 font-black text-[9px] uppercase tracking-wider">
+                                            BERHASIL
+                                        </span>
+                                    @else
+                                        <span class="px-2.5 py-0.5 rounded-lg bg-rose-950/80 border border-rose-500/40 text-rose-300 font-black text-[9px] uppercase tracking-wider">
+                                            GAGAL
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="py-3 px-3.5 text-right font-mono-num font-black text-amber-400 whitespace-nowrap">
+                                    Rp {{ number_format($job->tarif, 0, ',', '.') }}
+                                </td>
+                                <td class="py-3 px-3.5 text-slate-400 max-w-xs truncate">
+                                    {{ $job->catatan ?? '-' }}
+                                </td>
+                                <td class="py-3 px-3.5 text-center whitespace-nowrap">
+                                    <div class="flex items-center justify-center gap-1.5">
+                                        <button 
+                                            onclick="openEditModal({{ json_encode($job) }})" 
+                                            class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 transition-all" 
+                                            title="Edit"
+                                        >
+                                            <span class="material-symbols-outlined text-sm">edit</span>
+                                        </button>
+
+                                        <form action="{{ route('job-orders.destroy', $job->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus job order ini?');" class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="p-1.5 rounded-lg bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 transition-all" title="Hapus">
+                                                <span class="material-symbols-outlined text-sm">delete</span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="py-8 text-center text-slate-500 uppercase tracking-widest font-bold text-xs">
+                                    Tidak ada data job order ditemukan.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Mobile Card List View -->
+            <div class="block sm:hidden space-y-2.5">
+                @forelse($detailJobOrders as $index => $job)
+                    <div class="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
+                        <div class="flex items-center justify-between border-b border-slate-800/80 pb-1.5">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[10px] font-mono-num text-slate-500 font-bold">#{{ $detailJobOrders->firstItem() + $index }}</span>
+                                <span class="font-mono-num font-bold text-slate-300 text-xs flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-xs text-slate-500">calendar_today</span>
+                                    <span>{{ $job->tanggal->format('d/m/Y') }}</span>
+                                </span>
+                            </div>
+                            <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider {{ $job->status === 'berhasil' ? 'bg-emerald-950/80 border border-emerald-500/40 text-emerald-400' : 'bg-rose-950/80 border border-rose-500/40 text-rose-300' }}">
+                                {{ $job->status }}
+                            </span>
+                        </div>
+
+                        <div>
+                            <h4 class="font-bold text-white text-xs">{{ $job->kategori }}</h4>
+                            @if($job->catatan)
+                                <p class="text-[11px] text-slate-400 bg-slate-900/60 p-2 rounded-xl border border-slate-800 mt-1">
+                                    {{ $job->catatan }}
+                                </p>
+                            @endif
+                        </div>
+
+                        <div class="flex items-center justify-between pt-1.5 border-t border-slate-800/80">
+                            <span class="font-mono-num font-black text-amber-400 text-sm">
+                                Rp {{ number_format($job->tarif, 0, ',', '.') }}
+                            </span>
+
+                            <div class="flex items-center gap-1.5">
+                                <button 
+                                    onclick="openEditModal({{ json_encode($job) }})" 
+                                    class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1"
+                                >
+                                    <span class="material-symbols-outlined text-xs">edit</span>
+                                    <span>Edit</span>
+                                </button>
+
+                                <form action="{{ route('job-orders.destroy', $job->id) }}" method="POST" onsubmit="return confirm('Hapus job order ini?');" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="px-2.5 py-1 rounded-lg bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-xs">delete</span>
+                                        <span>Hapus</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-6 text-center text-slate-500 font-bold uppercase tracking-widest text-xs rounded-2xl bg-slate-950/80 border border-slate-800">
+                        Tidak ada data job order.
+                    </div>
+                @endforelse
+            </div>
+
+            @if($detailJobOrders->hasPages())
+                <div class="pt-2">
+                    {{ $detailJobOrders->links() }}
+                </div>
+            @endif
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================================= -->
+    <!-- TAB PANEL 4: TARGET & GRAFIK TREN (GOAL METER & CHART.JS)                 -->
+    <!-- ========================================================================= -->
+    <div id="tabPanel_target" class="dashboard-tab-panel space-y-4 hidden">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            
+            <!-- Goal Meter Card (5 Col) -->
+            <div class="lg:col-span-5 rounded-3xl bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 p-5 shadow-2xl flex flex-col justify-between space-y-4 relative overflow-hidden">
+                <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
                     <div class="flex items-center gap-2.5">
-                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-400 to-cyan-500 text-slate-950 flex items-center justify-center font-black text-base shadow-md shadow-emerald-500/20">
+                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-400 to-cyan-500 text-slate-950 flex items-center justify-center font-black shadow-md shadow-emerald-500/20">
                             <span class="material-symbols-outlined text-lg">workspace_premium</span>
                         </div>
                         <div>
-                            <h3 class="text-sm font-black uppercase tracking-wider text-white flex items-center gap-1.5">
-                                Target Gaji Bulanan
-                            </h3>
-                            <p class="text-[11px] text-slate-400 font-medium">Goal Meter Personal</p>
+                            <h3 class="text-xs sm:text-sm font-black uppercase tracking-wider text-white">Target Gaji Bulanan</h3>
+                            <p class="text-[11px] text-slate-400">Personal Goal Meter</p>
                         </div>
                     </div>
                     
-                    <button type="button" onclick="openTargetModal()" class="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 text-xs font-extrabold flex items-center gap-1 border border-emerald-500/30 transition-all shadow-sm">
+                    <button type="button" onclick="openTargetModal()" class="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 text-xs font-extrabold flex items-center gap-1 border border-emerald-500/30 transition-all">
                         <span class="material-symbols-outlined text-sm">edit</span>
                         <span>Ubah</span>
                     </button>
                 </div>
 
-                <!-- Main Target Number & Percentage -->
-                <div class="flex items-baseline justify-between mb-2">
+                <!-- Main Target Numbers -->
+                <div class="flex items-baseline justify-between">
                     <div>
-                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Tercapai (Gaji Bersih)</span>
-                        <div id="metricTercapaiPendapatan" class="text-2xl sm:text-3xl font-black font-mono-num text-emerald-400 tracking-tight">
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Tercapai</span>
+                        <div class="text-xl sm:text-2xl font-black font-mono-num text-emerald-400">
                             Rp {{ number_format($tercapaiPendapatan, 0, ',', '.') }}
                         </div>
                     </div>
                     <div class="text-right">
-                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Target Bulanan</span>
-                        <div id="metricTargetPendapatan" class="text-lg font-extrabold font-mono-num text-slate-300">
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Target</span>
+                        <div class="text-base sm:text-lg font-extrabold font-mono-num text-slate-300">
                             Rp {{ number_format($targetPendapatan, 0, ',', '.') }}
                         </div>
                     </div>
                 </div>
 
                 <!-- Progress Bar -->
-                <div class="space-y-1.5 my-4">
+                <div class="space-y-1">
                     <div class="flex justify-between items-center text-xs font-black">
-                        <span class="text-slate-400">Pencapaian Progress</span>
-                        <span id="metricPersenTarget" class="{{ $persenTarget >= 100 ? 'text-emerald-400' : 'text-cyan-400' }} font-mono-num font-extrabold">{{ $persenTarget }}%</span>
+                        <span class="text-slate-400 text-[11px]">Pencapaian:</span>
+                        <span class="{{ $persenTarget >= 100 ? 'text-emerald-400' : 'text-cyan-400' }} font-mono-num font-extrabold">{{ $persenTarget }}%</span>
                     </div>
-                    <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-slate-800/80 shadow-inner">
-                        <div id="metricProgressBar" class="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 rounded-full transition-all duration-1000 shadow-sm" style="width: {{ min(100, $persenTarget) }}%"></div>
+                    <div class="w-full h-2.5 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-slate-800">
+                        <div class="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 rounded-full transition-all duration-1000" style="width: {{ min(100, $persenTarget) }}%"></div>
                     </div>
                 </div>
 
-                <!-- Stats summary grid -->
-                <div class="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-slate-800/60">
-                    <div class="p-3 rounded-2xl bg-slate-950/60 border border-slate-800/60">
-                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block mb-0.5">Sisa Target Total</span>
-                        <span id="metricSisaTarget" class="text-sm sm:text-base font-black font-mono-num {{ $sisaTarget > 0 ? 'text-amber-400' : 'text-emerald-400' }}">
+                <!-- Stats Summary -->
+                <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800/60">
+                    <div class="p-2.5 rounded-xl bg-slate-950/60 border border-slate-800/60">
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Sisa Target</span>
+                        <span class="text-xs sm:text-sm font-black font-mono-num {{ $sisaTarget > 0 ? 'text-amber-400' : 'text-emerald-400' }}">
                             {{ $sisaTarget > 0 ? 'Rp ' . number_format($sisaTarget, 0, ',', '.') : 'Tercapai! 🎉' }}
                         </span>
                     </div>
-                    <div class="p-3 rounded-2xl bg-slate-950/60 border border-slate-800/60">
-                        <span id="labelSisaHari" class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block mb-0.5">
-                            {{ $sisaHari > 0 ? "Perlu/Hari ({$sisaHari} Hari Sisa)" : "Perlu/Hari (Selesai)" }}
+                    <div class="p-2.5 rounded-xl bg-slate-950/60 border border-slate-800/60">
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
+                            {{ $sisaHari > 0 ? "Perlu/Hari ({$sisaHari} Hari)" : "Perlu/Hari" }}
                         </span>
-                        <span id="metricRataRataHarianDibutuhkan" class="text-sm sm:text-base font-black font-mono-num text-cyan-300">
+                        <span class="text-xs sm:text-sm font-black font-mono-num text-cyan-300">
                             {{ ($sisaTarget > 0 && $sisaHari > 0) ? 'Rp ' . number_format($rataRataHarianDibutuhkan, 0, ',', '.') : 'Rp 0' }}
                         </span>
                     </div>
-
-                    <!-- Target Produktivitas 330 JO Card -->
-                    <div class="col-span-2 p-3 rounded-2xl bg-slate-950/80 border border-emerald-500/30 flex items-center justify-between gap-3 shadow-inner">
-                        <div>
-                            <span class="text-[10px] font-black uppercase tracking-wider text-emerald-400 flex items-center gap-1">
-                                <span class="material-symbols-outlined text-xs">trending_up</span>
-                                <span>Target Produktivitas JO ({{ $targetJoLabel ?? 'Target ' . $targetJoVolume . ' JO' }})</span>
-                            </span>
-                            <span class="text-[10px] font-bold text-slate-400 block">
-                                Sisa <span id="metricSisaJoVolume" class="text-amber-400 font-extrabold">{{ $sisaJoVolume > 0 ? $sisaJoVolume . ' JO' : 'Tercapai! 🎉' }}</span> lagi dari target <span id="metricTargetJoVolume">{{ $targetJoVolume }} JO</span> (<span id="metricPersenJoVolume" class="text-emerald-400 font-extrabold">{{ $persenJoVolume }}%</span>)
-                            </span>
-                        </div>
-                        <div class="text-right shrink-0">
-                            <span id="metricTargetJoQtyPerHariCard" class="text-xs sm:text-sm font-black font-mono-num text-emerald-300 block">
-                                {{ ($sisaJoVolume > 0 && $sisaHari > 0) ? $targetJoQtyPerHari . ' JO / Hari' : 'Tercapai! 🎉' }}
-                            </span>
-                            <span id="metricTargetJoRevenuePerHariCard" class="text-[10px] font-extrabold font-mono-num text-amber-300 block">
-                                {{ ($sisaJoVolume > 0 && $sisaHari > 0) ? 'Rp ' . number_format($targetJoRevenuePerHari, 0, ',', '.') . '/Hari' : 'Rp 0' }}
-                            </span>
-                        </div>
-                    </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- 2. DAILY TREND CHART (7 cols) -->
-        <div class="lg:col-span-7 rounded-3xl bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 p-5 sm:p-6 shadow-2xl flex flex-col justify-between">
-            <div class="flex items-center justify-between border-b border-slate-800/80 pb-3 mb-4">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-500 text-slate-950 flex items-center justify-center font-black text-base shadow-md shadow-indigo-500/20">
-                        <span class="material-symbols-outlined text-lg">show_chart</span>
-                    </div>
+                <!-- 330 JO Box -->
+                <div class="p-3 rounded-2xl bg-slate-950/80 border border-emerald-500/30 flex items-center justify-between gap-2 shadow-inner">
                     <div>
-                        <h3 class="text-sm font-black uppercase tracking-wider text-white">Trend Pendapatan Harian</h3>
-                        <p class="text-[11px] text-slate-400 font-medium">Grafik perolehan per tanggal ({{ $periodLabel }})</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="relative w-full h-56 sm:h-64">
-                <canvas id="trendChartCanvas"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL EDIT TARGET PENDAPATAN -->
-    <div id="targetModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 transition-all duration-300">
-        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 w-full max-w-md shadow-2xl relative">
-            <button type="button" onclick="closeTargetModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">
-                <span class="material-symbols-outlined">close</span>
-            </button>
-            <div class="flex items-center gap-3 mb-4">
-                <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-xl">flag</span>
-                </div>
-                <div>
-                    <h3 class="text-base font-black text-white">Set Target Pendapatan</h3>
-                    <p class="text-xs text-slate-400">Atur target pencapaian gaji bulanan Anda</p>
-                </div>
-            </div>
-
-            <form action="{{ route('user.target.update') }}" method="POST" class="space-y-4">
-                @csrf
-                <div>
-                    <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-400 mb-2">Target Pendapatan (Rp)</label>
-                    <div class="relative">
-                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">Rp</span>
-                        <input type="number" step="500000" min="0" name="target_pendapatan" id="targetInput" value="{{ auth()->user()->target_pendapatan ?? 5000000 }}" required
-                            class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-3 text-white font-mono-num font-bold text-lg focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none">
-                    </div>
-                </div>
-
-                <!-- Quick presets -->
-                <div>
-                    <span class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1.5">Pilihan Cepat:</span>
-                    <div class="grid grid-cols-4 gap-2">
-                        <button type="button" onclick="setPresetTarget(3000000)" class="py-2 px-2 bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 hover:border-emerald-500/50 rounded-xl text-xs font-bold text-slate-300 hover:text-emerald-400 transition-all">3 Jt</button>
-                        <button type="button" onclick="setPresetTarget(5000000)" class="py-2 px-2 bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 hover:border-emerald-500/50 rounded-xl text-xs font-bold text-slate-300 hover:text-emerald-400 transition-all">5 Jt</button>
-                        <button type="button" onclick="setPresetTarget(7500000)" class="py-2 px-2 bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 hover:border-emerald-500/50 rounded-xl text-xs font-bold text-slate-300 hover:text-emerald-400 transition-all">7.5 Jt</button>
-                        <button type="button" onclick="setPresetTarget(10000000)" class="py-2 px-2 bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 hover:border-emerald-500/50 rounded-xl text-xs font-bold text-slate-300 hover:text-emerald-400 transition-all">10 Jt</button>
-                    </div>
-                </div>
-
-                <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeTargetModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-bold text-xs uppercase tracking-wider">Batal</button>
-                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/20 transition-all">Simpan Target</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- 2. QUICK INPUT JOB ORDER FORM UNTUK TEKNISI -->
-    <div class="relative rounded-3xl bg-slate-900/80 backdrop-blur-2xl border border-slate-800/90 p-5 sm:p-6 md:p-7 shadow-2xl space-y-6 overflow-hidden group hover:border-amber-500/30 transition-all duration-300">
-        <!-- Background Ambient Glow Orbs -->
-        <div class="absolute -top-24 -right-24 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-amber-500/15 transition-all duration-500"></div>
-        <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-        <!-- Top Accent Header Line -->
-        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-orange-500 to-emerald-400"></div>
-
-        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4 gap-3 relative z-10">
-            <div class="flex items-center gap-3.5">
-                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-400/20 to-orange-500/20 border border-amber-400/30 text-amber-400 flex items-center justify-center font-black shrink-0 shadow-md shadow-amber-500/10">
-                    <span class="material-symbols-outlined text-2xl">post_add</span>
-                </div>
-                <div>
-                    <h2 class="text-base sm:text-lg font-black uppercase tracking-wider text-white flex items-center gap-2">
-                        <span>Catat Job Order Baru</span>
-                    </h2>
-                    <p class="text-xs text-slate-400 mt-0.5 font-medium">Input pekerjaan atau piket harian teknisi dengan dukungan 1-tap kategori &amp; kuantitas cepat.</p>
-                </div>
-            </div>
-            <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-400/10 border border-amber-400/30 text-amber-400 text-xs font-extrabold uppercase tracking-wider shrink-0 shadow-sm">
-                <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                <span>Input Cepat</span>
-            </div>
-        </div>
-
-        <!-- KEMUDAHAN INPUT: Quick Chips Kategori Terpopuler (1-Tap Selection) -->
-        <div class="space-y-2 relative z-10">
-            <div class="flex items-center justify-between">
-                <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-sm text-amber-400">bolt</span>
-                    <span>Pilih Cepat Kategori Populer (1-Sentuhan):</span>
-                </span>
-            </div>
-            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth py-1">
-                @foreach($tarifs->take(6) as $chipTarif)
-                    <button type="button" 
-                        onclick="selectQuickCategory({{ $chipTarif->id }})" 
-                        class="quick-category-chip px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-amber-400 text-slate-300 hover:text-amber-300 text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 shadow-sm active:scale-95 cursor-pointer">
-                        <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
-                        <span>{{ $chipTarif->kategori }}</span>
-                    </button>
-                @endforeach
-            </div>
-        </div>
-
-        <form action="{{ route('job-orders.store') }}" method="POST" class="space-y-5 relative z-10" id="quickJobForm" onsubmit="handleQuickJobFormSubmit(event)">
-            @csrf
-
-            <!-- Form Row 1: Select Kategori, Status Radio, Jumlah (Qty), Tanggal -->
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
-                <!-- 1. Select Kategori Tugas (Width 4 col) -->
-                <div class="space-y-2 md:col-span-4">
-                    <label for="tarif_id" class="flex items-center gap-1.5 text-xs font-extrabold text-slate-300 uppercase tracking-wider">
-                        <span class="material-symbols-outlined text-sm text-amber-400">category</span>
-                        <span>Kategori Tugas</span>
-                        <span class="text-amber-400">*</span>
-                    </label>
-                    <div class="relative">
-                        <select 
-                            name="tarif_id" 
-                            id="tarif_id" 
-                            required 
-                            class="w-full px-4 py-3 rounded-2xl bg-slate-950/90 border border-slate-700/80 text-white font-bold focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 focus:outline-none transition-all text-sm min-h-[48px] cursor-pointer shadow-inner appearance-none pr-10"
-                            onchange="updatePricePreview()"
-                        >
-                            <option value="" disabled selected>Pilih Kategori Pekerjaan</option>
-                            @foreach($tarifs as $tarif)
-                                <option 
-                                    value="{{ $tarif->id }}" 
-                                    data-berhasil="{{ $tarif->tarif_berhasil }}" 
-                                    data-gagal="{{ $tarif->tarif_gagal ?? 0 }}"
-                                    {{ old('tarif_id') == $tarif->id ? 'selected' : '' }}
-                                >
-                                    {{ $tarif->kategori }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xl">unfold_more</span>
-                    </div>
-                </div>
-
-                <!-- 2. Status Radio Options (Width 3 col) -->
-                <div class="space-y-2 md:col-span-3">
-                    <label class="flex items-center gap-1.5 text-xs font-extrabold text-slate-300 uppercase tracking-wider">
-                        <span class="material-symbols-outlined text-sm text-amber-400">task_alt</span>
-                        <span>Status Job</span>
-                        <span class="text-amber-400">*</span>
-                    </label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <label class="cursor-pointer">
-                            <input 
-                                type="radio" 
-                                name="status" 
-                                value="berhasil" 
-                                class="peer sr-only" 
-                                checked 
-                                onchange="updatePricePreview()"
-                            >
-                            <div class="w-full py-3 px-2 rounded-2xl bg-slate-950/90 border border-slate-800 peer-checked:border-emerald-400 peer-checked:bg-emerald-500/15 peer-checked:text-emerald-300 peer-checked:shadow-lg peer-checked:shadow-emerald-500/10 text-slate-400 font-extrabold text-center text-xs uppercase tracking-wider transition-all min-h-[48px] flex items-center justify-center gap-1">
-                                <span class="material-symbols-outlined text-base">check_circle</span>
-                                <span>BERHASIL</span>
-                            </div>
-                        </label>
-
-                        <label class="cursor-pointer">
-                            <input 
-                                type="radio" 
-                                name="status" 
-                                value="gagal" 
-                                class="peer sr-only" 
-                                {{ old('status') === 'gagal' ? 'checked' : '' }}
-                                onchange="updatePricePreview()"
-                            >
-                            <div class="w-full py-3 px-2 rounded-2xl bg-slate-950/90 border border-slate-800 peer-checked:border-rose-500 peer-checked:bg-rose-500/15 peer-checked:text-rose-300 peer-checked:shadow-lg peer-checked:shadow-rose-500/10 text-slate-400 font-extrabold text-center text-xs uppercase tracking-wider transition-all min-h-[48px] flex items-center justify-center gap-1">
-                                <span class="material-symbols-outlined text-base">cancel</span>
-                                <span>GAGAL</span>
-                            </div>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- 3. Jumlah (Quantity) Input dengan Stepper +/- (Width 2 col) -->
-                <div class="space-y-2 md:col-span-2">
-                    <div class="flex items-center justify-between">
-                        <label for="quantity" class="flex items-center gap-1 text-xs font-extrabold text-slate-300 uppercase tracking-wider">
-                            <span class="material-symbols-outlined text-sm text-amber-400">tag</span>
-                            <span>Jumlah</span>
-                            <span class="text-amber-400">*</span>
-                        </label>
-                        <!-- Quick Quantity Presets -->
-                        <div class="flex items-center gap-1">
-                            <button type="button" onclick="adjustQuickQuantity(1)" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-bold cursor-pointer" title="Tambah 1">+1</button>
-                            <button type="button" onclick="adjustQuickQuantity(5)" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-amber-300 text-[10px] font-bold cursor-pointer" title="Tambah 5">+5</button>
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-center rounded-2xl bg-slate-950/90 border border-slate-700/80 overflow-hidden min-h-[48px]">
-                        <button type="button" onclick="stepQuantity(-1)" class="px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors font-black text-base cursor-pointer">
-                            −
-                        </button>
-                        <input 
-                            type="number" 
-                            name="quantity" 
-                            id="quantity" 
-                            value="{{ old('quantity', 1) }}" 
-                            min="1" 
-                            max="100" 
-                            required 
-                            oninput="updatePricePreview()"
-                            onchange="updatePricePreview()"
-                            class="w-full bg-transparent text-white font-mono-num font-black text-center text-sm focus:outline-none py-2"
-                        >
-                        <button type="button" onclick="stepQuantity(1)" class="px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors font-black text-base cursor-pointer">
-                            +
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 4. Tanggal Input (Width 3 col) -->
-                <div class="space-y-2 md:col-span-3">
-                    <div class="flex items-center justify-between gap-1">
-                        <label for="tanggal" class="flex items-center gap-1.5 text-xs font-extrabold text-slate-300 uppercase tracking-wider">
-                            <span class="material-symbols-outlined text-sm text-amber-400">calendar_today</span>
-                            <span>Tanggal</span>
-                            <span class="text-amber-400">*</span>
-                        </label>
-                        <div class="flex items-center gap-1 text-[10px]">
-                            <button type="button" onclick="setQuickFormDate('today')" class="px-2 py-0.5 rounded-lg bg-slate-800 hover:bg-amber-400/20 hover:text-amber-300 text-slate-300 font-bold transition-all cursor-pointer border border-slate-700" title="Set tanggal hari ini">Today</button>
-                            <button type="button" onclick="setQuickFormDate('yesterday')" class="px-2 py-0.5 rounded-lg bg-slate-800 hover:bg-amber-400/20 hover:text-amber-300 text-slate-300 font-bold transition-all cursor-pointer border border-slate-700" title="Set tanggal kemarin">Kemarin</button>
-                        </div>
-                    </div>
-                    <input 
-                        type="date" 
-                        name="tanggal" 
-                        id="tanggal" 
-                        value="{{ old('tanggal', $today) }}" 
-                        required 
-                        class="w-full px-4 py-3 rounded-2xl bg-slate-950/90 border border-slate-700/80 text-white font-mono font-bold focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 focus:outline-none transition-all text-sm min-h-[48px]"
-                    >
-                </div>
-            </div>
-
-            <!-- Form Row 2: Catatan dengan Voice-to-Text Microphone & Custom Nominal Input -->
-            <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center pt-1">
-                <div class="sm:col-span-8 relative">
-                    <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-lg">edit_note</span>
-                    <input 
-                        type="text" 
-                        name="catatan" 
-                        id="catatanInput"
-                        placeholder="Catatan tambahan / No. Merchant / Lokasi (opsional)" 
-                        value="{{ old('catatan') }}"
-                        class="w-full pl-10 pr-12 py-3 rounded-2xl bg-slate-950/90 border border-slate-800 text-slate-200 text-xs focus:border-amber-400 focus:outline-none transition-all min-h-[44px]"
-                    >
-                    <!-- Voice-to-Text Button -->
-                    <button type="button" onclick="toggleVoiceInput('catatanInput', this)" class="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-amber-400 transition-colors cursor-pointer" title="Input suara (Speech-to-Text)">
-                        <span class="material-symbols-outlined text-lg">mic</span>
-                    </button>
-                </div>
-
-                <!-- Custom Nominal Input (Tampil jika Piket Event dipilih) -->
-                <div id="customTarifContainer" class="sm:col-span-4 hidden">
-                    <div class="relative">
-                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-400 font-bold text-xs">Rp</span>
-                        <input 
-                            type="number" 
-                            name="custom_tarif" 
-                            id="custom_tarif" 
-                            min="0" 
-                            step="1000"
-                            placeholder="Isi Nominal Custom (Rp)" 
-                            oninput="updatePricePreview()"
-                            class="w-full pl-9 pr-4 py-3 rounded-2xl bg-slate-950/95 border border-amber-400 text-amber-300 font-mono-num font-extrabold text-xs focus:outline-none min-h-[44px] shadow-lg shadow-amber-500/10"
-                        >
-                    </div>
-                </div>
-            </div>
-
-            <!-- Action & Preview Row -->
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-4 border-t border-slate-800/80">
-                <div class="w-full sm:w-auto px-5 py-3 rounded-2xl bg-slate-950/95 border border-emerald-500/30 flex items-center justify-between sm:justify-start gap-4 shadow-xl shadow-emerald-500/5 group/snapshot">
-                    <div class="flex items-center gap-2">
-                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-                        <span class="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Tarif Snapshot:</span>
-                    </div>
-                    <span id="pricePreview" class="text-2xl font-black font-mono-num text-gradient-emerald tracking-tight">Rp 0</span>
-                </div>
-
-                <button 
-                    type="submit" 
-                    class="w-full sm:w-auto py-3.5 px-8 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 hover:from-amber-300 hover:to-orange-300 active:scale-[0.98] text-slate-950 font-black text-sm uppercase tracking-wider shadow-xl shadow-amber-500/25 hover:shadow-amber-500/40 transition-all duration-200 cursor-pointer min-h-[50px] flex items-center justify-center gap-2.5 border border-amber-300/30"
-                >
-                    <span class="material-symbols-outlined text-xl">save</span>
-                    <span>SIMPAN JOB ORDER</span>
-                </button>
-            </div>
-        </form>
-    </div>
-
-
-    <!-- MOBILE TAB SWITCHER (Rekap Harian vs Detail Transaksi) -->
-    <div class="block sm:hidden mb-2">
-        <div class="grid grid-cols-2 gap-2 p-1.5 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-xl backdrop-blur-xl">
-            <button 
-                type="button" 
-                id="btnMobileTabRekap"
-                onclick="switchMobileTab('rekap')"
-                class="py-3 px-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950"
-            >
-                <span class="material-symbols-outlined text-base">calendar_month</span>
-                <span>Rekap Harian</span>
-            </button>
-            <button 
-                type="button" 
-                id="btnMobileTabDetail"
-                onclick="switchMobileTab('detail')"
-                class="py-3 px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 text-slate-400 bg-slate-950 hover:bg-slate-800"
-            >
-                <span class="material-symbols-outlined text-base">receipt_long</span>
-                <span>Detail Jobs</span>
-                @if($detailJobOrders->total() > 0)
-                    <span class="px-1.5 py-0.5 rounded-md bg-amber-400/20 text-amber-400 text-[10px] font-mono-num font-bold border border-amber-400/30">
-                        {{ $detailJobOrders->total() }}
-                    </span>
-                @endif
-            </button>
-        </div>
-    </div>
-
-
-    <!-- 3. REKAP HARIAN DALAM BULAN & FILTER / EKSPOR UNIFIED CARD -->
-    <div id="sectionRekapContainer" class="rounded-3xl bg-slate-900/70 backdrop-blur-xl border border-slate-800/80 p-5 sm:p-6 md:p-7 shadow-2xl space-y-5">
-        <!-- Unified Header: Title & Export Buttons -->
-        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
-            <div>
-                <h3 class="text-base md:text-lg font-black uppercase text-white tracking-wider flex items-center gap-2">
-                    <span class="material-symbols-outlined text-slate-400 text-xl">date_range</span>
-                    <span>Rekap Harian</span>
-                    <span class="text-amber-400 text-sm sm:text-base">({{ $periodLabel }})</span>
-                </h3>
-                <p class="text-xs text-slate-400 mt-0.5">Akumulasi total job order murni dan pendapatan harian.</p>
-            </div>
-
-            <!-- Export Buttons -->
-            <div class="grid grid-cols-2 gap-2.5 w-full md:w-auto">
-                <a 
-                    href="{{ route('export.csv', ['bulan' => $selectedBulan, 'start_date' => $startDate, 'end_date' => $endDate, 'teknisi_id' => request('teknisi_id')]) }}" 
-                    class="px-4 py-2.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900/80 border border-emerald-500/40 text-emerald-300 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all shadow-sm hover:shadow-emerald-950/40"
-                >
-                    <span class="material-symbols-outlined text-base">download</span>
-                    <span>Export CSV</span>
-                </a>
-
-                <a 
-                    href="{{ route('export.pdf', ['bulan' => $selectedBulan, 'start_date' => $startDate, 'end_date' => $endDate, 'teknisi_id' => request('teknisi_id')]) }}" 
-                    target="_blank"
-                    class="px-4 py-2.5 rounded-xl bg-cyan-950/80 hover:bg-cyan-900/80 border border-cyan-500/40 text-cyan-300 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all shadow-sm hover:shadow-cyan-950/40"
-                >
-                    <span class="material-symbols-outlined text-base">print</span>
-                    <span>Cetak PDF</span>
-                </a>
-            </div>
-        </div>
-
-        <!-- Integrated Filter Controls -->
-        <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 space-y-4">
-            <div class="grid grid-cols-2 sm:flex items-center gap-2 border-b border-slate-800/80 pb-3">
-                <button 
-                    type="button"
-                    onclick="switchFilterMode('bulan')"
-                    id="tabBulan"
-                    class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer text-center {{ (!$startDate && !$endDate) ? 'bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 font-black shadow' : 'bg-slate-800/80 text-slate-400 hover:bg-slate-700/80 hover:text-slate-200' }}"
-                >
-                    Per Bulan
-                </button>
-                <button 
-                    type="button"
-                    onclick="switchFilterMode('rentang')"
-                    id="tabRentang"
-                    class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer text-center {{ ($startDate || $endDate) ? 'bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 font-black shadow' : 'bg-slate-800/80 text-slate-400 hover:bg-slate-700/80 hover:text-slate-200' }}"
-                >
-                    Rentang Tanggal
-                </button>
-                
-                @if($startDate || $endDate || $selectedBulan !== \Carbon\Carbon::now()->format('Y-m') || request('teknisi_id'))
-                    <a href="{{ route('dashboard') }}" class="col-span-2 sm:col-span-1 sm:ml-auto text-center text-xs text-rose-400 hover:underline font-bold uppercase tracking-wider py-1">
-                        Reset Filter
-                    </a>
-                @endif
-            </div>
-
-            <!-- Form Filter Per Bulan -->
-            <form id="formFilterBulan" method="GET" action="{{ route('dashboard') }}" class="{{ ($startDate || $endDate) ? 'hidden' : 'block' }}">
-                @if(request('teknisi_id'))
-                    <input type="hidden" name="teknisi_id" value="{{ request('teknisi_id') }}">
-                @endif
-                <div class="flex flex-col sm:flex-row items-end gap-3">
-                    <div class="w-full sm:w-64 space-y-1.5">
-                        <label for="bulan" class="block text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">
-                            Pilih Bulan &amp; Tahun
-                        </label>
-                        <input 
-                            type="month" 
-                            name="bulan" 
-                            id="bulan" 
-                            value="{{ $selectedBulan }}" 
-                            onchange="this.form.submit()"
-                            class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700/80 text-white font-mono font-bold text-xs focus:border-amber-400 focus:outline-none min-h-[44px]"
-                        >
-                    </div>
-                    <button type="submit" class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 font-black text-xs uppercase tracking-wider hover:from-amber-300 hover:to-orange-300 transition-all min-h-[44px]">
-                        Tampilkan Rekap
-                    </button>
-                </div>
-            </form>
-
-            <!-- Form Filter Rentang Tanggal -->
-            <form id="formFilterRentang" method="GET" action="{{ route('dashboard') }}" class="{{ ($startDate || $endDate) ? 'block' : 'hidden' }}">
-                <input type="hidden" name="bulan" value="{{ $selectedBulan }}">
-                @if(request('teknisi_id'))
-                    <input type="hidden" name="teknisi_id" value="{{ request('teknisi_id') }}">
-                @endif
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
-                    <div class="space-y-1.5">
-                        <label for="start_date" class="block text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">
-                            Dari Tanggal
-                        </label>
-                        <input 
-                            type="date" 
-                            name="start_date" 
-                            id="start_date" 
-                            value="{{ $startDate }}" 
-                            required
-                            class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700/80 text-white font-mono font-bold text-xs focus:border-amber-400 focus:outline-none min-h-[44px]"
-                        >
-                    </div>
-
-                    <div class="space-y-1.5">
-                        <label for="end_date" class="block text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">
-                            Sampai Tanggal
-                        </label>
-                        <input 
-                            type="date" 
-                            name="end_date" 
-                            id="end_date" 
-                            value="{{ $endDate }}" 
-                            required
-                            class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700/80 text-white font-mono font-bold text-xs focus:border-amber-400 focus:outline-none min-h-[44px]"
-                        >
-                    </div>
-
-                    <div>
-                        <button 
-                            type="submit" 
-                            class="w-full py-2.5 px-6 rounded-xl bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 font-black text-xs uppercase tracking-wider hover:from-amber-300 hover:to-orange-300 transition-all min-h-[44px]"
-                        >
-                            Terapkan Rentang
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        <!-- Desktop View Table -->
-        <div class="hidden sm:block overflow-x-auto rounded-2xl border border-slate-800/80 shadow-inner">
-            <table class="w-full text-left text-xs">
-                <thead class="bg-slate-950/80 text-slate-400 font-extrabold uppercase tracking-wider border-b border-slate-800">
-                    <tr>
-                        <th class="py-4 px-5">Tanggal Pekerjaan</th>
-                        <th class="py-4 px-5 text-center">Volume Job Order (JO)</th>
-                        <th class="py-4 px-5 text-right">Pendapatan Harian</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-800/80 font-medium">
-                    @forelse($rekapHarian as $rekap)
-                        <tr class="hover:bg-slate-800/40 transition-colors">
-                            <td class="py-4 px-5 font-bold text-slate-200">
-                                <a href="{{ route('dashboard', ['bulan' => $selectedBulan, 'tanggal' => $rekap->tanggal]) }}" class="hover:text-amber-400 transition-colors flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-amber-400/80 text-base">event</span>
-                                    <span>{{ \Carbon\Carbon::parse($rekap->tanggal)->translatedFormat('j F Y') }}</span>
-                                </a>
-                            </td>
-                            <td class="py-4 px-5 text-center">
-                                <div class="font-mono-num font-bold text-amber-300 text-sm">
-                                    {{ $rekap->total_job }} JO
-                                </div>
-                                @if(($rekap->total_piket ?? 0) > 0)
-                                    <div class="font-mono-num font-semibold text-cyan-400 text-[11px] mt-0.5">
-                                        + {{ $rekap->total_piket }} Piket
-                                    </div>
-                                @endif
-                            </td>
-                            <td class="py-4 px-5 text-right font-mono-num font-black text-emerald-400 text-base">
-                                Rp {{ number_format($rekap->total_pendapatan, 0, ',', '.') }}
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="3" class="py-10 text-center text-slate-500 uppercase tracking-widest font-bold">
-                                Belum ada transaksi job order di bulan ini.
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-                <!-- Bottom Summary Total Row -->
-                <tfoot class="bg-slate-950/90 border-t-2 border-amber-400/50 font-black text-sm text-slate-100">
-                    <tr>
-                        <td class="py-4 px-5 uppercase tracking-wider text-amber-400">
-                            TOTAL AKUMULASI BULAN THIS
-                        </td>
-                        <td class="py-4 px-5 text-center">
-                            <div class="font-mono-num text-amber-300 text-base font-black">
-                                {{ $rekapHarian->sum('total_job') }} JO
-                            </div>
-                            @if($rekapHarian->sum('total_piket') > 0)
-                                <div class="font-mono-num text-cyan-400 text-xs font-bold mt-0.5">
-                                    + {{ $rekapHarian->sum('total_piket') }} Piket
-                                </div>
-                            @endif
-                        </td>
-                        <td class="py-4 px-5 text-right font-mono-num text-emerald-400 text-xl">
-                            Rp {{ number_format($rekapHarian->sum('total_pendapatan'), 0, ',', '.') }}
-                        </td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-
-        <!-- Mobile Card View (For Small Screens) -->
-        <div class="block sm:hidden space-y-3">
-            @forelse($rekapHarian as $rekap)
-                <a href="{{ route('dashboard', ['bulan' => $selectedBulan, 'tanggal' => $rekap->tanggal]) }}" class="block p-4 rounded-2xl bg-slate-950/80 border border-slate-800 hover:border-amber-400/50 transition-colors space-y-2.5">
-                    <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
-                        <span class="font-extrabold text-slate-200 text-xs flex items-center gap-1.5">
-                            <span class="material-symbols-outlined text-amber-400 text-sm">event</span>
-                            <span>{{ \Carbon\Carbon::parse($rekap->tanggal)->translatedFormat('j F Y') }}</span>
+                        <span class="text-[10px] font-black uppercase tracking-wider text-emerald-400 block">
+                            Target Produktivitas: 330 JO
                         </span>
-                        <span class="text-xs font-mono-num font-black text-emerald-400">
-                            Rp {{ number_format($rekap->total_pendapatan, 0, ',', '.') }}
+                        <span class="text-[10px] font-bold text-slate-400 block mt-0.5">
+                            Tercapai <span class="text-white font-extrabold">{{ $tercapaiJoVolume }} JO</span> ({{ $persenJoVolume }}%)
                         </span>
                     </div>
-                    <div class="flex items-center justify-between text-xs pt-0.5">
-                        <span class="text-slate-400 font-medium">Volume Harian:</span>
-                        <div class="flex items-center gap-2 font-mono-num font-bold">
-                            <span class="text-amber-400 bg-amber-400/10 px-2.5 py-0.5 rounded-lg border border-amber-400/20 text-[11px]">
-                                {{ $rekap->total_job }} JO
-                            </span>
-                            @if(($rekap->total_piket ?? 0) > 0)
-                                <span class="text-cyan-300 bg-cyan-400/10 px-2.5 py-0.5 rounded-lg border border-cyan-400/20 text-[11px]">
-                                    + {{ $rekap->total_piket }} Piket
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-                </a>
-            @empty
-                <div class="p-6 text-center text-slate-500 font-bold uppercase tracking-widest text-xs rounded-2xl bg-slate-950/80 border border-slate-800">
-                    Belum ada transaksi job order di bulan ini.
-                </div>
-            @endforelse
-
-            @if($rekapHarian->count() > 0)
-                <!-- Total Accumulation Card on Mobile -->
-                <div class="p-4 rounded-2xl bg-slate-950/90 border border-amber-400/50 space-y-2 shadow-lg">
-                    <div class="text-xs font-black uppercase text-amber-400 tracking-wider">
-                        Total Akumulasi Bulan Ini
-                    </div>
-                    <div class="flex items-center justify-between border-t border-slate-800/80 pt-2">
-                        <div class="font-mono-num text-xs font-bold text-amber-300">
-                            {{ $rekapHarian->sum('total_job') }} JO
-                            @if($rekapHarian->sum('total_piket') > 0)
-                                <span class="text-cyan-400 text-[11px] block">+ {{ $rekapHarian->sum('total_piket') }} Piket</span>
-                            @endif
-                        </div>
-                        <div class="text-lg font-black font-mono-num text-emerald-400">
-                            Rp {{ number_format($rekapHarian->sum('total_pendapatan'), 0, ',', '.') }}
-                        </div>
+                    <div class="text-right shrink-0">
+                        <span class="text-xs font-black font-mono-num text-emerald-300 block">
+                            {{ ($sisaJoVolume > 0 && $sisaHari > 0) ? $targetJoQtyPerHari . ' JO/Hari' : 'Tercapai! 🎉' }}
+                        </span>
                     </div>
                 </div>
-            @endif
-        </div>
-    </div>
-
-
-    <!-- 5. DETAIL JOB ORDERS LIST (WITH EDIT & DELETE) -->
-    <div id="sectionDetailContainer" class="rounded-3xl bg-slate-900/70 backdrop-blur-xl border border-slate-800/80 p-5 sm:p-6 md:p-7 shadow-2xl space-y-5 hidden sm:block">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-4">
-            <div>
-                <h3 class="text-base font-black uppercase text-white tracking-wider flex items-center gap-2">
-                    <span class="material-symbols-outlined text-slate-400 text-xl">receipt_long</span>
-                    <span>Detail Transaksi Job Order</span>
-                </h3>
-                <p class="text-xs text-slate-400 mt-0.5">Rincian entri per kategori tugas beserta status dan nilai tarif snapshot.</p>
             </div>
-            @if($startDate && $endDate)
-                <span class="text-xs bg-amber-400/10 border border-amber-400/40 text-amber-400 px-3 py-1 rounded-xl font-bold shrink-0 shadow-sm">
-                    Rentang: {{ \Carbon\Carbon::parse($startDate)->format('d/m/Y') }} s/d {{ \Carbon\Carbon::parse($endDate)->format('d/m/Y') }}
-                </span>
-            @endif
-        </div>
 
-        <!-- Desktop View Table -->
-        <div class="hidden sm:block overflow-x-auto rounded-2xl border border-slate-800/80 shadow-inner">
-            <table class="w-full text-left text-xs">
-                <thead class="bg-slate-950/80 text-slate-400 font-extrabold uppercase tracking-wider border-b border-slate-800">
-                    <tr>
-                        <th class="py-4 px-4">#</th>
-                        <th class="py-4 px-4">Tanggal</th>
-                        @if(auth()->user()->isAdmin())
-                            <th class="py-4 px-4">Teknisi</th>
-                        @endif
-                        <th class="py-4 px-4">Kategori Tugas</th>
-                        <th class="py-4 px-4 text-center">Status</th>
-                        <th class="py-4 px-4 text-right">Tarif (Snapshot)</th>
-                        <th class="py-4 px-4">Catatan</th>
-                        <th class="py-4 px-4 text-center">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-800/80 font-medium">
-                    @forelse($detailJobOrders as $index => $job)
-                        <tr class="hover:bg-slate-800/40 transition-colors">
-                            <td class="py-4 px-4 text-slate-500 font-mono-num">
-                                {{ $detailJobOrders->firstItem() + $index }}
-                            </td>
-                            <td class="py-4 px-4 font-mono-num text-slate-300 font-bold whitespace-nowrap">
-                                {{ $job->tanggal->format('d/m/Y') }}
-                            </td>
-                            @if(auth()->user()->isAdmin())
-                                <td class="py-4 px-4 font-bold text-amber-300 whitespace-nowrap">
-                                    {{ $job->user ? $job->user->name : 'System' }}
-                                </td>
-                            @endif
-                            <td class="py-4 px-4 font-bold text-white">
-                                {{ $job->kategori }}
-                            </td>
-                            <td class="py-4 px-4 text-center">
-                                @if($job->status === 'berhasil')
-                                    <span class="px-3 py-1 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 font-black text-[10px] uppercase tracking-wider shadow-sm">
-                                        BERHASIL
-                                    </span>
-                                @else
-                                    <span class="px-3.5 py-1 rounded-xl bg-rose-950/80 border border-rose-500/40 text-rose-300 font-black text-[10px] uppercase tracking-wider shadow-sm">
-                                        GAGAL
-                                    </span>
-                                @endif
-                            </td>
-                            <td class="py-4 px-4 text-right font-mono-num font-black text-amber-400 text-sm whitespace-nowrap">
-                                Rp {{ number_format($job->tarif, 0, ',', '.') }}
-                            </td>
-                            <td class="py-4 px-4 text-slate-400 max-w-xs truncate">
-                                {{ $job->catatan ?? '-' }}
-                            </td>
-                            <td class="py-4 px-4 text-center whitespace-nowrap">
-                                <div class="flex items-center justify-center gap-2">
-                                    <button 
-                                        onclick="openEditModal({{ json_encode($job) }})" 
-                                        class="px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-amber-400 border border-slate-700/80 font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1 min-h-[34px]"
-                                    >
-                                        <span class="material-symbols-outlined text-sm">edit</span>
-                                        <span>Edit</span>
-                                    </button>
-
-                                    <form action="{{ route('job-orders.destroy', $job->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus job order ini?');" class="inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="px-3 py-1.5 rounded-xl bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 border border-rose-800/60 font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1 min-h-[34px]">
-                                            <span class="material-symbols-outlined text-sm">delete</span>
-                                            <span>Hapus</span>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="7" class="py-10 text-center text-slate-500 uppercase tracking-widest font-bold">
-                                Tidak ada data job order ditemukan untuk filter ini.
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Mobile Card List View -->
-        <div class="block sm:hidden space-y-3">
-            @forelse($detailJobOrders as $index => $job)
-                <div class="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-3">
-                    <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
-                        <div class="flex items-center gap-2">
-                            <span class="text-[10px] font-mono-num text-slate-500 font-bold">#{{ $detailJobOrders->firstItem() + $index }}</span>
-                            <span class="font-mono-num font-bold text-slate-300 text-xs flex items-center gap-1">
-                                <span class="material-symbols-outlined text-xs text-slate-500">calendar_today</span>
-                                <span>{{ $job->tanggal->format('d/m/Y') }}</span>
-                            </span>
+            <!-- Trend Line Chart Card (7 Col) -->
+            <div class="lg:col-span-7 rounded-3xl bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 p-5 shadow-2xl flex flex-col justify-between">
+                <div class="flex items-center justify-between border-b border-slate-800/80 pb-3 mb-3">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-500 text-slate-950 flex items-center justify-center font-black shadow-md shadow-indigo-500/20">
+                            <span class="material-symbols-outlined text-base">show_chart</span>
                         </div>
                         <div>
-                            @if($job->status === 'berhasil')
-                                <span class="px-2.5 py-0.5 rounded-lg bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 font-black text-[9px] uppercase tracking-wider">
-                                    BERHASIL
-                                </span>
-                            @else
-                                <span class="px-2.5 py-0.5 rounded-lg bg-rose-950/80 border border-rose-500/40 text-rose-300 font-black text-[9px] uppercase tracking-wider">
-                                    GAGAL
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-
-                    <div class="space-y-1">
-                        <h4 class="font-bold text-white text-xs">{{ $job->kategori }}</h4>
-                        @if($job->catatan)
-                            <p class="text-[11px] text-slate-400 bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
-                                {{ $job->catatan }}
-                            </p>
-                        @endif
-                    </div>
-
-                    <div class="flex items-center justify-between pt-2 border-t border-slate-800/80">
-                        <div class="font-mono-num font-black text-amber-400 text-base">
-                            Rp {{ number_format($job->tarif, 0, ',', '.') }}
-                        </div>
-
-                        <div class="flex items-center gap-1.5">
-                            <button 
-                                onclick="openEditModal({{ json_encode($job) }})" 
-                                class="px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-amber-400 border border-slate-700/80 font-bold text-[10px] uppercase tracking-wider flex items-center gap-1 min-h-[36px]"
-                            >
-                                <span class="material-symbols-outlined text-xs">edit</span>
-                                <span>Edit</span>
-                            </button>
-
-                            <form action="{{ route('job-orders.destroy', $job->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus job order ini?');" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="px-3 py-1.5 rounded-xl bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 border border-rose-800/60 font-bold text-[10px] uppercase tracking-wider flex items-center gap-1 min-h-[36px]">
-                                    <span class="material-symbols-outlined text-xs">delete</span>
-                                    <span>Hapus</span>
-                                </button>
-                            </form>
+                            <h3 class="text-xs sm:text-sm font-black uppercase tracking-wider text-white">Trend Pendapatan Harian</h3>
+                            <p class="text-[11px] text-slate-400">Grafik perolehan ({{ $periodLabel }})</p>
                         </div>
                     </div>
                 </div>
-            @empty
-                <div class="p-6 text-center text-slate-500 font-bold uppercase tracking-widest text-xs rounded-2xl bg-slate-950/80 border border-slate-800">
-                    Tidak ada data job order ditemukan untuk filter ini.
+
+                <div class="relative w-full h-56 sm:h-64">
+                    <canvas id="trendChartCanvas"></canvas>
                 </div>
-            @endforelse
+            </div>
+
         </div>
 
-        @if($detailJobOrders->hasPages())
-            <div class="pt-2">
-                {{ $detailJobOrders->links() }}
-            </div>
-        @endif
     </div>
 
 </div>
 
 
-<!-- EDIT JOB ORDER MODAL -->
+<!-- MODAL EDIT TARGET PENDAPATAN -->
+<div id="targetModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 transition-all duration-300">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 w-full max-w-md shadow-2xl relative">
+        <button type="button" onclick="closeTargetModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center">
+                <span class="material-symbols-outlined text-xl">flag</span>
+            </div>
+            <div>
+                <h3 class="text-base font-black text-white">Set Target Pendapatan</h3>
+                <p class="text-xs text-slate-400">Atur target pencapaian gaji bulanan Anda</p>
+            </div>
+        </div>
+
+        <form action="{{ route('user.target.update') }}" method="POST" class="space-y-4">
+            @csrf
+            <div>
+                <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-400 mb-2">Target Pendapatan (Rp)</label>
+                <div class="relative">
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">Rp</span>
+                    <input type="number" step="500000" min="0" name="target_pendapatan" id="targetInput" value="{{ auth()->user()->target_pendapatan ?? 5000000 }}" required
+                        class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-3 text-white font-mono-num font-bold text-lg focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none">
+                </div>
+            </div>
+
+            <!-- Quick presets -->
+            <div>
+                <span class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1.5">Pilihan Cepat:</span>
+                <div class="grid grid-cols-4 gap-2">
+                    <button type="button" onclick="setPresetTarget(3000000)" class="py-2 px-2 bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 hover:border-emerald-500/50 rounded-xl text-xs font-bold text-slate-300 hover:text-emerald-400 transition-all">3 Jt</button>
+                    <button type="button" onclick="setPresetTarget(5000000)" class="py-2 px-2 bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 hover:border-emerald-500/50 rounded-xl text-xs font-bold text-slate-300 hover:text-emerald-400 transition-all">5 Jt</button>
+                    <button type="button" onclick="setPresetTarget(7500000)" class="py-2 px-2 bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 hover:border-emerald-500/50 rounded-xl text-xs font-bold text-slate-300 hover:text-emerald-400 transition-all">7.5 Jt</button>
+                    <button type="button" onclick="setPresetTarget(10000000)" class="py-2 px-2 bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 hover:border-emerald-500/50 rounded-xl text-xs font-bold text-slate-300 hover:text-emerald-400 transition-all">10 Jt</button>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2">
+                <button type="button" onclick="closeTargetModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-bold text-xs uppercase tracking-wider">Batal</button>
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/20 transition-all">Simpan Target</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- MODAL EDIT JOB ORDER -->
 <div id="editModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
-    <div class="bg-slate-900/95 border border-amber-400/60 rounded-3xl max-w-lg w-full p-6 sm:p-7 space-y-5 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between border-b border-slate-800/80 pb-3.5">
-            <h3 class="text-base font-black uppercase text-white tracking-wider flex items-center gap-2">
-                <span class="material-symbols-outlined text-amber-400 text-xl">edit</span>
+    <div class="bg-slate-900/95 border border-amber-400/60 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+            <h3 class="text-sm sm:text-base font-black uppercase text-white tracking-wider flex items-center gap-2">
+                <span class="material-symbols-outlined text-amber-400 text-lg">edit</span>
                 <span>Edit Job Order</span>
             </h3>
             <button onclick="closeEditModal()" class="text-slate-400 hover:text-white font-bold text-xs uppercase tracking-wider p-1 cursor-pointer">
@@ -997,47 +1074,47 @@
             </button>
         </div>
 
-        <form id="editForm" method="POST" class="space-y-4">
+        <form id="editForm" method="POST" class="space-y-3.5">
             @csrf
             @method('PUT')
 
-            <div class="space-y-1.5">
+            <div class="space-y-1">
                 <label for="edit_kategori_info" class="block text-xs font-extrabold text-slate-400 uppercase tracking-wider">
                     Kategori Tugas
                 </label>
-                <input type="text" id="edit_kategori_info" readonly class="w-full px-4 py-3 rounded-2xl bg-slate-950 border border-slate-800 text-slate-300 font-bold text-xs cursor-not-allowed" />
+                <input type="text" id="edit_kategori_info" readonly class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-300 font-bold text-xs cursor-not-allowed" />
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="space-y-1.5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="space-y-1">
                     <label class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider">Status</label>
-                    <select name="status" id="edit_status" required class="w-full px-4 py-3 rounded-2xl bg-slate-950 border border-slate-700/80 text-white font-bold text-xs focus:border-amber-400 focus:outline-none min-h-[44px]">
+                    <select name="status" id="edit_status" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700/80 text-white font-bold text-xs focus:border-amber-400 focus:outline-none min-h-[42px]">
                         <option value="berhasil">BERHASIL</option>
                         <option value="gagal">GAGAL</option>
                     </select>
                 </div>
 
-                <div class="space-y-1.5">
+                <div class="space-y-1">
                     <label for="edit_tanggal" class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider">Tanggal</label>
-                    <input type="date" name="tanggal" id="edit_tanggal" required class="w-full px-4 py-3 rounded-2xl bg-slate-950 border border-slate-700/80 text-white font-mono font-bold text-xs focus:border-amber-400 focus:outline-none min-h-[44px]" />
+                    <input type="date" name="tanggal" id="edit_tanggal" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700/80 text-white font-mono font-bold text-xs focus:border-amber-400 focus:outline-none min-h-[42px]" />
                 </div>
             </div>
 
-            <div class="space-y-1.5">
+            <div class="space-y-1">
                 <label for="edit_tarif" class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider">Nominal Tarif (Rp)</label>
-                <input type="number" name="tarif" id="edit_tarif" required min="0" step="500" class="w-full px-4 py-3 rounded-2xl bg-slate-950 border border-slate-700/80 text-white font-mono font-bold text-xs focus:border-amber-400 focus:outline-none min-h-[44px]" />
+                <input type="number" name="tarif" id="edit_tarif" required min="0" step="500" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700/80 text-white font-mono font-bold text-xs focus:border-amber-400 focus:outline-none min-h-[42px]" />
             </div>
 
-            <div class="space-y-1.5">
+            <div class="space-y-1">
                 <label for="edit_catatan" class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider">Catatan</label>
-                <input type="text" name="catatan" id="edit_catatan" class="w-full px-4 py-3 rounded-2xl bg-slate-950 border border-slate-700/80 text-white text-xs focus:border-amber-400 focus:outline-none min-h-[44px]" />
+                <input type="text" name="catatan" id="edit_catatan" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700/80 text-white text-xs focus:border-amber-400 focus:outline-none min-h-[42px]" />
             </div>
 
-            <div class="flex items-center justify-end gap-2.5 pt-3">
-                <button type="button" onclick="closeEditModal()" class="px-5 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs uppercase tracking-wider hover:bg-slate-700 transition-colors cursor-pointer">
+            <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+                <button type="button" onclick="closeEditModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs uppercase tracking-wider hover:bg-slate-700 transition-colors cursor-pointer">
                     Batal
                 </button>
-                <button type="submit" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 font-black text-xs uppercase tracking-wider hover:from-amber-300 hover:to-orange-300 transition-all cursor-pointer shadow-lg shadow-amber-500/20">
+                <button type="submit" class="px-5 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 font-black text-xs uppercase tracking-wider hover:from-amber-300 hover:to-orange-300 transition-all cursor-pointer shadow-lg shadow-amber-500/20">
                     Simpan Perubahan
                 </button>
             </div>
@@ -1049,6 +1126,40 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
+    let trendChartInstance = null;
+
+    // Tab Switching System with URL Hash & localStorage Support
+    function switchDashboardTab(tabId) {
+        const panels = document.querySelectorAll('.dashboard-tab-panel');
+        panels.forEach(panel => panel.classList.add('hidden'));
+
+        const buttons = document.querySelectorAll('.dashboard-tab-btn');
+        buttons.forEach(btn => {
+            btn.classList.remove('bg-gradient-to-r', 'from-amber-400', 'to-orange-400', 'text-slate-950', 'font-black', 'shadow-lg', 'shadow-amber-500/20');
+            btn.classList.add('text-slate-400', 'hover:text-slate-200', 'hover:bg-slate-800/60', 'font-bold');
+        });
+
+        const activePanel = document.getElementById('tabPanel_' + tabId);
+        const activeBtn = document.getElementById('tabBtn_' + tabId);
+
+        if (activePanel) {
+            activePanel.classList.remove('hidden');
+        }
+        if (activeBtn) {
+            activeBtn.classList.remove('text-slate-400', 'hover:text-slate-200', 'hover:bg-slate-800/60', 'font-bold');
+            activeBtn.classList.add('bg-gradient-to-r', 'from-amber-400', 'to-orange-400', 'text-slate-950', 'font-black', 'shadow-lg', 'shadow-amber-500/20');
+        }
+
+        localStorage.setItem('active_technician_tab', tabId);
+
+        // Resize chart if target tab is activated
+        if (tabId === 'target' && trendChartInstance) {
+            setTimeout(() => {
+                trendChartInstance.resize();
+            }, 60);
+        }
+    }
+
     function setQuickFormDate(target) {
         const input = document.getElementById('tanggal');
         if (!input) return;
@@ -1074,16 +1185,16 @@
             formRentang.classList.remove('block');
             formRentang.classList.add('hidden');
 
-            tabBulan.className = "px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 shadow text-center";
-            tabRentang.className = "px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-slate-800/80 text-slate-400 hover:bg-slate-700/80 text-center";
+            tabBulan.className = "px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 shadow";
+            tabRentang.className = "px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-800/80 text-slate-400 hover:text-slate-200";
         } else {
             formRentang.classList.remove('hidden');
             formRentang.classList.add('block');
             formBulan.classList.remove('block');
             formBulan.classList.add('hidden');
 
-            tabRentang.className = "px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 shadow text-center";
-            tabBulan.className = "px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-slate-800/80 text-slate-400 hover:bg-slate-700/80 text-center";
+            tabRentang.className = "px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 shadow";
+            tabBulan.className = "px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-800/80 text-slate-400 hover:text-slate-200";
         }
     }
 
@@ -1127,6 +1238,43 @@
         }
     }
 
+    function selectQuickCategory(id) {
+        const select = document.getElementById('tarif_id');
+        if (!select) return;
+        select.value = id;
+
+        document.querySelectorAll('.quick-category-chip').forEach(chip => {
+            chip.classList.remove('border-amber-400', 'bg-amber-400/20', 'text-amber-300');
+            chip.classList.add('border-slate-800', 'bg-slate-950', 'text-slate-300');
+        });
+
+        const activeChip = Array.from(document.querySelectorAll('.quick-category-chip')).find(c => c.getAttribute('onclick')?.includes(`(${id})`));
+        if (activeChip) {
+            activeChip.classList.remove('border-slate-800', 'bg-slate-950', 'text-slate-300');
+            activeChip.classList.add('border-amber-400', 'bg-amber-400/20', 'text-amber-300');
+        }
+
+        updatePricePreview();
+    }
+
+    function stepQuantity(delta) {
+        const qtyInput = document.getElementById('quantity');
+        if (!qtyInput) return;
+        let val = parseInt(qtyInput.value || 1) + delta;
+        val = Math.max(1, Math.min(100, val));
+        qtyInput.value = val;
+        updatePricePreview();
+    }
+
+    function adjustQuickQuantity(delta) {
+        const qtyInput = document.getElementById('quantity');
+        if (!qtyInput) return;
+        let val = parseInt(qtyInput.value || 0) + delta;
+        val = Math.max(1, Math.min(100, val));
+        qtyInput.value = val;
+        updatePricePreview();
+    }
+
     function openEditModal(job) {
         document.getElementById('editForm').action = `/job-orders/${job.id}`;
         document.getElementById('edit_kategori_info').value = job.kategori;
@@ -1145,6 +1293,16 @@
 
     function closeEditModal() {
         document.getElementById('editModal').classList.add('hidden');
+    }
+
+    function openTargetModal() {
+        document.getElementById('targetModal').classList.remove('hidden');
+    }
+    function closeTargetModal() {
+        document.getElementById('targetModal').classList.add('hidden');
+    }
+    function setPresetTarget(val) {
+        document.getElementById('targetInput').value = val;
     }
 
     async function handleQuickJobFormSubmit(event) {
@@ -1177,12 +1335,16 @@
                 if (qtyInput) qtyInput.value = '1';
 
                 if (typeof updatePricePreview === 'function') updatePricePreview();
-                
                 showTemporaryToast(data.message || 'Job order berhasil dicatat!');
-                
+
                 if (typeof refreshDashboardData === 'function') {
                     refreshDashboardData();
                 }
+
+                // Smooth reload to immediately sync today's jobs table and statistics
+                setTimeout(() => {
+                    window.location.reload();
+                }, 800);
             } else {
                 alert(data.message || 'Gagal menyimpan job order.');
             }
@@ -1191,7 +1353,7 @@
         } finally {
             if (submitBtn) {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<span class="material-symbols-outlined text-xl">save</span><span>SIMPAN JOB ORDER</span>';
+                submitBtn.innerHTML = '<span class="material-symbols-outlined text-lg">save</span><span>SIMPAN JOB ORDER</span>';
             }
         }
     }
@@ -1209,95 +1371,14 @@
         }, 2500);
     }
 
-    function openTargetModal() {
-        document.getElementById('targetModal').classList.remove('hidden');
-    }
-    function closeTargetModal() {
-        document.getElementById('targetModal').classList.add('hidden');
-    }
-    function setPresetTarget(val) {
-        document.getElementById('targetInput').value = val;
-    }
-
-    function switchMobileTab(target) {
-        const sectionRekap = document.getElementById('sectionRekapContainer');
-        const sectionDetail = document.getElementById('sectionDetailContainer');
-        const btnRekap = document.getElementById('btnMobileTabRekap');
-        const btnDetail = document.getElementById('btnMobileTabDetail');
-
-        if (!sectionRekap || !sectionDetail) return;
-
-        if (target === 'rekap') {
-            sectionRekap.classList.remove('hidden');
-            sectionDetail.classList.add('hidden');
-            sectionDetail.classList.remove('block');
-            
-            if (btnRekap && btnDetail) {
-                btnRekap.className = "py-3 px-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950";
-                btnDetail.className = "py-3 px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 text-slate-400 bg-slate-950 hover:bg-slate-800";
-            }
-        } else {
-            sectionDetail.classList.remove('hidden');
-            sectionDetail.classList.add('block');
-            sectionRekap.classList.add('hidden');
-            sectionRekap.classList.remove('block');
-
-            if (btnRekap && btnDetail) {
-                btnDetail.className = "py-3 px-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950";
-                btnRekap.className = "py-3 px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 text-slate-400 bg-slate-950 hover:bg-slate-800";
-            }
-        }
-    }
-
-    // Quick category selection chip handler
-    function selectQuickCategory(id) {
-        const select = document.getElementById('tarif_id');
-        if (!select) return;
-        select.value = id;
-
-        // Visual active indicator on quick chips
-        document.querySelectorAll('.quick-category-chip').forEach(chip => {
-            chip.classList.remove('border-amber-400', 'bg-amber-400/20', 'text-amber-300');
-            chip.classList.add('border-slate-800', 'bg-slate-950', 'text-slate-300');
-        });
-
-        const activeChip = Array.from(document.querySelectorAll('.quick-category-chip')).find(c => c.getAttribute('onclick')?.includes(`(${id})`));
-        if (activeChip) {
-            activeChip.classList.remove('border-slate-800', 'bg-slate-950', 'text-slate-300');
-            activeChip.classList.add('border-amber-400', 'bg-amber-400/20', 'text-amber-300');
-        }
-
-        updatePricePreview();
-    }
-
-    // Step quantity +/-
-    function stepQuantity(delta) {
-        const qtyInput = document.getElementById('quantity');
-        if (!qtyInput) return;
-        let val = parseInt(qtyInput.value || 1) + delta;
-        val = Math.max(1, Math.min(100, val));
-        qtyInput.value = val;
-        updatePricePreview();
-    }
-
-    // Quick add presets (+1, +5)
-    function adjustQuickQuantity(delta) {
-        const qtyInput = document.getElementById('quantity');
-        if (!qtyInput) return;
-        let val = parseInt(qtyInput.value || 0) + delta;
-        val = Math.max(1, Math.min(100, val));
-        qtyInput.value = val;
-        updatePricePreview();
-    }
-
-    // Voice-to-Text Speech Recognition for Notes
+    // Voice-to-Text Speech Recognition
     let recognitionInstance = null;
     let isRecognizing = false;
 
     function toggleVoiceInput(inputId, btn) {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
-            alert('Browser Anda belum mendukung fitur pengenalan suara (Speech Recognition). Silakan gunakan browser Google Chrome atau Microsoft Edge.');
+            alert('Browser belum mendukung pengenalan suara. Silakan gunakan Google Chrome / Microsoft Edge.');
             return;
         }
 
@@ -1358,20 +1439,30 @@
     document.addEventListener('DOMContentLoaded', function() {
         updatePricePreview();
 
+        // Check which tab to activate
         const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('tanggal') || urlParams.has('page') || urlParams.get('tab') === 'detail') {
-            if (window.innerWidth < 640) {
-                switchMobileTab('detail');
-            }
+        const urlHash = window.location.hash.replace('#', '');
+        const savedTab = localStorage.getItem('active_technician_tab');
+
+        if (urlParams.has('page') || urlParams.get('tab') === 'riwayat') {
+            switchDashboardTab('riwayat');
+        } else if (urlParams.has('tanggal') || urlParams.has('start_date') || urlParams.get('tab') === 'rekap') {
+            switchDashboardTab('rekap');
+        } else if (urlHash && ['input', 'rekap', 'riwayat', 'target'].includes(urlHash)) {
+            switchDashboardTab(urlHash);
+        } else if (savedTab && ['input', 'rekap', 'riwayat', 'target'].includes(savedTab)) {
+            switchDashboardTab(savedTab);
+        } else {
+            switchDashboardTab('input');
         }
 
-        // Initialize Daily Trend Line Chart
+        // Initialize Trend Line Chart
         const ctx = document.getElementById('trendChartCanvas');
         if (ctx) {
             const labels = {!! json_encode($chartLabels ?? []) !!};
             const incomeData = {!! json_encode($chartIncomeData ?? []) !!};
 
-            new Chart(ctx, {
+            trendChartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
@@ -1390,9 +1481,9 @@
                         },
                         fill: true,
                         tension: 0.35,
-                        borderWidth: 3,
+                        borderWidth: 2.5,
                         pointBackgroundColor: '#10b981',
-                        pointHoverRadius: 7
+                        pointHoverRadius: 6
                     }]
                 },
                 options: {
