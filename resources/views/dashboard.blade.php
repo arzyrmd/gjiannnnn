@@ -215,64 +215,111 @@
     <!-- ========================================================================= -->
     <div id="tabPanel_input" class="dashboard-tab-panel space-y-4">
         
-        <!-- Input Job Form Card (Sleek, Compact, User-Friendly) -->
-        <div class="rounded-3xl bg-slate-900/80 backdrop-blur-xl border border-slate-800/90 p-4 sm:p-6 shadow-2xl relative overflow-hidden">
-            <div class="absolute -top-16 -right-16 w-56 h-56 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <!-- Input Job Form Card (Sleek, Modern, High-End Bento Design) -->
+        <div class="relative rounded-3xl bg-slate-900/90 backdrop-blur-2xl border border-slate-800/90 p-5 sm:p-7 shadow-2xl shadow-black/40 overflow-hidden group">
+            <!-- Glowing top accent line -->
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-orange-500 to-emerald-400"></div>
+            <!-- Ambient glows -->
+            <div class="absolute -top-20 -right-20 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-amber-500/15 transition-all duration-500"></div>
+            <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-            <div class="flex items-center justify-between border-b border-slate-800/80 pb-3 mb-4">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-xl bg-amber-400/10 border border-amber-400/30 text-amber-400 flex items-center justify-center font-black">
-                        <span class="material-symbols-outlined text-lg">bolt</span>
+            <!-- Form Card Header -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-4 mb-5 relative z-10">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-400 via-amber-500 to-orange-500 text-slate-950 flex items-center justify-center font-black shadow-lg shadow-amber-500/25 ring-1 ring-amber-300/40 shrink-0">
+                        <span class="material-symbols-outlined text-2xl">post_add</span>
                     </div>
                     <div>
-                        <h2 class="text-sm sm:text-base font-black uppercase tracking-wider text-white">Form Input Job Order</h2>
-                        <p class="text-[11px] text-slate-400">Pilih kategori, atur kuantitas, lalu simpan.</p>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-base sm:text-lg font-black uppercase tracking-wider text-white">Catat Job Order</h2>
+                            <span class="text-[10px] font-black uppercase tracking-wider text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-md border border-amber-400/30">Input Cepat</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-0.5">Pilih kategori, atur hasil &amp; kuantitas, lalu simpan.</p>
                     </div>
                 </div>
-                <span class="text-[10px] font-black uppercase tracking-wider text-amber-400 bg-amber-400/10 px-2.5 py-1 rounded-lg border border-amber-400/20">
-                    1-Tap Entry
-                </span>
+
+                <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-950/80 border border-slate-800 text-slate-300 text-xs font-mono font-bold shadow-sm shrink-0">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Kalkulator Siap</span>
+                </div>
             </div>
 
             <!-- Quick Category Chips (1-Sentuhan) -->
-            <div class="space-y-1.5 mb-4">
-                <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1">
-                    <span class="material-symbols-outlined text-xs text-amber-400">touch_app</span>
-                    <span>Kategori Populer:</span>
-                </span>
-                <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth py-1">
+            <div class="space-y-2 mb-5 relative z-10">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-sm text-amber-400">bolt</span>
+                        <span>Pilihan Cepat Kategori Populer (1-Klik):</span>
+                    </span>
+                    <span class="text-[10px] text-slate-500 font-semibold hidden sm:inline">Klik untuk langsung pilih</span>
+                </div>
+                
+                @php
+                    $chipIconMap = [
+                        'init' => 'power_settings_new',
+                        'faktur' => 'receipt_long',
+                        'kunjungan' => 'person_pin_circle',
+                        'qris' => 'qr_code_2',
+                        'pemasangan edc' => 'point_of_sale',
+                        'penarikan edc' => 'remove_shopping_cart',
+                        'proaktif' => 'build',
+                        'piket' => 'alarm',
+                    ];
+                @endphp
+
+                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth py-1 -mx-1 px-1">
                     @foreach($tarifs->take(6) as $chipTarif)
+                        @php
+                            $cName = strtolower($chipTarif->kategori);
+                            $cIcon = 'category';
+                            foreach ($chipIconMap as $key => $icon) {
+                                if (str_contains($cName, $key)) {
+                                    $cIcon = $icon;
+                                    break;
+                                }
+                            }
+                        @endphp
                         <button type="button" 
                             onclick="selectQuickCategory({{ $chipTarif->id }})" 
-                            class="quick-category-chip px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-amber-400 text-slate-300 hover:text-amber-300 text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 shadow-sm active:scale-95 cursor-pointer">
-                            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
-                            <span>{{ $chipTarif->kategori }}</span>
+                            class="quick-category-chip group px-3.5 py-2.5 rounded-2xl bg-slate-950/90 border border-slate-800 hover:border-amber-400 text-slate-300 hover:text-amber-300 text-xs font-bold whitespace-nowrap transition-all flex items-center gap-2.5 shrink-0 shadow-sm active:scale-95 cursor-pointer">
+                            <span class="w-6 h-6 rounded-lg bg-amber-400/10 group-hover:bg-amber-400/20 text-amber-400 flex items-center justify-center transition-colors">
+                                <span class="material-symbols-outlined text-sm">{{ $cIcon }}</span>
+                            </span>
+                            <span class="font-extrabold">{{ $chipTarif->kategori }}</span>
+                            <span class="text-[10px] font-mono-num font-black text-amber-400/80 bg-slate-900 px-1.5 py-0.5 rounded-lg border border-slate-800">
+                                {{ number_format($chipTarif->tarif_berhasil / 1000, 0) }}k
+                            </span>
                         </button>
                     @endforeach
                 </div>
             </div>
 
-            <form action="{{ route('job-orders.store') }}" method="POST" class="space-y-4" id="quickJobForm" onsubmit="handleQuickJobFormSubmit(event)">
+            <form action="{{ route('job-orders.store') }}" method="POST" class="space-y-4 relative z-10" id="quickJobForm" onsubmit="handleQuickJobFormSubmit(event)">
                 @csrf
 
-                <!-- Form Grid: 4 Kolom di Desktop -->
-                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-start">
+                <!-- FORM BARIS 1: Kategori (Lebar) & Status Hasil (Segmented Switcher) -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start">
                     
-                    <!-- 1. Kategori Dropdown (Col 4) -->
-                    <div class="sm:col-span-4 space-y-1">
-                        <label for="tarif_id" class="text-[11px] font-extrabold text-slate-300 uppercase tracking-wider flex items-center gap-1">
-                            <span>Kategori Tugas</span>
-                            <span class="text-amber-400">*</span>
+                    <!-- 1. Kategori Dropdown (Col 7 on lg) -->
+                    <div class="lg:col-span-7 space-y-1.5">
+                        <label for="tarif_id" class="text-xs font-black text-slate-300 uppercase tracking-wider flex items-center justify-between">
+                            <span class="flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-sm text-amber-400">category</span>
+                                <span>Kategori Pekerjaan</span>
+                                <span class="text-amber-400">*</span>
+                            </span>
+                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Tarif Otomatis</span>
                         </label>
-                        <div class="relative">
+                        <div class="relative group/sel">
+                            <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/sel:text-amber-400 transition-colors text-xl pointer-events-none">work_outline</span>
                             <select 
                                 name="tarif_id" 
                                 id="tarif_id" 
                                 required 
-                                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700/80 text-white font-bold text-xs focus:border-amber-400 focus:outline-none transition-all min-h-[44px] cursor-pointer appearance-none pr-8"
+                                class="w-full pl-11 pr-10 py-3.5 rounded-2xl bg-slate-950/90 border border-slate-700/80 hover:border-slate-600 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 text-white font-bold text-sm min-h-[50px] cursor-pointer appearance-none shadow-inner transition-all outline-none"
                                 onchange="updatePricePreview()"
                             >
-                                <option value="" disabled selected>Pilih Kategori Pekerjaan</option>
+                                <option value="" disabled selected>Pilih Kategori Pekerjaan...</option>
                                 @foreach($tarifs as $tarif)
                                     <option 
                                         value="{{ $tarif->id }}" 
@@ -280,21 +327,26 @@
                                         data-gagal="{{ $tarif->tarif_gagal ?? 0 }}"
                                         {{ old('tarif_id') == $tarif->id ? 'selected' : '' }}
                                     >
-                                        {{ $tarif->kategori }}
+                                        {{ $tarif->kategori }} (Berhasil: Rp {{ number_format($tarif->tarif_berhasil, 0, ',', '.') }})
                                     </option>
                                 @endforeach
                             </select>
-                            <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-lg">unfold_more</span>
+                            <span class="material-symbols-outlined absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xl">unfold_more</span>
                         </div>
                     </div>
 
-                    <!-- 2. Status Berhasil / Gagal (Col 3) -->
-                    <div class="sm:col-span-3 space-y-1">
-                        <label class="text-[11px] font-extrabold text-slate-300 uppercase tracking-wider flex items-center gap-1">
-                            <span>Status Job</span>
-                            <span class="text-amber-400">*</span>
+                    <!-- 2. Status Hasil Switcher (Col 5 on lg) -->
+                    <div class="lg:col-span-5 space-y-1.5">
+                        <label class="text-xs font-black text-slate-300 uppercase tracking-wider flex items-center justify-between">
+                            <span class="flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-sm text-amber-400">task_alt</span>
+                                <span>Status Hasil</span>
+                                <span class="text-amber-400">*</span>
+                            </span>
+                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Pilih Salah Satu</span>
                         </label>
-                        <div class="grid grid-cols-2 gap-1.5 min-h-[44px]">
+                        <div class="grid grid-cols-2 gap-2 min-h-[50px]">
+                            <!-- Berhasil -->
                             <label class="cursor-pointer">
                                 <input 
                                     type="radio" 
@@ -304,12 +356,13 @@
                                     checked 
                                     onchange="updatePricePreview()"
                                 >
-                                <div class="w-full h-full py-2 px-1 rounded-xl bg-slate-950 border border-slate-800 peer-checked:border-emerald-400 peer-checked:bg-emerald-500/15 peer-checked:text-emerald-300 text-slate-400 font-extrabold text-center text-[11px] uppercase tracking-wider transition-all flex items-center justify-center gap-1">
-                                    <span class="material-symbols-outlined text-sm">check_circle</span>
+                                <div class="w-full h-full py-3 px-3 rounded-2xl bg-slate-950/90 border border-slate-800 peer-checked:border-emerald-400 peer-checked:bg-emerald-500/20 peer-checked:text-emerald-300 peer-checked:shadow-lg peer-checked:shadow-emerald-500/15 text-slate-400 font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 hover:border-slate-700 select-none">
+                                    <span class="material-symbols-outlined text-lg">check_circle</span>
                                     <span>BERHASIL</span>
                                 </div>
                             </label>
 
+                            <!-- Gagal -->
                             <label class="cursor-pointer">
                                 <input 
                                     type="radio" 
@@ -319,25 +372,32 @@
                                     {{ old('status') === 'gagal' ? 'checked' : '' }}
                                     onchange="updatePricePreview()"
                                 >
-                                <div class="w-full h-full py-2 px-1 rounded-xl bg-slate-950 border border-slate-800 peer-checked:border-rose-500 peer-checked:bg-rose-500/15 peer-checked:text-rose-300 text-slate-400 font-extrabold text-center text-[11px] uppercase tracking-wider transition-all flex items-center justify-center gap-1">
-                                    <span class="material-symbols-outlined text-sm">cancel</span>
+                                <div class="w-full h-full py-3 px-3 rounded-2xl bg-slate-950/90 border border-slate-800 peer-checked:border-rose-500 peer-checked:bg-rose-500/20 peer-checked:text-rose-300 peer-checked:shadow-lg peer-checked:shadow-rose-500/15 text-slate-400 font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 hover:border-slate-700 select-none">
+                                    <span class="material-symbols-outlined text-lg">cancel</span>
                                     <span>GAGAL</span>
                                 </div>
                             </label>
                         </div>
                     </div>
+                </div>
 
-                    <!-- 3. Quantity Stepper (Col 2) -->
-                    <div class="sm:col-span-2 space-y-1">
+                <!-- FORM BARIS 2: Jumlah Stepper, Tanggal, dan Catatan (3 Kolom Seimbang) -->
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3.5 items-start">
+                    
+                    <!-- 3. Jumlah (Qty) Stepper (Col 3 on sm/lg) -->
+                    <div class="sm:col-span-3 space-y-1.5">
                         <div class="flex items-center justify-between">
-                            <label for="quantity" class="text-[11px] font-extrabold text-slate-300 uppercase tracking-wider">Jumlah</label>
+                            <label for="quantity" class="text-xs font-black text-slate-300 uppercase tracking-wider flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm text-amber-400">tag</span>
+                                <span>Jumlah JO</span>
+                            </label>
                             <div class="flex items-center gap-1">
-                                <button type="button" onclick="adjustQuickQuantity(1)" class="px-1 py-0.2 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-bold cursor-pointer" title="Tambah 1">+1</button>
-                                <button type="button" onclick="adjustQuickQuantity(5)" class="px-1 py-0.2 rounded bg-slate-800 hover:bg-slate-700 text-amber-300 text-[10px] font-bold cursor-pointer" title="Tambah 5">+5</button>
+                                <button type="button" onclick="adjustQuickQuantity(1)" class="px-2 py-0.5 rounded-lg bg-slate-800/90 hover:bg-slate-700 text-slate-300 hover:text-white text-[10px] font-bold border border-slate-700 transition-all cursor-pointer" title="Tambah 1">+1</button>
+                                <button type="button" onclick="adjustQuickQuantity(5)" class="px-2 py-0.5 rounded-lg bg-slate-800/90 hover:bg-amber-400/20 text-amber-300 hover:text-amber-200 text-[10px] font-bold border border-amber-400/30 transition-all cursor-pointer" title="Tambah 5">+5</button>
                             </div>
                         </div>
-                        <div class="flex items-center rounded-xl bg-slate-950 border border-slate-700/80 overflow-hidden min-h-[44px]">
-                            <button type="button" onclick="stepQuantity(-1)" class="px-2.5 py-2 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors font-black text-sm cursor-pointer">−</button>
+                        <div class="flex items-center rounded-2xl bg-slate-950/90 border border-slate-700/80 overflow-hidden min-h-[48px] focus-within:border-amber-400 focus-within:ring-2 focus-within:ring-amber-400/20 transition-all shadow-inner">
+                            <button type="button" onclick="stepQuantity(-1)" class="w-12 h-12 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors font-black text-lg cursor-pointer select-none">−</button>
                             <input 
                                 type="number" 
                                 name="quantity" 
@@ -348,85 +408,109 @@
                                 required 
                                 oninput="updatePricePreview()"
                                 onchange="updatePricePreview()"
-                                class="w-full bg-transparent text-white font-mono-num font-black text-center text-xs focus:outline-none py-1"
+                                class="w-full bg-transparent text-amber-400 font-mono-num font-black text-center text-base focus:outline-none py-2"
                             >
-                            <button type="button" onclick="stepQuantity(1)" class="px-2.5 py-2 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors font-black text-sm cursor-pointer">+</button>
+                            <button type="button" onclick="stepQuantity(1)" class="w-12 h-12 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors font-black text-lg cursor-pointer select-none">+</button>
                         </div>
                     </div>
 
-                    <!-- 4. Tanggal (Col 3) -->
-                    <div class="sm:col-span-3 space-y-1">
+                    <!-- 4. Tanggal Pengerjaan (Col 4 on sm/lg) -->
+                    <div class="sm:col-span-4 space-y-1.5">
                         <div class="flex items-center justify-between">
-                            <label for="tanggal" class="text-[11px] font-extrabold text-slate-300 uppercase tracking-wider flex items-center gap-1">
+                            <label for="tanggal" class="text-xs font-black text-slate-300 uppercase tracking-wider flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm text-amber-400">calendar_today</span>
                                 <span>Tanggal</span>
                                 <span class="text-amber-400">*</span>
                             </label>
-                            <div class="flex items-center gap-1 text-[10px]">
-                                <button type="button" onclick="setQuickFormDate('today')" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-amber-400/20 hover:text-amber-300 text-slate-300 font-bold transition-all cursor-pointer border border-slate-700">Hari Ini</button>
-                                <button type="button" onclick="setQuickFormDate('yesterday')" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-amber-400/20 hover:text-amber-300 text-slate-300 font-bold transition-all cursor-pointer border border-slate-700">Kemarin</button>
+                            <div class="flex items-center gap-1">
+                                <button type="button" onclick="setQuickFormDate('today')" class="px-2 py-0.5 rounded-lg bg-slate-800/90 hover:bg-amber-400/20 hover:text-amber-300 text-slate-300 text-[10px] font-bold border border-slate-700 transition-all cursor-pointer">Hari Ini</button>
+                                <button type="button" onclick="setQuickFormDate('yesterday')" class="px-2 py-0.5 rounded-lg bg-slate-800/90 hover:bg-amber-400/20 hover:text-amber-300 text-slate-300 text-[10px] font-bold border border-slate-700 transition-all cursor-pointer">Kemarin</button>
                             </div>
                         </div>
-                        <input 
-                            type="date" 
-                            name="tanggal" 
-                            id="tanggal" 
-                            value="{{ old('tanggal', $today) }}" 
-                            required 
-                            class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700/80 text-white font-mono font-bold text-xs focus:border-amber-400 focus:outline-none transition-all min-h-[44px]"
-                        >
-                    </div>
-                </div>
-
-                <!-- Form Row 2: Catatan (Voice-to-Text) & Custom Tarif (Piket Event) -->
-                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
-                    <div class="sm:col-span-8 relative">
-                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-base">edit_note</span>
-                        <input 
-                            type="text" 
-                            name="catatan" 
-                            id="catatanInput"
-                            placeholder="Catatan tambahan / No. Merchant / Lokasi (opsional)" 
-                            value="{{ old('catatan') }}"
-                            class="w-full pl-9 pr-10 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-xs focus:border-amber-400 focus:outline-none transition-all min-h-[42px]"
-                        >
-                        <button type="button" onclick="toggleVoiceInput('catatanInput', this)" class="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-amber-400 transition-colors cursor-pointer" title="Input suara (Speech-to-Text)">
-                            <span class="material-symbols-outlined text-base">mic</span>
-                        </button>
-                    </div>
-
-                    <!-- Custom Nominal Input (Piket Event) -->
-                    <div id="customTarifContainer" class="sm:col-span-4 hidden">
-                        <div class="relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-amber-400 font-bold text-xs">Rp</span>
+                        <div class="relative group/dt">
                             <input 
-                                type="number" 
-                                name="custom_tarif" 
-                                id="custom_tarif" 
-                                min="0" 
-                                step="1000"
-                                placeholder="Nominal Custom (Rp)" 
-                                oninput="updatePricePreview()"
-                                class="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-950 border border-amber-400 text-amber-300 font-mono-num font-extrabold text-xs focus:outline-none min-h-[42px]"
+                                type="date" 
+                                name="tanggal" 
+                                id="tanggal" 
+                                value="{{ old('tanggal', $today) }}" 
+                                required 
+                                class="w-full px-4 py-3 rounded-2xl bg-slate-950/90 border border-slate-700/80 text-white font-mono font-bold text-xs focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 focus:outline-none transition-all min-h-[48px] shadow-inner"
                             >
                         </div>
                     </div>
+
+                    <!-- 5. Catatan / Voice-to-Text (Col 5 on sm/lg) -->
+                    <div class="sm:col-span-5 space-y-1.5">
+                        <div class="flex items-center justify-between">
+                            <label for="catatanInput" class="text-xs font-black text-slate-300 uppercase tracking-wider flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm text-amber-400">edit_note</span>
+                                <span>Catatan / Lokasi</span>
+                                <span class="text-slate-500 text-[10px] font-normal lowercase">(opsional)</span>
+                            </label>
+                            <span class="text-[10px] text-slate-500 font-semibold hidden sm:inline">No. Merchant / TID</span>
+                        </div>
+                        <div class="relative group/cat">
+                            <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within/cat:text-amber-400 transition-colors text-lg pointer-events-none">description</span>
+                            <input 
+                                type="text" 
+                                name="catatan" 
+                                id="catatanInput"
+                                placeholder="Contoh: Toko Berkah / TID 88219..." 
+                                value="{{ old('catatan') }}"
+                                class="w-full pl-10 pr-11 py-3 rounded-2xl bg-slate-950/90 border border-slate-700/80 text-slate-200 text-xs focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 focus:outline-none transition-all min-h-[48px] shadow-inner"
+                            >
+                            <button type="button" onclick="toggleVoiceInput('catatanInput', this)" class="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-amber-400 transition-colors cursor-pointer" title="Input suara (Speech-to-Text)">
+                                <span class="material-symbols-outlined text-lg">mic</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Action & Price Preview Row -->
-                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 border-t border-slate-800/80">
-                    <div class="px-4 py-2 rounded-xl bg-slate-950 border border-emerald-500/30 flex items-center justify-between sm:justify-start gap-3 shadow-inner">
-                        <div class="flex items-center gap-1.5">
-                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                            <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Snapshot Tarif:</span>
+                <!-- Custom Nominal Input (Piket Event) -->
+                <div id="customTarifContainer" class="p-4 rounded-2xl bg-amber-500/10 border border-amber-400/40 hidden space-y-2 animate-fadeIn">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-amber-400 text-lg">payments</span>
+                        <label for="custom_tarif" class="text-xs font-black uppercase tracking-wider text-amber-300">Nominal Tarif Custom Piket / Event (Rp):</label>
+                    </div>
+                    <div class="relative max-w-sm">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-400 font-bold text-sm">Rp</span>
+                        <input 
+                            type="number" 
+                            name="custom_tarif" 
+                            id="custom_tarif" 
+                            min="0" 
+                            step="1000"
+                            placeholder="Contoh: 75000" 
+                            oninput="updatePricePreview()"
+                            class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-amber-400 text-amber-300 font-mono-num font-extrabold text-sm focus:outline-none shadow-inner"
+                        >
+                    </div>
+                </div>
+
+                <!-- FORM BARIS 3: Action & Price Preview Bar (Modern, High-Contrast & Premium) -->
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-4 border-t border-slate-800/80">
+                    <!-- Left: Live Tarif Calculation Card -->
+                    <div class="flex items-center gap-3.5 px-4 py-3 rounded-2xl bg-slate-950/90 border border-emerald-500/30 shadow-lg shadow-emerald-950/10">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 shadow-inner">
+                            <span class="material-symbols-outlined text-xl">payments</span>
                         </div>
-                        <span id="pricePreview" class="text-base sm:text-lg font-black font-mono-num text-gradient-emerald tracking-tight">Rp 0</span>
+                        <div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                                <span class="text-[10px] font-black uppercase tracking-wider text-slate-400">Total Snapshot Tarif:</span>
+                            </div>
+                            <div id="pricePreview" class="text-xl sm:text-2xl font-black font-mono-num text-gradient-emerald tracking-tight">
+                                Rp 0
+                            </div>
+                        </div>
                     </div>
 
+                    <!-- Right: Submit CTA Button -->
                     <button 
                         type="submit" 
-                        class="py-3 px-6 rounded-xl bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 hover:from-amber-300 hover:to-orange-300 active:scale-[0.98] text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-amber-500/20 transition-all cursor-pointer flex items-center justify-center gap-2 border border-amber-300/30 min-h-[46px]"
+                        class="py-3.5 px-8 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 hover:from-amber-300 hover:to-orange-400 active:scale-[0.98] text-slate-950 font-black text-sm uppercase tracking-wider shadow-xl shadow-amber-500/25 hover:shadow-amber-500/40 transition-all duration-200 cursor-pointer min-h-[52px] flex items-center justify-center gap-2.5 border border-amber-300/40"
                     >
-                        <span class="material-symbols-outlined text-lg">save</span>
+                        <span class="material-symbols-outlined text-xl font-bold">check_circle</span>
                         <span>SIMPAN JOB ORDER</span>
                     </button>
                 </div>
@@ -1232,7 +1316,7 @@
 
         const totalFee = activeFee * qty;
         if (qty > 1) {
-            document.getElementById('pricePreview').innerHTML = 'Rp ' + totalFee.toLocaleString('id-ID') + ' <span class="text-xs font-semibold text-amber-300/80">(' + qty + ' JO x Rp ' + activeFee.toLocaleString('id-ID') + ')</span>';
+            document.getElementById('pricePreview').innerHTML = 'Rp ' + totalFee.toLocaleString('id-ID') + ' <span class="text-xs font-semibold text-emerald-300/80 block sm:inline sm:ml-1">(' + qty + ' JO x Rp ' + activeFee.toLocaleString('id-ID') + ')</span>';
         } else {
             document.getElementById('pricePreview').innerText = 'Rp ' + activeFee.toLocaleString('id-ID');
         }
@@ -1244,14 +1328,14 @@
         select.value = id;
 
         document.querySelectorAll('.quick-category-chip').forEach(chip => {
-            chip.classList.remove('border-amber-400', 'bg-amber-400/20', 'text-amber-300');
-            chip.classList.add('border-slate-800', 'bg-slate-950', 'text-slate-300');
+            chip.classList.remove('border-amber-400', 'bg-amber-400/20', 'text-amber-300', 'ring-1', 'ring-amber-400/40', 'shadow-amber-500/10');
+            chip.classList.add('border-slate-800', 'bg-slate-950/90', 'text-slate-300');
         });
 
         const activeChip = Array.from(document.querySelectorAll('.quick-category-chip')).find(c => c.getAttribute('onclick')?.includes(`(${id})`));
         if (activeChip) {
-            activeChip.classList.remove('border-slate-800', 'bg-slate-950', 'text-slate-300');
-            activeChip.classList.add('border-amber-400', 'bg-amber-400/20', 'text-amber-300');
+            activeChip.classList.remove('border-slate-800', 'bg-slate-950/90', 'text-slate-300');
+            activeChip.classList.add('border-amber-400', 'bg-amber-400/20', 'text-amber-300', 'ring-1', 'ring-amber-400/40', 'shadow-amber-500/10');
         }
 
         updatePricePreview();
