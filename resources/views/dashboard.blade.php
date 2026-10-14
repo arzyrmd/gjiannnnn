@@ -2,14 +2,137 @@
 
 @section('title', 'Kabin Kerja Teknisi - GajianARMN')
 
+@push('styles')
+<style>
+    @keyframes tabFadeIn {
+        0% { opacity: 0; transform: translateY(8px) scale(0.995); }
+        100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .animate-tab-fade {
+        animation: tabFadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes pricePop {
+        0% { transform: scale(0.9); filter: brightness(1.3); }
+        50% { transform: scale(1.08); }
+        100% { transform: scale(1); filter: brightness(1); }
+    }
+    .animate-price-pop {
+        animation: pricePop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    @keyframes lightSweep {
+        0% { transform: translateX(-150%) skewX(-20deg); }
+        100% { transform: translateX(250%) skewX(-20deg); }
+    }
+    .btn-shine {
+        position: relative;
+        overflow: hidden;
+    }
+    .btn-shine::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        bottom: -50%;
+        left: 0;
+        width: 60%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transform: translateX(-150%) skewX(-20deg);
+        pointer-events: none;
+    }
+    .btn-shine:hover::after {
+        animation: lightSweep 0.85s ease-out;
+    }
+
+    @keyframes ctaBreathing {
+        0%, 100% {
+            box-shadow: 0 4px 20px -2px rgba(245, 158, 11, 0.35), 0 0 0 1px rgba(251, 191, 36, 0.25);
+        }
+        50% {
+            box-shadow: 0 8px 30px 2px rgba(245, 158, 11, 0.6), 0 0 0 2px rgba(251, 191, 36, 0.5);
+        }
+    }
+    .animate-cta-glow {
+        animation: ctaBreathing 3s ease-in-out infinite;
+    }
+
+    @keyframes micRipple {
+        0% {
+            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6), 0 0 12px rgba(239, 68, 68, 0.4);
+        }
+        70% {
+            box-shadow: 0 0 0 12px rgba(239, 68, 68, 0), 0 0 20px rgba(239, 68, 68, 0.2);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0), 0 0 0 rgba(239, 68, 68, 0);
+        }
+    }
+    .animate-mic-active {
+        animation: micRipple 1.4s infinite cubic-bezier(0, 0, 0.2, 1);
+    }
+
+    .card-hover-glow {
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .card-hover-glow:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.6), 0 0 20px -4px rgba(251, 191, 36, 0.15);
+    }
+
+    .quick-category-chip {
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .quick-category-chip:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px -4px rgba(245, 158, 11, 0.25);
+    }
+    .quick-category-chip:active {
+        transform: scale(0.96);
+    }
+
+    .stepper-btn {
+        transition: all 0.15s ease;
+    }
+    .stepper-btn:hover {
+        background-color: rgba(245, 158, 11, 0.15);
+        color: #fbbf24;
+    }
+    .stepper-btn:active {
+        transform: scale(0.85);
+    }
+
+    @keyframes modalPop {
+        0% { opacity: 0; transform: scale(0.95) translateY(12px); }
+        100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .animate-modal-pop {
+        animation: modalPop 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes toastSlideIn {
+        0% {
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+    .toast-enter {
+        animation: toastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="space-y-4 sm:space-y-5">
 
     <!-- 1. COMPACT HEADER BAR (Kabin Teknisi & Filter Bulan) -->
-    <div class="rounded-2xl sm:rounded-3xl bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 p-3.5 sm:p-4 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 relative overflow-hidden">
+    <div class="rounded-2xl sm:rounded-3xl bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 p-3.5 sm:p-4 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 relative overflow-hidden card-hover-glow">
         <div class="absolute -top-10 -left-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none"></div>
         <div class="flex items-center gap-3 relative z-10">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 text-slate-950 flex items-center justify-center font-black shadow-md shadow-cyan-500/20 shrink-0">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 text-slate-950 flex items-center justify-center font-black shadow-md shadow-cyan-500/20 shrink-0 group-hover:scale-105 transition-transform">
                 <span class="material-symbols-outlined text-xl">badge</span>
             </div>
             <div>
@@ -28,7 +151,7 @@
                 name="bulan" 
                 value="{{ $selectedBulan }}" 
                 onchange="this.form.submit()" 
-                class="w-full sm:w-auto px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-xs font-mono font-bold focus:outline-none focus:border-cyan-400 transition-all cursor-pointer"
+                class="w-full sm:w-auto px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-xs font-mono font-bold focus:outline-none focus:border-cyan-400 hover:border-slate-700 transition-all cursor-pointer"
             >
         </form>
     </div>
@@ -37,7 +160,7 @@
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
         
         <!-- Bento 1: Hari Ini -->
-        <div class="rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-emerald-500/30 p-3.5 sm:p-4 shadow-lg flex flex-col justify-between hover:border-emerald-500/50 transition-all relative overflow-hidden group">
+        <div class="card-hover-glow rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-emerald-500/30 p-3.5 sm:p-4 shadow-lg flex flex-col justify-between hover:border-emerald-500/60 transition-all relative overflow-hidden group">
             <div class="flex items-center justify-between gap-1 mb-1.5">
                 <div class="flex items-center gap-1.5">
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -64,7 +187,7 @@
         </div>
 
         <!-- Bento 2: Bulan Ini -->
-        <div class="rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-cyan-500/30 p-3.5 sm:p-4 shadow-lg flex flex-col justify-between hover:border-cyan-500/50 transition-all relative overflow-hidden group">
+        <div class="card-hover-glow rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-cyan-500/30 p-3.5 sm:p-4 shadow-lg flex flex-col justify-between hover:border-cyan-500/60 transition-all relative overflow-hidden group">
             <div class="flex items-center justify-between gap-1 mb-1.5">
                 <div class="flex items-center gap-1.5">
                     <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
@@ -95,13 +218,13 @@
         </div>
 
         <!-- Bento 3: Target Gaji Bulanan -->
-        <div class="rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-slate-800/90 p-3.5 sm:p-4 shadow-lg flex flex-col justify-between hover:border-emerald-500/40 transition-all relative overflow-hidden group">
+        <div class="card-hover-glow rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-slate-800/90 p-3.5 sm:p-4 shadow-lg flex flex-col justify-between hover:border-emerald-500/50 transition-all relative overflow-hidden group">
             <div class="flex items-center justify-between gap-1 mb-1.5">
                 <div class="flex items-center gap-1.5">
                     <span class="material-symbols-outlined text-xs text-emerald-400">workspace_premium</span>
                     <span class="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-slate-300">Target Gaji</span>
                 </div>
-                <button type="button" onclick="openTargetModal()" class="text-[10px] text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-0.5" title="Ubah target gaji">
+                <button type="button" onclick="openTargetModal()" class="text-[10px] text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-0.5 hover:scale-105 active:scale-95 transition-all" title="Ubah target gaji">
                     <span class="material-symbols-outlined text-[13px]">edit</span>
                     <span>Ubah</span>
                 </button>
@@ -126,7 +249,7 @@
         </div>
 
         <!-- Bento 4: Target Produktivitas 330 JO -->
-        <div class="rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-slate-800/90 p-3.5 sm:p-4 shadow-lg flex flex-col justify-between hover:border-amber-500/40 transition-all relative overflow-hidden group">
+        <div class="card-hover-glow rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-slate-800/90 p-3.5 sm:p-4 shadow-lg flex flex-col justify-between hover:border-amber-500/50 transition-all relative overflow-hidden group">
             <div class="flex items-center justify-between gap-1 mb-1.5">
                 <div class="flex items-center gap-1.5">
                     <span class="material-symbols-outlined text-xs text-amber-400">trending_up</span>
@@ -163,7 +286,7 @@
                 type="button" 
                 id="tabBtn_input" 
                 onclick="switchDashboardTab('input')" 
-                class="dashboard-tab-btn py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1 sm:gap-2 cursor-pointer bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 font-black shadow-lg shadow-amber-500/20"
+                class="dashboard-tab-btn py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 cursor-pointer bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 font-black shadow-lg shadow-amber-500/20 active:scale-95 select-none"
             >
                 <span class="material-symbols-outlined text-base sm:text-lg">post_add</span>
                 <span class="truncate">Catat Job</span>
@@ -174,7 +297,7 @@
                 type="button" 
                 id="tabBtn_rekap" 
                 onclick="switchDashboardTab('rekap')" 
-                class="dashboard-tab-btn py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1 sm:gap-2 cursor-pointer text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-bold"
+                class="dashboard-tab-btn py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 cursor-pointer text-slate-400 hover:text-slate-200 hover:bg-slate-800/80 hover:scale-[1.02] active:scale-95 font-bold select-none"
             >
                 <span class="material-symbols-outlined text-base sm:text-lg">calendar_month</span>
                 <span class="truncate">Rekap Harian</span>
@@ -185,7 +308,7 @@
                 type="button" 
                 id="tabBtn_riwayat" 
                 onclick="switchDashboardTab('riwayat')" 
-                class="dashboard-tab-btn py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1 sm:gap-2 cursor-pointer text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-bold relative"
+                class="dashboard-tab-btn py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 cursor-pointer text-slate-400 hover:text-slate-200 hover:bg-slate-800/80 hover:scale-[1.02] active:scale-95 font-bold select-none relative"
             >
                 <span class="material-symbols-outlined text-base sm:text-lg">receipt_long</span>
                 <span class="truncate">Riwayat</span>
@@ -201,7 +324,7 @@
                 type="button" 
                 id="tabBtn_target" 
                 onclick="switchDashboardTab('target')" 
-                class="dashboard-tab-btn py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1 sm:gap-2 cursor-pointer text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-bold"
+                class="dashboard-tab-btn py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 cursor-pointer text-slate-400 hover:text-slate-200 hover:bg-slate-800/80 hover:scale-[1.02] active:scale-95 font-bold select-none"
             >
                 <span class="material-symbols-outlined text-base sm:text-lg">insights</span>
                 <span class="truncate">Target &amp; Tren</span>
@@ -213,7 +336,7 @@
     <!-- ========================================================================= -->
     <!-- TAB PANEL 1: CATAT JOB (FORMULIR CEPAT + DAFTAR INPUT HARI INI)            -->
     <!-- ========================================================================= -->
-    <div id="tabPanel_input" class="dashboard-tab-panel space-y-4">
+    <div id="tabPanel_input" class="dashboard-tab-panel space-y-4 animate-tab-fade">
         
         <!-- Input Job Form Card (Sleek, Modern, High-End Bento Design) -->
         <div class="relative rounded-3xl bg-slate-900/90 backdrop-blur-2xl border border-slate-800/90 p-5 sm:p-7 shadow-2xl shadow-black/40 overflow-hidden group">
@@ -392,12 +515,12 @@
                                 <span>Jumlah JO</span>
                             </label>
                             <div class="flex items-center gap-1">
-                                <button type="button" onclick="adjustQuickQuantity(1)" class="px-2 py-0.5 rounded-lg bg-slate-800/90 hover:bg-slate-700 text-slate-300 hover:text-white text-[10px] font-bold border border-slate-700 transition-all cursor-pointer" title="Tambah 1">+1</button>
-                                <button type="button" onclick="adjustQuickQuantity(5)" class="px-2 py-0.5 rounded-lg bg-slate-800/90 hover:bg-amber-400/20 text-amber-300 hover:text-amber-200 text-[10px] font-bold border border-amber-400/30 transition-all cursor-pointer" title="Tambah 5">+5</button>
+                                <button type="button" onclick="adjustQuickQuantity(1)" class="px-2 py-0.5 rounded-lg bg-slate-800/90 hover:bg-slate-700 text-slate-300 hover:text-white text-[10px] font-bold border border-slate-700 hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-sm" title="Tambah 1">+1</button>
+                                <button type="button" onclick="adjustQuickQuantity(5)" class="px-2 py-0.5 rounded-lg bg-slate-800/90 hover:bg-amber-400/20 text-amber-300 hover:text-amber-200 text-[10px] font-bold border border-amber-400/30 hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-sm" title="Tambah 5">+5</button>
                             </div>
                         </div>
                         <div class="flex items-center rounded-2xl bg-slate-950/90 border border-slate-700/80 overflow-hidden min-h-[48px] focus-within:border-amber-400 focus-within:ring-2 focus-within:ring-amber-400/20 transition-all shadow-inner">
-                            <button type="button" onclick="stepQuantity(-1)" class="w-12 h-12 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors font-black text-lg cursor-pointer select-none">−</button>
+                            <button type="button" onclick="stepQuantity(-1)" class="stepper-btn w-12 h-12 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800/80 transition-all font-black text-lg cursor-pointer select-none">−</button>
                             <input 
                                 type="number" 
                                 name="quantity" 
@@ -410,7 +533,7 @@
                                 onchange="updatePricePreview()"
                                 class="w-full bg-transparent text-amber-400 font-mono-num font-black text-center text-base focus:outline-none py-2"
                             >
-                            <button type="button" onclick="stepQuantity(1)" class="w-12 h-12 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors font-black text-lg cursor-pointer select-none">+</button>
+                            <button type="button" onclick="stepQuantity(1)" class="stepper-btn w-12 h-12 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800/80 transition-all font-black text-lg cursor-pointer select-none">+</button>
                         </div>
                     </div>
 
@@ -423,8 +546,8 @@
                                 <span class="text-amber-400">*</span>
                             </label>
                             <div class="flex items-center gap-1">
-                                <button type="button" onclick="setQuickFormDate('today')" class="px-2 py-0.5 rounded-lg bg-slate-800/90 hover:bg-amber-400/20 hover:text-amber-300 text-slate-300 text-[10px] font-bold border border-slate-700 transition-all cursor-pointer">Hari Ini</button>
-                                <button type="button" onclick="setQuickFormDate('yesterday')" class="px-2 py-0.5 rounded-lg bg-slate-800/90 hover:bg-amber-400/20 hover:text-amber-300 text-slate-300 text-[10px] font-bold border border-slate-700 transition-all cursor-pointer">Kemarin</button>
+                                <button type="button" onclick="setQuickFormDate('today')" class="px-2 py-0.5 rounded-lg bg-slate-800/90 hover:bg-amber-400/20 hover:text-amber-300 text-slate-300 text-[10px] font-bold border border-slate-700 hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-sm">Hari Ini</button>
+                                <button type="button" onclick="setQuickFormDate('yesterday')" class="px-2 py-0.5 rounded-lg bg-slate-800/90 hover:bg-amber-400/20 hover:text-amber-300 text-slate-300 text-[10px] font-bold border border-slate-700 hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-sm">Kemarin</button>
                             </div>
                         </div>
                         <div class="relative group/dt">
@@ -459,7 +582,7 @@
                                 value="{{ old('catatan') }}"
                                 class="w-full pl-10 pr-11 py-3 rounded-2xl bg-slate-950/90 border border-slate-700/80 text-slate-200 text-xs focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 focus:outline-none transition-all min-h-[48px] shadow-inner"
                             >
-                            <button type="button" onclick="toggleVoiceInput('catatanInput', this)" class="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-amber-400 transition-colors cursor-pointer" title="Input suara (Speech-to-Text)">
+                            <button type="button" onclick="toggleVoiceInput('catatanInput', this)" class="absolute right-2.5 top-1/2 -translate-y-1/2 p-2 rounded-xl bg-slate-800/80 hover:bg-amber-400/20 text-slate-400 hover:text-amber-300 hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-sm" title="Input suara (Speech-to-Text)">
                                 <span class="material-symbols-outlined text-lg">mic</span>
                             </button>
                         </div>
@@ -508,9 +631,9 @@
                     <!-- Right: Submit CTA Button -->
                     <button 
                         type="submit" 
-                        class="py-3.5 px-8 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 hover:from-amber-300 hover:to-orange-400 active:scale-[0.98] text-slate-950 font-black text-sm uppercase tracking-wider shadow-xl shadow-amber-500/25 hover:shadow-amber-500/40 transition-all duration-200 cursor-pointer min-h-[52px] flex items-center justify-center gap-2.5 border border-amber-300/40"
+                        class="btn-shine animate-cta-glow relative overflow-hidden group py-3.5 px-8 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 hover:from-amber-300 hover:to-orange-400 active:scale-[0.97] text-slate-950 font-black text-sm uppercase tracking-wider shadow-xl shadow-amber-500/30 hover:shadow-amber-500/50 transition-all duration-300 cursor-pointer min-h-[52px] flex items-center justify-center gap-2.5 border border-amber-300/40"
                     >
-                        <span class="material-symbols-outlined text-xl font-bold">check_circle</span>
+                        <span class="material-symbols-outlined text-xl font-bold group-hover:scale-110 transition-transform">check_circle</span>
                         <span>SIMPAN JOB ORDER</span>
                     </button>
                 </div>
@@ -533,13 +656,13 @@
             @if($todayJobOrders->count() > 0)
                 <div class="space-y-2">
                     @foreach($todayJobOrders as $tJob)
-                        <div class="p-3 rounded-2xl bg-slate-950/80 border border-slate-800/80 hover:border-slate-700 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                        <div class="group/job p-3 rounded-2xl bg-slate-950/80 border border-slate-800/80 hover:border-amber-400/40 hover:bg-slate-900/90 hover:translate-x-1 hover:shadow-lg hover:shadow-black/40 transition-all duration-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                             <div class="flex items-center gap-2.5">
-                                <span class="w-1.5 h-1.5 rounded-full {{ $tJob->status === 'berhasil' ? 'bg-emerald-400' : 'bg-rose-400' }}"></span>
+                                <span class="w-2 h-2 rounded-full {{ $tJob->status === 'berhasil' ? 'bg-emerald-400 shadow-sm shadow-emerald-400/50' : 'bg-rose-400 shadow-sm shadow-rose-400/50' }} shrink-0"></span>
                                 <div>
                                     <div class="flex items-center gap-2">
-                                        <span class="text-xs font-bold text-white">{{ $tJob->kategori }}</span>
-                                        <span class="px-1.5 py-0.2 rounded text-[9px] font-black uppercase tracking-wider {{ $tJob->status === 'berhasil' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-300 border border-rose-500/30' }}">
+                                        <span class="text-xs font-bold text-white group-hover/job:text-amber-300 transition-colors">{{ $tJob->kategori }}</span>
+                                        <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider {{ $tJob->status === 'berhasil' ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/15 text-rose-300 border border-rose-500/30' }}">
                                             {{ $tJob->status }}
                                         </span>
                                     </div>
@@ -553,11 +676,11 @@
                                 <span class="text-xs font-black font-mono-num text-amber-400">
                                     Rp {{ number_format($tJob->tarif, 0, ',', '.') }}
                                 </span>
-                                <div class="flex items-center gap-1">
+                                <div class="flex items-center gap-1.5">
                                     <button 
                                         type="button" 
                                         onclick="openEditModal({{ json_encode($tJob) }})" 
-                                        class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 transition-all" 
+                                        class="p-2 rounded-xl bg-slate-800/80 hover:bg-amber-400 hover:text-slate-950 text-amber-400 border border-slate-700/60 hover:border-amber-400 active:scale-90 transition-all cursor-pointer shadow-sm" 
                                         title="Edit"
                                     >
                                         <span class="material-symbols-outlined text-sm">edit</span>
@@ -565,7 +688,7 @@
                                     <form action="{{ route('job-orders.destroy', $tJob->id) }}" method="POST" onsubmit="return confirm('Hapus job order ini?');" class="inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="p-1.5 rounded-lg bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 transition-all" title="Hapus">
+                                        <button type="submit" class="p-2 rounded-xl bg-rose-950/40 hover:bg-rose-500 hover:text-white text-rose-400 border border-rose-500/30 hover:border-rose-400 active:scale-90 transition-all cursor-pointer shadow-sm" title="Hapus">
                                             <span class="material-symbols-outlined text-sm">delete</span>
                                         </button>
                                     </form>
@@ -1129,16 +1252,16 @@
             <div>
                 <span class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1.5">Pilihan Cepat:</span>
                 <div class="grid grid-cols-4 gap-2">
-                    <button type="button" onclick="setPresetTarget(3000000)" class="py-2 px-2 bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 hover:border-emerald-500/50 rounded-xl text-xs font-bold text-slate-300 hover:text-emerald-400 transition-all">3 Jt</button>
-                    <button type="button" onclick="setPresetTarget(5000000)" class="py-2 px-2 bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 hover:border-emerald-500/50 rounded-xl text-xs font-bold text-slate-300 hover:text-emerald-400 transition-all">5 Jt</button>
-                    <button type="button" onclick="setPresetTarget(7500000)" class="py-2 px-2 bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 hover:border-emerald-500/50 rounded-xl text-xs font-bold text-slate-300 hover:text-emerald-400 transition-all">7.5 Jt</button>
-                    <button type="button" onclick="setPresetTarget(10000000)" class="py-2 px-2 bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 hover:border-emerald-500/50 rounded-xl text-xs font-bold text-slate-300 hover:text-emerald-400 transition-all">10 Jt</button>
+                    <button type="button" onclick="setPresetTarget(3000000)" class="py-2 px-2 bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 hover:border-emerald-500/50 rounded-xl text-xs font-bold text-slate-300 hover:text-emerald-400 hover:scale-105 active:scale-95 transition-all">3 Jt</button>
+                    <button type="button" onclick="setPresetTarget(5000000)" class="py-2 px-2 bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 hover:border-emerald-500/50 rounded-xl text-xs font-bold text-slate-300 hover:text-emerald-400 hover:scale-105 active:scale-95 transition-all">5 Jt</button>
+                    <button type="button" onclick="setPresetTarget(7500000)" class="py-2 px-2 bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 hover:border-emerald-500/50 rounded-xl text-xs font-bold text-slate-300 hover:text-emerald-400 hover:scale-105 active:scale-95 transition-all">7.5 Jt</button>
+                    <button type="button" onclick="setPresetTarget(10000000)" class="py-2 px-2 bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 hover:border-emerald-500/50 rounded-xl text-xs font-bold text-slate-300 hover:text-emerald-400 hover:scale-105 active:scale-95 transition-all">10 Jt</button>
                 </div>
             </div>
 
             <div class="flex justify-end gap-2 pt-2">
-                <button type="button" onclick="closeTargetModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-bold text-xs uppercase tracking-wider">Batal</button>
-                <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/20 transition-all">Simpan Target</button>
+                <button type="button" onclick="closeTargetModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-bold text-xs uppercase tracking-wider active:scale-95 transition-all">Batal</button>
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/20 transition-all">Simpan Target</button>
             </div>
         </form>
     </div>
@@ -1195,10 +1318,10 @@
             </div>
 
             <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
-                <button type="button" onclick="closeEditModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs uppercase tracking-wider hover:bg-slate-700 transition-colors cursor-pointer">
+                <button type="button" onclick="closeEditModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs uppercase tracking-wider hover:bg-slate-700 active:scale-95 transition-all cursor-pointer">
                     Batal
                 </button>
-                <button type="submit" class="px-5 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 font-black text-xs uppercase tracking-wider hover:from-amber-300 hover:to-orange-300 transition-all cursor-pointer shadow-lg shadow-amber-500/20">
+                <button type="submit" class="px-5 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 font-black text-xs uppercase tracking-wider hover:from-amber-300 hover:to-orange-300 active:scale-95 transition-all cursor-pointer shadow-lg shadow-amber-500/20">
                     Simpan Perubahan
                 </button>
             </div>
@@ -1228,6 +1351,9 @@
 
         if (activePanel) {
             activePanel.classList.remove('hidden');
+            activePanel.classList.remove('animate-tab-fade');
+            void activePanel.offsetWidth; // Force browser reflow to re-trigger smooth entrance animation
+            activePanel.classList.add('animate-tab-fade');
         }
         if (activeBtn) {
             activeBtn.classList.remove('text-slate-400', 'hover:text-slate-200', 'hover:bg-slate-800/60', 'font-bold');
@@ -1291,9 +1417,9 @@
         const customInput = document.getElementById('custom_tarif');
         const qtyInput = document.getElementById('quantity');
         const qty = Math.max(1, parseInt(qtyInput?.value || 1));
+        const pricePreview = document.getElementById('pricePreview');
         
         if (!selectedOption || !selectedOption.value) {
-            const pricePreview = document.getElementById('pricePreview');
             if (pricePreview) pricePreview.innerText = 'Rp 0';
             if (customContainer) customContainer.classList.add('hidden');
             return;
@@ -1315,10 +1441,16 @@
         }
 
         const totalFee = activeFee * qty;
-        if (qty > 1) {
-            document.getElementById('pricePreview').innerHTML = 'Rp ' + totalFee.toLocaleString('id-ID') + ' <span class="text-xs font-semibold text-emerald-300/80 block sm:inline sm:ml-1">(' + qty + ' JO x Rp ' + activeFee.toLocaleString('id-ID') + ')</span>';
-        } else {
-            document.getElementById('pricePreview').innerText = 'Rp ' + activeFee.toLocaleString('id-ID');
+        if (pricePreview) {
+            if (qty > 1) {
+                pricePreview.innerHTML = 'Rp ' + totalFee.toLocaleString('id-ID') + ' <span class="text-xs font-semibold text-emerald-300/80 block sm:inline sm:ml-1">(' + qty + ' JO x Rp ' + activeFee.toLocaleString('id-ID') + ')</span>';
+            } else {
+                pricePreview.innerText = 'Rp ' + activeFee.toLocaleString('id-ID');
+            }
+            // Trigger modern tactile price pop animation
+            pricePreview.classList.remove('animate-price-pop');
+            void pricePreview.offsetWidth;
+            pricePreview.classList.add('animate-price-pop');
         }
     }
 
@@ -1372,7 +1504,14 @@
         document.getElementById('edit_tanggal').value = `${yyyy}-${mm}-${dd}`;
         
         document.getElementById('edit_catatan').value = job.catatan || '';
-        document.getElementById('editModal').classList.remove('hidden');
+        const modal = document.getElementById('editModal');
+        modal.classList.remove('hidden');
+        const box = modal.querySelector('div');
+        if (box) {
+            box.classList.remove('animate-modal-pop');
+            void box.offsetWidth;
+            box.classList.add('animate-modal-pop');
+        }
     }
 
     function closeEditModal() {
@@ -1380,7 +1519,14 @@
     }
 
     function openTargetModal() {
-        document.getElementById('targetModal').classList.remove('hidden');
+        const modal = document.getElementById('targetModal');
+        modal.classList.remove('hidden');
+        const box = modal.querySelector('div');
+        if (box) {
+            box.classList.remove('animate-modal-pop');
+            void box.offsetWidth;
+            box.classList.add('animate-modal-pop');
+        }
     }
     function closeTargetModal() {
         document.getElementById('targetModal').classList.add('hidden');
@@ -1393,10 +1539,20 @@
         event.preventDefault();
         const form = event.target;
         const submitBtn = form.querySelector('button[type="submit"]');
+        let originalContent = '';
         
         if (submitBtn) {
+            originalContent = submitBtn.innerHTML;
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">refresh</span> <span>MENYIMPAN...</span>';
+            submitBtn.classList.remove('animate-cta-glow');
+            submitBtn.innerHTML = `
+                <span class="inline-flex items-center gap-2">
+                    <svg class="animate-spin -ml-1 mr-1 h-5 w-5 text-slate-950" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>MENYIMPAN...</span>
+                </span>`;
         }
 
         const formData = new FormData(form);
@@ -1414,12 +1570,23 @@
             const data = await response.json();
 
             if (response.ok && data.success) {
+                // Success feedback state on button
+                if (submitBtn) {
+                    submitBtn.classList.remove('from-amber-400', 'to-orange-400', 'via-amber-500');
+                    submitBtn.classList.add('from-emerald-400', 'to-teal-500', 'text-slate-950');
+                    submitBtn.innerHTML = `
+                        <span class="inline-flex items-center gap-2">
+                            <span class="material-symbols-outlined text-xl">check_circle</span>
+                            <span>TERSIMPAN!</span>
+                        </span>`;
+                }
+
                 form.reset();
                 const qtyInput = document.getElementById('quantity');
                 if (qtyInput) qtyInput.value = '1';
 
                 if (typeof updatePricePreview === 'function') updatePricePreview();
-                showTemporaryToast(data.message || 'Job order berhasil dicatat!');
+                showTemporaryToast(data.message || 'Job order berhasil dicatat!', 'success');
 
                 if (typeof refreshDashboardData === 'function') {
                     refreshDashboardData();
@@ -1428,31 +1595,60 @@
                 // Smooth reload to immediately sync today's jobs table and statistics
                 setTimeout(() => {
                     window.location.reload();
-                }, 800);
+                }, 750);
             } else {
-                alert(data.message || 'Gagal menyimpan job order.');
+                showTemporaryToast(data.message || 'Gagal menyimpan job order.', 'error');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalContent;
+                    submitBtn.classList.add('animate-cta-glow');
+                }
             }
         } catch (e) {
-            alert('Terjadi kesalahan koneksi.');
-        } finally {
+            showTemporaryToast('Terjadi kesalahan koneksi server.', 'error');
             if (submitBtn) {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<span class="material-symbols-outlined text-lg">save</span><span>SIMPAN JOB ORDER</span>';
+                submitBtn.innerHTML = originalContent;
+                submitBtn.classList.add('animate-cta-glow');
             }
         }
     }
 
-    function showTemporaryToast(message) {
+    function showTemporaryToast(message, type = 'success') {
+        const existingToast = document.getElementById('modernFloatingToast');
+        if (existingToast) existingToast.remove();
+
         const toast = document.createElement('div');
-        toast.className = 'fixed bottom-6 left-6 z-50 px-4 py-3 rounded-2xl bg-emerald-950/90 border border-emerald-500/50 text-emerald-300 font-bold text-xs shadow-2xl backdrop-blur-xl flex items-center gap-2 animate-bounce';
-        toast.innerHTML = `<span class="material-symbols-outlined text-lg">check_circle</span><span>${message}</span>`;
+        toast.id = 'modernFloatingToast';
+        const isSuccess = type === 'success';
+
+        toast.className = `fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-50 px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl shadow-2xl backdrop-blur-2xl flex items-center gap-3 toast-enter border transition-all duration-300 ${
+            isSuccess 
+            ? 'bg-slate-950/95 border-emerald-500/40 text-emerald-300 shadow-emerald-500/20' 
+            : 'bg-slate-950/95 border-rose-500/40 text-rose-300 shadow-rose-500/20'
+        }`;
+
+        const iconName = isSuccess ? 'check_circle' : 'error';
+        const iconColor = isSuccess 
+            ? 'text-emerald-400 bg-emerald-500/20 ring-1 ring-emerald-400/40' 
+            : 'text-rose-400 bg-rose-500/20 ring-1 ring-rose-400/40';
+
+        toast.innerHTML = `
+            <div class="w-8 h-8 rounded-xl ${iconColor} flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-lg">${iconName}</span>
+            </div>
+            <div>
+                <p class="text-[11px] font-black uppercase tracking-wider text-white">${isSuccess ? 'Sukses' : 'Perhatian'}</p>
+                <p class="text-xs text-slate-300 font-medium">${message}</p>
+            </div>
+        `;
         document.body.appendChild(toast);
+
         setTimeout(() => {
             toast.style.opacity = '0';
-            toast.style.transform = 'translateY(10px)';
-            toast.style.transition = 'all 0.3s ease';
+            toast.style.transform = 'translateY(15px) scale(0.95)';
             setTimeout(() => toast.remove(), 300);
-        }, 2500);
+        }, 3000);
     }
 
     // Voice-to-Text Speech Recognition
@@ -1462,7 +1658,7 @@
     function toggleVoiceInput(inputId, btn) {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
-            alert('Browser belum mendukung pengenalan suara. Silakan gunakan Google Chrome / Microsoft Edge.');
+            showTemporaryToast('Browser belum mendukung pengenalan suara. Silakan gunakan Google Chrome / Microsoft Edge.', 'error');
             return;
         }
 
@@ -1484,7 +1680,7 @@
             recognition.onstart = function() {
                 isRecognizing = true;
                 if (btn) {
-                    btn.classList.add('text-rose-400', 'animate-pulse');
+                    btn.classList.add('text-rose-400', 'animate-mic-active', 'border-rose-500/60', 'bg-rose-500/20');
                     btn.classList.remove('text-slate-400');
                 }
             };
@@ -1504,7 +1700,7 @@
             recognition.onend = function() {
                 isRecognizing = false;
                 if (btn) {
-                    btn.classList.remove('text-rose-400', 'animate-pulse');
+                    btn.classList.remove('text-rose-400', 'animate-mic-active', 'border-rose-500/60', 'bg-rose-500/20');
                     btn.classList.add('text-slate-400');
                 }
             };
@@ -1514,7 +1710,7 @@
             console.error('Error starting speech recognition:', err);
             isRecognizing = false;
             if (btn) {
-                btn.classList.remove('text-rose-400', 'animate-pulse');
+                btn.classList.remove('text-rose-400', 'animate-mic-active', 'border-rose-500/60', 'bg-rose-500/20');
                 btn.classList.add('text-slate-400');
             }
         }
