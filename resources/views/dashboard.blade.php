@@ -129,85 +129,78 @@
 <div class="space-y-4 sm:space-y-5">
 
     <!-- 1. COMPACT HEADER BAR (Kabin Teknisi & Filter Bulan) -->
-    <div class="rounded-2xl sm:rounded-3xl bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 p-3.5 sm:p-4 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 relative overflow-hidden card-hover-glow">
-        <div class="absolute -top-10 -left-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none"></div>
+    <div class="rounded-2xl bg-slate-900/80 backdrop-blur-md border border-slate-800/80 p-3.5 sm:p-4 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 relative card-hover-glow">
         <div class="flex items-center gap-3 relative z-10">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 text-slate-950 flex items-center justify-center font-black shadow-md shadow-cyan-500/20 shrink-0 group-hover:scale-105 transition-transform">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-cyan-400/10 border border-cyan-400/25 text-cyan-400 flex items-center justify-center font-semibold shrink-0">
                 <span class="material-symbols-outlined text-xl">badge</span>
             </div>
             <div>
                 <div class="flex items-center gap-2">
-                    <span class="text-[11px] font-black uppercase tracking-wider text-cyan-300 bg-cyan-500/10 px-2 py-0.5 rounded-md border border-cyan-500/30">TEKNISI</span>
-                    <span class="text-xs sm:text-sm font-extrabold text-white font-mono">{{ auth()->user()->name }}</span>
+                    <span class="text-[10px] font-semibold tracking-wider text-cyan-300 bg-cyan-500/10 px-2 py-0.5 rounded-md border border-cyan-500/20">TEKNISI</span>
+                    <span class="text-xs sm:text-sm font-semibold text-white font-mono">{{ auth()->user()->name }}</span>
                 </div>
-                <p class="text-[11px] text-slate-400">Pencatatan Cepat &bull; Rekap Gaji &bull; Target 330 JO</p>
+                <p class="text-xs text-slate-400 mt-0.5">Pencatatan Pekerjaan &bull; Rekap Gaji &bull; Target 330 JO</p>
             </div>
         </div>
 
         <form method="GET" action="{{ route('dashboard') }}" class="flex items-center gap-2 w-full sm:w-auto relative z-10">
-            <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 hidden sm:inline">Periode:</span>
+            <span class="text-xs font-medium text-slate-400 hidden sm:inline">Periode:</span>
             <input 
                 type="month" 
                 name="bulan" 
                 value="{{ $selectedBulan }}" 
                 onchange="this.form.submit()" 
-                class="w-full sm:w-auto px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-xs font-mono font-bold focus:outline-none focus:border-cyan-400 hover:border-slate-700 transition-all cursor-pointer"
+                class="w-full sm:w-auto px-3.5 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-xs font-mono font-medium focus:outline-none focus:border-cyan-400/80 hover:border-slate-700 transition-all cursor-pointer"
             >
         </form>
     </div>
 
-    <!-- 2. COMPACT BENTO KPI GRID (4 KARTU RINGKAS DI PALING ATAS - TIDAK PANJANG!) -->
+    <!-- 2. COMPACT BENTO KPI GRID (4 KARTU RINGKAS DI PALING ATAS) -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
         
         <!-- Bento 1: Hari Ini -->
-        <div class="card-hover-glow rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-emerald-500/30 p-3.5 sm:p-4 shadow-lg flex flex-col justify-between hover:border-emerald-500/60 transition-all relative overflow-hidden group">
+        <div class="card-hover-glow rounded-2xl bg-slate-900/80 backdrop-blur-md border border-slate-800/80 p-3.5 sm:p-4 shadow-sm flex flex-col justify-between hover:border-slate-700 transition-all relative group">
             <div class="flex items-center justify-between gap-1 mb-1.5">
-                <div class="flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span class="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-emerald-400">Hari Ini</span>
-                </div>
-                <span class="text-[10px] font-mono-num font-bold text-slate-400">
+                <span class="text-xs font-semibold text-slate-300">Hari Ini</span>
+                <span class="text-[11px] font-mono-num text-slate-400">
                     {{ \Carbon\Carbon::parse($today)->translatedFormat('d M') }}
                 </span>
             </div>
             <div>
-                <div id="metricPendapatanHariIni" class="text-lg sm:text-2xl font-black font-mono-num text-gradient-emerald tracking-tight truncate">
+                <div id="metricPendapatanHariIni" class="text-lg sm:text-2xl font-bold font-mono-num text-emerald-400 tracking-tight truncate">
                     Rp {{ number_format($pendapatanHariIni, 0, ',', '.') }}
                 </div>
-                <div class="flex items-center gap-2 text-[11px] mt-1 text-slate-400">
-                    <span id="metricTotalJobHariIni" class="font-extrabold text-amber-400 font-mono-num">
-                        {{ $totalJobHariIni }} <span class="text-[10px] text-slate-400 font-bold">JO</span>
+                <div class="flex items-center gap-2 text-xs mt-1 text-slate-400">
+                    <span id="metricTotalJobHariIni" class="font-semibold text-slate-200 font-mono-num">
+                        {{ $totalJobHariIni }} <span class="text-slate-400 font-normal">JO</span>
                     </span>
                     <span>&bull;</span>
-                    <span id="metricTotalPiketHariIni" class="font-extrabold text-cyan-300 font-mono-num">
-                        {{ $totalPiketHariIni }} <span class="text-[10px] text-slate-400 font-bold">Piket</span>
+                    <span id="metricTotalPiketHariIni" class="font-semibold text-slate-200 font-mono-num">
+                        {{ $totalPiketHariIni }} <span class="text-slate-400 font-normal">Piket</span>
                     </span>
                 </div>
             </div>
         </div>
 
         <!-- Bento 2: Bulan Ini -->
-        <div class="card-hover-glow rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-cyan-500/30 p-3.5 sm:p-4 shadow-lg flex flex-col justify-between hover:border-cyan-500/60 transition-all relative overflow-hidden group">
+        <div class="card-hover-glow rounded-2xl bg-slate-900/80 backdrop-blur-md border border-slate-800/80 p-3.5 sm:p-4 shadow-sm flex flex-col justify-between hover:border-slate-700 transition-all relative group">
             <div class="flex items-center justify-between gap-1 mb-1.5">
-                <div class="flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
-                    <span class="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-cyan-400">{{ $periodTitleCard }}</span>
-                </div>
-                <span class="text-[10px] font-mono-num font-bold text-slate-400 truncate max-w-[90px]">
+                <span class="text-xs font-semibold text-slate-300">{{ $periodTitleCard }}</span>
+                <span class="text-[11px] font-mono-num text-slate-400 truncate max-w-[90px]">
                     {{ $periodLabel }}
                 </span>
             </div>
             <div>
-                <div id="metricPendapatanBulanIni" class="text-lg sm:text-2xl font-black font-mono-num text-gradient-cyan tracking-tight truncate">
+                <div id="metricPendapatanBulanIni" class="text-lg sm:text-2xl font-bold font-mono-num text-sky-400 tracking-tight truncate">
                     Rp {{ number_format($pendapatanBulanIni, 0, ',', '.') }}
                 </div>
-                <div class="flex items-center gap-2 text-[11px] mt-1 text-slate-400">
-                    <span id="metricTotalJobBulanIni" class="font-extrabold text-indigo-300 font-mono-num">
-                        {{ $totalJobBulanIni }} <span class="text-[10px] text-slate-400 font-bold">JO</span>
+                <div class="flex items-center gap-2 text-xs mt-1 text-slate-400">
+                    <span id="metricTotalJobBulanIni" class="font-semibold text-slate-200 font-mono-num">
+                        {{ $totalJobBulanIni }} <span class="text-slate-400 font-normal">JO</span>
                     </span>
                     <span>&bull;</span>
-                    <span id="metricTotalPiketBulanIni" class="font-extrabold text-amber-300 font-mono-num">
-                        {{ $totalPiketBulanIni }} <span class="text-[10px] text-slate-400 font-bold">Piket</span>
+                    <span id="metricTotalPiketBulanIni" class="font-semibold text-slate-200 font-mono-num">
+                        {{ $totalPiketBulanIni }} <span class="text-slate-400 font-normal">Piket</span>
                     </span>
                 </div>
             </div>
@@ -218,28 +211,24 @@
         </div>
 
         <!-- Bento 3: Target Gaji Bulanan -->
-        <div class="card-hover-glow rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-slate-800/90 p-3.5 sm:p-4 shadow-lg flex flex-col justify-between hover:border-emerald-500/50 transition-all relative overflow-hidden group">
+        <div class="card-hover-glow rounded-2xl bg-slate-900/80 backdrop-blur-md border border-slate-800/80 p-3.5 sm:p-4 shadow-sm flex flex-col justify-between hover:border-slate-700 transition-all relative group">
             <div class="flex items-center justify-between gap-1 mb-1.5">
-                <div class="flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-xs text-emerald-400">workspace_premium</span>
-                    <span class="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-slate-300">Target Gaji</span>
-                </div>
-                <button type="button" onclick="openTargetModal()" class="text-[10px] text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-0.5 hover:scale-105 active:scale-95 transition-all" title="Ubah target gaji">
-                    <span class="material-symbols-outlined text-[13px]">edit</span>
-                    <span>Ubah</span>
+                <span class="text-xs font-semibold text-slate-300">Target Gaji</span>
+                <button type="button" onclick="openTargetModal()" class="text-[11px] text-emerald-400 hover:text-emerald-300 font-medium hover:underline transition-all" title="Ubah target gaji">
+                    Ubah
                 </button>
             </div>
             <div>
-                <div id="metricTercapaiPendapatan" class="text-lg sm:text-2xl font-black font-mono-num text-emerald-400 tracking-tight truncate">
+                <div id="metricTercapaiPendapatan" class="text-lg sm:text-2xl font-bold font-mono-num text-emerald-400 tracking-tight truncate">
                     Rp {{ number_format($tercapaiPendapatan, 0, ',', '.') }}
                 </div>
                 <!-- Mini Progress Bar -->
                 <div class="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800 my-1.5">
-                    <div id="metricProgressBar" class="h-full bg-gradient-to-r from-emerald-500 to-cyan-400 rounded-full transition-all duration-700" style="width: {{ min(100, $persenTarget) }}%"></div>
+                    <div id="metricProgressBar" class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: {{ min(100, $persenTarget) }}%"></div>
                 </div>
-                <div class="flex items-center justify-between text-[10px] text-slate-400">
-                    <span class="truncate">Goal: <span id="metricTargetPendapatan" class="font-bold font-mono-num text-slate-300">Rp {{ number_format($targetPendapatan, 0, ',', '.') }}</span></span>
-                    <span id="metricPersenTarget" class="font-black font-mono-num text-emerald-400 shrink-0 ml-1">{{ $persenTarget }}%</span>
+                <div class="flex items-center justify-between text-[11px] text-slate-400">
+                    <span class="truncate">Goal: <span id="metricTargetPendapatan" class="font-medium font-mono-num text-slate-300">Rp {{ number_format($targetPendapatan, 0, ',', '.') }}</span></span>
+                    <span id="metricPersenTarget" class="font-semibold font-mono-num text-emerald-400 shrink-0 ml-1">{{ $persenTarget }}%</span>
                 </div>
             </div>
             <!-- Hidden elements for dynamic Ajax sync -->
@@ -249,25 +238,22 @@
         </div>
 
         <!-- Bento 4: Target Produktivitas 330 JO -->
-        <div class="card-hover-glow rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-slate-800/90 p-3.5 sm:p-4 shadow-lg flex flex-col justify-between hover:border-amber-500/50 transition-all relative overflow-hidden group">
+        <div class="card-hover-glow rounded-2xl bg-slate-900/80 backdrop-blur-md border border-slate-800/80 p-3.5 sm:p-4 shadow-sm flex flex-col justify-between hover:border-slate-700 transition-all relative group">
             <div class="flex items-center justify-between gap-1 mb-1.5">
-                <div class="flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-xs text-amber-400">trending_up</span>
-                    <span class="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-amber-400">Target 330 JO</span>
-                </div>
-                <span id="metricPersenJoVolume" class="text-[10px] font-black font-mono-num text-amber-400">
+                <span class="text-xs font-semibold text-slate-300">Target 330 JO</span>
+                <span id="metricPersenJoVolume" class="text-[11px] font-semibold font-mono-num text-amber-400">
                     {{ $persenJoVolume }}%
                 </span>
             </div>
             <div>
-                <div class="text-lg sm:text-2xl font-black font-mono-num text-amber-400 tracking-tight truncate">
-                    <span id="metricTercapaiJoVolumeText">{{ $tercapaiJoVolume }}</span> <span class="text-xs text-slate-400 font-bold">/ <span id="metricTargetJoVolume">{{ $targetJoVolume }} JO</span></span>
+                <div class="text-lg sm:text-2xl font-bold font-mono-num text-amber-400 tracking-tight truncate">
+                    <span id="metricTercapaiJoVolumeText">{{ $tercapaiJoVolume }}</span> <span class="text-xs text-slate-400 font-normal">/ <span id="metricTargetJoVolume">{{ $targetJoVolume }} JO</span></span>
                 </div>
-                <div class="flex items-center justify-between text-[10px] text-slate-400 mt-1.5">
-                    <span id="metricTargetJoQtyPerHari" class="font-bold text-emerald-300 font-mono-num truncate">
+                <div class="flex items-center justify-between text-[11px] text-slate-400 mt-1.5">
+                    <span id="metricTargetJoQtyPerHari" class="font-medium text-emerald-400 font-mono-num truncate">
                         {{ ($sisaJoVolume > 0 && $sisaHari > 0) ? $targetJoQtyPerHari . ' JO / Hari' : 'Tercapai! 🎉' }}
                     </span>
-                    <span class="text-slate-500 truncate ml-1">Sisa <span id="metricSisaJoVolume" class="text-amber-300 font-bold">{{ $sisaJoVolume > 0 ? $sisaJoVolume : 0 }}</span> JO</span>
+                    <span class="text-slate-500 truncate ml-1">Sisa <span id="metricSisaJoVolume" class="text-amber-300 font-medium">{{ $sisaJoVolume > 0 ? $sisaJoVolume : 0 }}</span> JO</span>
                 </div>
             </div>
             <!-- Hidden elements for dynamic Ajax sync -->
@@ -278,17 +264,17 @@
 
     </div>
 
-    <!-- 3. USER-FRIENDLY SEGMENTED TABS (MENGURANGI PANJANG SCROLL HALAMAN!) -->
-    <div class="sticky top-[60px] z-30 pt-1 pb-2">
-        <div class="grid grid-cols-4 gap-1.5 sm:gap-2 p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-2xl backdrop-blur-xl">
+    <!-- 3. USER-FRIENDLY SEGMENTED TABS -->
+    <div class="sticky top-[58px] z-30 pt-1 pb-1">
+        <div class="grid grid-cols-4 gap-1 sm:gap-1.5 p-1 rounded-xl bg-slate-900/90 border border-slate-800 shadow-md backdrop-blur-md">
             <!-- Tab 1: Catat Job -->
             <button 
                 type="button" 
                 id="tabBtn_input" 
                 onclick="switchDashboardTab('input')" 
-                class="dashboard-tab-btn py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 cursor-pointer bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 font-black shadow-lg shadow-amber-500/20 active:scale-95 select-none"
+                class="dashboard-tab-btn py-2 px-2 sm:px-3 rounded-lg text-xs font-semibold transition-all duration-150 flex items-center justify-center gap-1.5 cursor-pointer bg-slate-800 text-amber-400 border border-amber-400/30 shadow-sm active:scale-95 select-none"
             >
-                <span class="material-symbols-outlined text-base sm:text-lg">post_add</span>
+                <span class="material-symbols-outlined text-[18px]">post_add</span>
                 <span class="truncate">Catat Job</span>
             </button>
 
@@ -297,9 +283,9 @@
                 type="button" 
                 id="tabBtn_rekap" 
                 onclick="switchDashboardTab('rekap')" 
-                class="dashboard-tab-btn py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 cursor-pointer text-slate-400 hover:text-slate-200 hover:bg-slate-800/80 hover:scale-[1.02] active:scale-95 font-bold select-none"
+                class="dashboard-tab-btn py-2 px-2 sm:px-3 rounded-lg text-xs font-medium transition-all duration-150 flex items-center justify-center gap-1.5 cursor-pointer text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 active:scale-95 select-none border border-transparent"
             >
-                <span class="material-symbols-outlined text-base sm:text-lg">calendar_month</span>
+                <span class="material-symbols-outlined text-[18px]">calendar_month</span>
                 <span class="truncate">Rekap Harian</span>
             </button>
 
@@ -308,12 +294,12 @@
                 type="button" 
                 id="tabBtn_riwayat" 
                 onclick="switchDashboardTab('riwayat')" 
-                class="dashboard-tab-btn py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 cursor-pointer text-slate-400 hover:text-slate-200 hover:bg-slate-800/80 hover:scale-[1.02] active:scale-95 font-bold select-none relative"
+                class="dashboard-tab-btn py-2 px-2 sm:px-3 rounded-lg text-xs font-medium transition-all duration-150 flex items-center justify-center gap-1.5 cursor-pointer text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 active:scale-95 select-none relative border border-transparent"
             >
-                <span class="material-symbols-outlined text-base sm:text-lg">receipt_long</span>
+                <span class="material-symbols-outlined text-[18px]">receipt_long</span>
                 <span class="truncate">Riwayat</span>
                 @if($detailJobOrders->total() > 0)
-                    <span class="hidden sm:inline-block px-1.5 py-0.2 rounded-md bg-amber-400/20 text-amber-300 text-[10px] font-mono-num font-extrabold border border-amber-400/30">
+                    <span class="hidden sm:inline-block px-1.5 py-0.2 rounded bg-amber-400/10 text-amber-400 text-[10px] font-mono-num font-semibold border border-amber-400/20">
                         {{ $detailJobOrders->total() }}
                     </span>
                 @endif
@@ -324,9 +310,9 @@
                 type="button" 
                 id="tabBtn_target" 
                 onclick="switchDashboardTab('target')" 
-                class="dashboard-tab-btn py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 cursor-pointer text-slate-400 hover:text-slate-200 hover:bg-slate-800/80 hover:scale-[1.02] active:scale-95 font-bold select-none"
+                class="dashboard-tab-btn py-2 px-2 sm:px-3 rounded-lg text-xs font-medium transition-all duration-150 flex items-center justify-center gap-1.5 cursor-pointer text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 active:scale-95 select-none border border-transparent"
             >
-                <span class="material-symbols-outlined text-base sm:text-lg">insights</span>
+                <span class="material-symbols-outlined text-[18px]">insights</span>
                 <span class="truncate">Target &amp; Tren</span>
             </button>
         </div>
@@ -338,78 +324,42 @@
     <!-- ========================================================================= -->
     <div id="tabPanel_input" class="dashboard-tab-panel space-y-4 animate-tab-fade">
         
-        <!-- Input Job Form Card (Sleek, Modern, High-End Bento Design) -->
-        <div class="relative rounded-3xl bg-slate-900/90 backdrop-blur-2xl border border-slate-800/90 p-5 sm:p-7 shadow-2xl shadow-black/40 overflow-hidden group">
-            <!-- Glowing top accent line -->
-            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-orange-500 to-emerald-400"></div>
-            <!-- Ambient glows -->
-            <div class="absolute -top-20 -right-20 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-amber-500/15 transition-all duration-500"></div>
-            <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
+        <!-- Input Job Form Card (Clean, Modern, Streamlined Design) -->
+        <div class="relative rounded-2xl bg-slate-900/80 backdrop-blur-md border border-slate-800/80 p-5 sm:p-6 shadow-sm overflow-hidden">
             <!-- Form Card Header -->
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-4 mb-5 relative z-10">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-400 via-amber-500 to-orange-500 text-slate-950 flex items-center justify-center font-black shadow-lg shadow-amber-500/25 ring-1 ring-amber-300/40 shrink-0">
-                        <span class="material-symbols-outlined text-2xl">post_add</span>
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-3.5 mb-4 relative z-10">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-amber-400/10 border border-amber-400/25 text-amber-400 flex items-center justify-center font-semibold shrink-0">
+                        <span class="material-symbols-outlined text-lg">post_add</span>
                     </div>
                     <div>
-                        <div class="flex items-center gap-2">
-                            <h2 class="text-base sm:text-lg font-black uppercase tracking-wider text-white">Catat Job Order</h2>
-                            <span class="text-[10px] font-black uppercase tracking-wider text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-md border border-amber-400/30">Input Cepat</span>
-                        </div>
+                        <h2 class="text-sm sm:text-base font-semibold text-white">Catat Job Order</h2>
                         <p class="text-xs text-slate-400 mt-0.5">Pilih kategori, atur hasil &amp; kuantitas, lalu simpan.</p>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-950/80 border border-slate-800 text-slate-300 text-xs font-mono font-bold shadow-sm shrink-0">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span>Kalkulator Siap</span>
+                <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 text-slate-400 text-xs font-mono font-medium shrink-0">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                    <span>Siap Input</span>
                 </div>
             </div>
 
-            <!-- Quick Category Chips (1-Sentuhan) -->
-            <div class="space-y-2 mb-5 relative z-10">
+            <!-- Quick Category Chips -->
+            <div class="space-y-1.5 mb-4 relative z-10">
                 <div class="flex items-center justify-between">
-                    <span class="text-[11px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                        <span class="material-symbols-outlined text-sm text-amber-400">bolt</span>
-                        <span>Pilihan Cepat Kategori Populer (1-Klik):</span>
+                    <span class="text-xs font-medium text-slate-400">
+                        Pilihan Cepat Kategori:
                     </span>
-                    <span class="text-[10px] text-slate-500 font-semibold hidden sm:inline">Klik untuk langsung pilih</span>
+                    <span class="text-[11px] text-slate-500 hidden sm:inline">1-klik untuk langsung pilih</span>
                 </div>
                 
-                @php
-                    $chipIconMap = [
-                        'init' => 'power_settings_new',
-                        'faktur' => 'receipt_long',
-                        'kunjungan' => 'person_pin_circle',
-                        'qris' => 'qr_code_2',
-                        'pemasangan edc' => 'point_of_sale',
-                        'penarikan edc' => 'remove_shopping_cart',
-                        'proaktif' => 'build',
-                        'piket' => 'alarm',
-                    ];
-                @endphp
-
-                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth py-1 -mx-1 px-1">
+                <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth py-1 -mx-0.5 px-0.5">
                     @foreach($tarifs->take(6) as $chipTarif)
-                        @php
-                            $cName = strtolower($chipTarif->kategori);
-                            $cIcon = 'category';
-                            foreach ($chipIconMap as $key => $icon) {
-                                if (str_contains($cName, $key)) {
-                                    $cIcon = $icon;
-                                    break;
-                                }
-                            }
-                        @endphp
                         <button type="button" 
                             onclick="selectQuickCategory({{ $chipTarif->id }})" 
-                            class="quick-category-chip group px-3.5 py-2.5 rounded-2xl bg-slate-950/90 border border-slate-800 hover:border-amber-400 text-slate-300 hover:text-amber-300 text-xs font-bold whitespace-nowrap transition-all flex items-center gap-2.5 shrink-0 shadow-sm active:scale-95 cursor-pointer">
-                            <span class="w-6 h-6 rounded-lg bg-amber-400/10 group-hover:bg-amber-400/20 text-amber-400 flex items-center justify-center transition-colors">
-                                <span class="material-symbols-outlined text-sm">{{ $cIcon }}</span>
-                            </span>
-                            <span class="font-extrabold">{{ $chipTarif->kategori }}</span>
-                            <span class="text-[10px] font-mono-num font-black text-amber-400/80 bg-slate-900 px-1.5 py-0.5 rounded-lg border border-slate-800">
+                            class="quick-category-chip px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 hover:border-amber-400/40 text-slate-300 hover:text-white text-xs font-medium whitespace-nowrap transition-all flex items-center gap-2 shrink-0 cursor-pointer shadow-sm active:scale-95">
+                            <span>{{ $chipTarif->kategori }}</span>
+                            <span class="text-[11px] font-mono-num font-semibold text-amber-400/90 bg-slate-900 px-1.5 py-0.2 rounded border border-slate-800">
                                 {{ number_format($chipTarif->tarif_berhasil / 1000, 0) }}k
                             </span>
                         </button>
@@ -417,7 +367,7 @@
                 </div>
             </div>
 
-            <form action="{{ route('job-orders.store') }}" method="POST" class="space-y-4 relative z-10" id="quickJobForm" onsubmit="handleQuickJobFormSubmit(event)">
+            <form action="{{ route('job-orders.store') }}" method="POST" class="space-y-3.5 relative z-10" id="quickJobForm" onsubmit="handleQuickJobFormSubmit(event)">
                 @csrf
 
                 <!-- FORM BARIS 1: Kategori (Lebar) & Status Hasil (Segmented Switcher) -->
@@ -425,21 +375,16 @@
                     
                     <!-- 1. Kategori Dropdown (Col 7 on lg) -->
                     <div class="lg:col-span-7 space-y-1.5">
-                        <label for="tarif_id" class="text-xs font-black text-slate-300 uppercase tracking-wider flex items-center justify-between">
-                            <span class="flex items-center gap-1.5">
-                                <span class="material-symbols-outlined text-sm text-amber-400">category</span>
-                                <span>Kategori Pekerjaan</span>
-                                <span class="text-amber-400">*</span>
-                            </span>
-                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Tarif Otomatis</span>
+                        <label for="tarif_id" class="text-xs font-medium text-slate-300 flex items-center justify-between">
+                            <span>Kategori Pekerjaan <span class="text-amber-400">*</span></span>
+                            <span class="text-[11px] text-slate-500">Tarif Otomatis</span>
                         </label>
                         <div class="relative group/sel">
-                            <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/sel:text-amber-400 transition-colors text-xl pointer-events-none">work_outline</span>
                             <select 
                                 name="tarif_id" 
                                 id="tarif_id" 
                                 required 
-                                class="w-full pl-11 pr-10 py-3.5 rounded-2xl bg-slate-950/90 border border-slate-700/80 hover:border-slate-600 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 text-white font-bold text-sm min-h-[50px] cursor-pointer appearance-none shadow-inner transition-all outline-none"
+                                class="w-full px-3.5 pr-10 py-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-slate-700 focus:border-amber-400/80 focus:ring-1 focus:ring-amber-400/30 text-slate-100 font-medium text-xs sm:text-sm min-h-[44px] cursor-pointer appearance-none transition-all outline-none"
                                 onchange="updatePricePreview()"
                             >
                                 <option value="" disabled selected>Pilih Kategori Pekerjaan...</option>
@@ -454,21 +399,16 @@
                                     </option>
                                 @endforeach
                             </select>
-                            <span class="material-symbols-outlined absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xl">unfold_more</span>
+                            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-lg">unfold_more</span>
                         </div>
                     </div>
 
                     <!-- 2. Status Hasil Switcher (Col 5 on lg) -->
                     <div class="lg:col-span-5 space-y-1.5">
-                        <label class="text-xs font-black text-slate-300 uppercase tracking-wider flex items-center justify-between">
-                            <span class="flex items-center gap-1.5">
-                                <span class="material-symbols-outlined text-sm text-amber-400">task_alt</span>
-                                <span>Status Hasil</span>
-                                <span class="text-amber-400">*</span>
-                            </span>
-                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Pilih Salah Satu</span>
+                        <label class="text-xs font-medium text-slate-300 flex items-center justify-between">
+                            <span>Status Hasil <span class="text-amber-400">*</span></span>
                         </label>
-                        <div class="grid grid-cols-2 gap-2 min-h-[50px]">
+                        <div class="grid grid-cols-2 gap-2 min-h-[44px]">
                             <!-- Berhasil -->
                             <label class="cursor-pointer">
                                 <input 
@@ -479,9 +419,9 @@
                                     checked 
                                     onchange="updatePricePreview()"
                                 >
-                                <div class="w-full h-full py-3 px-3 rounded-2xl bg-slate-950/90 border border-slate-800 peer-checked:border-emerald-400 peer-checked:bg-emerald-500/20 peer-checked:text-emerald-300 peer-checked:shadow-lg peer-checked:shadow-emerald-500/15 text-slate-400 font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 hover:border-slate-700 select-none">
-                                    <span class="material-symbols-outlined text-lg">check_circle</span>
-                                    <span>BERHASIL</span>
+                                <div class="w-full h-full py-2.5 px-3 rounded-xl bg-slate-950 border border-slate-800 peer-checked:border-emerald-500/60 peer-checked:bg-emerald-500/10 peer-checked:text-emerald-400 text-slate-400 font-semibold text-xs transition-all flex items-center justify-center gap-1.5 hover:border-slate-700 select-none">
+                                    <span class="material-symbols-outlined text-base">check_circle</span>
+                                    <span>Berhasil</span>
                                 </div>
                             </label>
 
@@ -495,32 +435,31 @@
                                     {{ old('status') === 'gagal' ? 'checked' : '' }}
                                     onchange="updatePricePreview()"
                                 >
-                                <div class="w-full h-full py-3 px-3 rounded-2xl bg-slate-950/90 border border-slate-800 peer-checked:border-rose-500 peer-checked:bg-rose-500/20 peer-checked:text-rose-300 peer-checked:shadow-lg peer-checked:shadow-rose-500/15 text-slate-400 font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 hover:border-slate-700 select-none">
-                                    <span class="material-symbols-outlined text-lg">cancel</span>
-                                    <span>GAGAL</span>
+                                <div class="w-full h-full py-2.5 px-3 rounded-xl bg-slate-950 border border-slate-800 peer-checked:border-rose-500/60 peer-checked:bg-rose-500/10 peer-checked:text-rose-400 text-slate-400 font-semibold text-xs transition-all flex items-center justify-center gap-1.5 hover:border-slate-700 select-none">
+                                    <span class="material-symbols-outlined text-base">cancel</span>
+                                    <span>Gagal</span>
                                 </div>
                             </label>
                         </div>
                     </div>
                 </div>
 
-                <!-- FORM BARIS 2: Jumlah Stepper, Tanggal, dan Catatan (3 Kolom Seimbang) -->
+                <!-- FORM BARIS 2: Jumlah Stepper, Tanggal, dan Catatan -->
                 <div class="grid grid-cols-1 sm:grid-cols-12 gap-3.5 items-start">
                     
                     <!-- 3. Jumlah (Qty) Stepper (Col 3 on sm/lg) -->
                     <div class="sm:col-span-3 space-y-1.5">
                         <div class="flex items-center justify-between">
-                            <label for="quantity" class="text-xs font-black text-slate-300 uppercase tracking-wider flex items-center gap-1">
-                                <span class="material-symbols-outlined text-sm text-amber-400">tag</span>
-                                <span>Jumlah JO</span>
+                            <label for="quantity" class="text-xs font-medium text-slate-300">
+                                Jumlah JO
                             </label>
                             <div class="flex items-center gap-1">
-                                <button type="button" onclick="adjustQuickQuantity(1)" class="px-2 py-0.5 rounded-lg bg-slate-800/90 hover:bg-slate-700 text-slate-300 hover:text-white text-[10px] font-bold border border-slate-700 hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-sm" title="Tambah 1">+1</button>
-                                <button type="button" onclick="adjustQuickQuantity(5)" class="px-2 py-0.5 rounded-lg bg-slate-800/90 hover:bg-amber-400/20 text-amber-300 hover:text-amber-200 text-[10px] font-bold border border-amber-400/30 hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-sm" title="Tambah 5">+5</button>
+                                <button type="button" onclick="adjustQuickQuantity(1)" class="px-1.5 py-0.2 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-[10px] font-medium border border-slate-700 transition-all cursor-pointer" title="Tambah 1">+1</button>
+                                <button type="button" onclick="adjustQuickQuantity(5)" class="px-1.5 py-0.2 rounded bg-slate-800 hover:bg-amber-400/20 text-amber-300 text-[10px] font-medium border border-slate-700 transition-all cursor-pointer" title="Tambah 5">+5</button>
                             </div>
                         </div>
-                        <div class="flex items-center rounded-2xl bg-slate-950/90 border border-slate-700/80 overflow-hidden min-h-[48px] focus-within:border-amber-400 focus-within:ring-2 focus-within:ring-amber-400/20 transition-all shadow-inner">
-                            <button type="button" onclick="stepQuantity(-1)" class="stepper-btn w-12 h-12 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800/80 transition-all font-black text-lg cursor-pointer select-none">−</button>
+                        <div class="flex items-center rounded-xl bg-slate-950 border border-slate-800 overflow-hidden min-h-[42px] focus-within:border-amber-400/80 focus-within:ring-1 focus-within:ring-amber-400/30 transition-all">
+                            <button type="button" onclick="stepQuantity(-1)" class="stepper-btn w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white transition-all font-semibold text-base cursor-pointer select-none">−</button>
                             <input 
                                 type="number" 
                                 name="quantity" 
@@ -531,72 +470,62 @@
                                 required 
                                 oninput="updatePricePreview()"
                                 onchange="updatePricePreview()"
-                                class="w-full bg-transparent text-amber-400 font-mono-num font-black text-center text-base focus:outline-none py-2"
+                                class="w-full bg-transparent text-amber-400 font-mono-num font-bold text-center text-sm focus:outline-none py-1.5"
                             >
-                            <button type="button" onclick="stepQuantity(1)" class="stepper-btn w-12 h-12 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800/80 transition-all font-black text-lg cursor-pointer select-none">+</button>
+                            <button type="button" onclick="stepQuantity(1)" class="stepper-btn w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white transition-all font-semibold text-base cursor-pointer select-none">+</button>
                         </div>
                     </div>
 
                     <!-- 4. Tanggal Pengerjaan (Col 4 on sm/lg) -->
                     <div class="sm:col-span-4 space-y-1.5">
                         <div class="flex items-center justify-between">
-                            <label for="tanggal" class="text-xs font-black text-slate-300 uppercase tracking-wider flex items-center gap-1">
-                                <span class="material-symbols-outlined text-sm text-amber-400">calendar_today</span>
-                                <span>Tanggal</span>
-                                <span class="text-amber-400">*</span>
+                            <label for="tanggal" class="text-xs font-medium text-slate-300">
+                                Tanggal <span class="text-amber-400">*</span>
                             </label>
                             <div class="flex items-center gap-1">
-                                <button type="button" onclick="setQuickFormDate('today')" class="px-2 py-0.5 rounded-lg bg-slate-800/90 hover:bg-amber-400/20 hover:text-amber-300 text-slate-300 text-[10px] font-bold border border-slate-700 hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-sm">Hari Ini</button>
-                                <button type="button" onclick="setQuickFormDate('yesterday')" class="px-2 py-0.5 rounded-lg bg-slate-800/90 hover:bg-amber-400/20 hover:text-amber-300 text-slate-300 text-[10px] font-bold border border-slate-700 hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-sm">Kemarin</button>
+                                <button type="button" onclick="setQuickFormDate('today')" class="px-1.5 py-0.2 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-medium border border-slate-700 transition-all cursor-pointer">Hari Ini</button>
+                                <button type="button" onclick="setQuickFormDate('yesterday')" class="px-1.5 py-0.2 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-medium border border-slate-700 transition-all cursor-pointer">Kemarin</button>
                             </div>
                         </div>
-                        <div class="relative group/dt">
-                            <input 
-                                type="date" 
-                                name="tanggal" 
-                                id="tanggal" 
-                                value="{{ old('tanggal', $today) }}" 
-                                required 
-                                class="w-full px-4 py-3 rounded-2xl bg-slate-950/90 border border-slate-700/80 text-white font-mono font-bold text-xs focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 focus:outline-none transition-all min-h-[48px] shadow-inner"
-                            >
-                        </div>
+                        <input 
+                            type="date" 
+                            name="tanggal" 
+                            id="tanggal" 
+                            value="{{ old('tanggal', $today) }}" 
+                            required 
+                            class="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 font-mono font-medium text-xs focus:border-amber-400/80 focus:ring-1 focus:ring-amber-400/30 focus:outline-none transition-all min-h-[42px]"
+                        >
                     </div>
 
                     <!-- 5. Catatan / Voice-to-Text (Col 5 on sm/lg) -->
                     <div class="sm:col-span-5 space-y-1.5">
                         <div class="flex items-center justify-between">
-                            <label for="catatanInput" class="text-xs font-black text-slate-300 uppercase tracking-wider flex items-center gap-1">
-                                <span class="material-symbols-outlined text-sm text-amber-400">edit_note</span>
-                                <span>Catatan / Lokasi</span>
-                                <span class="text-slate-500 text-[10px] font-normal lowercase">(opsional)</span>
+                            <label for="catatanInput" class="text-xs font-medium text-slate-300">
+                                Catatan / Lokasi <span class="text-slate-500 font-normal">(opsional)</span>
                             </label>
-                            <span class="text-[10px] text-slate-500 font-semibold hidden sm:inline">No. Merchant / TID</span>
+                            <span class="text-[11px] text-slate-500 hidden sm:inline">No. Merchant / TID</span>
                         </div>
-                        <div class="relative group/cat">
-                            <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within/cat:text-amber-400 transition-colors text-lg pointer-events-none">description</span>
+                        <div class="relative">
                             <input 
                                 type="text" 
                                 name="catatan" 
                                 id="catatanInput"
                                 placeholder="Contoh: Toko Berkah / TID 88219..." 
                                 value="{{ old('catatan') }}"
-                                class="w-full pl-10 pr-11 py-3 rounded-2xl bg-slate-950/90 border border-slate-700/80 text-slate-200 text-xs focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 focus:outline-none transition-all min-h-[48px] shadow-inner"
+                                class="w-full pl-3 pr-10 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 placeholder:text-slate-500 text-xs focus:border-amber-400/80 focus:ring-1 focus:ring-amber-400/30 focus:outline-none transition-all min-h-[42px]"
                             >
-                            <button type="button" onclick="toggleVoiceInput('catatanInput', this)" class="absolute right-2.5 top-1/2 -translate-y-1/2 p-2 rounded-xl bg-slate-800/80 hover:bg-amber-400/20 text-slate-400 hover:text-amber-300 hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-sm" title="Input suara (Speech-to-Text)">
-                                <span class="material-symbols-outlined text-lg">mic</span>
+                            <button type="button" onclick="toggleVoiceInput('catatanInput', this)" class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-slate-400 hover:text-amber-400 hover:bg-slate-800/80 transition-all cursor-pointer" title="Input suara (Speech-to-Text)">
+                                <span class="material-symbols-outlined text-base">mic</span>
                             </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Custom Nominal Input (Piket Event) -->
-                <div id="customTarifContainer" class="p-4 rounded-2xl bg-amber-500/10 border border-amber-400/40 hidden space-y-2 animate-fadeIn">
-                    <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-amber-400 text-lg">payments</span>
-                        <label for="custom_tarif" class="text-xs font-black uppercase tracking-wider text-amber-300">Nominal Tarif Custom Piket / Event (Rp):</label>
-                    </div>
-                    <div class="relative max-w-sm">
-                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-400 font-bold text-sm">Rp</span>
+                <div id="customTarifContainer" class="p-3.5 rounded-xl bg-amber-500/10 border border-amber-400/30 hidden space-y-1.5 animate-fadeIn">
+                    <label for="custom_tarif" class="text-xs font-semibold text-amber-300 block">Nominal Tarif Custom Piket / Event (Rp):</label>
+                    <div class="relative max-w-xs">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-amber-400 font-medium text-xs">Rp</span>
                         <input 
                             type="number" 
                             name="custom_tarif" 
@@ -605,24 +534,21 @@
                             step="1000"
                             placeholder="Contoh: 75000" 
                             oninput="updatePricePreview()"
-                            class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-amber-400 text-amber-300 font-mono-num font-extrabold text-sm focus:outline-none shadow-inner"
+                            class="w-full pl-9 pr-3 py-1.5 rounded-lg bg-slate-950 border border-amber-400/50 text-amber-300 font-mono-num font-semibold text-xs focus:outline-none"
                         >
                     </div>
                 </div>
 
-                <!-- FORM BARIS 3: Action & Price Preview Bar (Modern, High-Contrast & Premium) -->
-                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-4 border-t border-slate-800/80">
+                <!-- FORM BARIS 3: Action & Price Preview Bar -->
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3.5 border-t border-slate-800/80">
                     <!-- Left: Live Tarif Calculation Card -->
-                    <div class="flex items-center gap-3.5 px-4 py-3 rounded-2xl bg-slate-950/90 border border-emerald-500/30 shadow-lg shadow-emerald-950/10">
-                        <div class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 shadow-inner">
-                            <span class="material-symbols-outlined text-xl">payments</span>
+                    <div class="flex items-center gap-3 px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+                            <span class="material-symbols-outlined text-lg">payments</span>
                         </div>
                         <div>
-                            <div class="flex items-center gap-1.5">
-                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                                <span class="text-[10px] font-black uppercase tracking-wider text-slate-400">Total Snapshot Tarif:</span>
-                            </div>
-                            <div id="pricePreview" class="text-xl sm:text-2xl font-black font-mono-num text-gradient-emerald tracking-tight">
+                            <span class="text-[10px] font-medium text-slate-400 block">Total Estimasi Tarif:</span>
+                            <div id="pricePreview" class="text-lg sm:text-xl font-bold font-mono-num text-emerald-400 tracking-tight">
                                 Rp 0
                             </div>
                         </div>
@@ -631,24 +557,24 @@
                     <!-- Right: Submit CTA Button -->
                     <button 
                         type="submit" 
-                        class="btn-shine animate-cta-glow relative overflow-hidden group py-3.5 px-8 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 hover:from-amber-300 hover:to-orange-400 active:scale-[0.97] text-slate-950 font-black text-sm uppercase tracking-wider shadow-xl shadow-amber-500/30 hover:shadow-amber-500/50 transition-all duration-300 cursor-pointer min-h-[52px] flex items-center justify-center gap-2.5 border border-amber-300/40"
+                        class="btn-shine py-2.5 px-6 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-semibold text-xs sm:text-sm transition-all duration-150 cursor-pointer min-h-[44px] flex items-center justify-center gap-2 active:scale-98 shadow-sm"
                     >
-                        <span class="material-symbols-outlined text-xl font-bold group-hover:scale-110 transition-transform">check_circle</span>
-                        <span>SIMPAN JOB ORDER</span>
+                        <span class="material-symbols-outlined text-lg">check</span>
+                        <span>Simpan Job Order</span>
                     </button>
                 </div>
             </form>
         </div>
 
         <!-- DAFTAR JOB TERCATAT HARI INI (Langsung terlihat di bawah form tanpa perlu scroll ke bawah!) -->
-        <div class="rounded-3xl bg-slate-900/70 backdrop-blur-xl border border-slate-800/80 p-4 sm:p-5 shadow-xl space-y-3">
+        <!-- DAFTAR JOB TERCATAT HARI INI -->
+        <div class="rounded-2xl bg-slate-900/80 backdrop-blur-md border border-slate-800/80 p-4 sm:p-5 shadow-sm space-y-3">
             <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
                 <div class="flex items-center gap-2">
-                    <span class="material-symbols-outlined text-amber-400 text-lg">history_toggle_off</span>
-                    <h3 class="text-xs sm:text-sm font-black uppercase text-white tracking-wider">Job Tercatat Hari Ini</h3>
-                    <span class="text-[10px] font-mono-num font-bold text-slate-400">({{ \Carbon\Carbon::parse($today)->translatedFormat('d M Y') }})</span>
+                    <h3 class="text-xs sm:text-sm font-semibold text-white">Job Tercatat Hari Ini</h3>
+                    <span class="text-[11px] font-mono-num text-slate-400">({{ \Carbon\Carbon::parse($today)->translatedFormat('d M Y') }})</span>
                 </div>
-                <span class="px-2.5 py-0.5 rounded-lg bg-emerald-400/10 text-emerald-300 text-[10px] font-mono-num font-extrabold border border-emerald-400/20">
+                <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 text-[11px] font-mono-num font-medium border border-emerald-500/20">
                     {{ $todayJobOrders->count() }} JO &bull; Rp {{ number_format($pendapatanHariIni, 0, ',', '.') }}
                 </span>
             </div>
@@ -656,13 +582,13 @@
             @if($todayJobOrders->count() > 0)
                 <div class="space-y-2">
                     @foreach($todayJobOrders as $tJob)
-                        <div class="group/job p-3 rounded-2xl bg-slate-950/80 border border-slate-800/80 hover:border-amber-400/40 hover:bg-slate-900/90 hover:translate-x-1 hover:shadow-lg hover:shadow-black/40 transition-all duration-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                        <div class="group/job p-3 rounded-xl bg-slate-950 border border-slate-800 hover:border-slate-700 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                             <div class="flex items-center gap-2.5">
-                                <span class="w-2 h-2 rounded-full {{ $tJob->status === 'berhasil' ? 'bg-emerald-400 shadow-sm shadow-emerald-400/50' : 'bg-rose-400 shadow-sm shadow-rose-400/50' }} shrink-0"></span>
+                                <span class="w-2 h-2 rounded-full {{ $tJob->status === 'berhasil' ? 'bg-emerald-400' : 'bg-rose-400' }} shrink-0"></span>
                                 <div>
                                     <div class="flex items-center gap-2">
-                                        <span class="text-xs font-bold text-white group-hover/job:text-amber-300 transition-colors">{{ $tJob->kategori }}</span>
-                                        <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider {{ $tJob->status === 'berhasil' ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/15 text-rose-300 border border-rose-500/30' }}">
+                                        <span class="text-xs font-semibold text-slate-200">{{ $tJob->kategori }}</span>
+                                        <span class="px-1.5 py-0.2 rounded text-[10px] font-medium capitalize {{ $tJob->status === 'berhasil' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20' }}">
                                             {{ $tJob->status }}
                                         </span>
                                     </div>
@@ -673,23 +599,23 @@
                             </div>
                             
                             <div class="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto pt-1 sm:pt-0 border-t sm:border-t-0 border-slate-800/60">
-                                <span class="text-xs font-black font-mono-num text-amber-400">
+                                <span class="text-xs font-semibold font-mono-num text-amber-400">
                                     Rp {{ number_format($tJob->tarif, 0, ',', '.') }}
                                 </span>
-                                <div class="flex items-center gap-1.5">
+                                <div class="flex items-center gap-1">
                                     <button 
                                         type="button" 
                                         onclick="openEditModal({{ json_encode($tJob) }})" 
-                                        class="p-2 rounded-xl bg-slate-800/80 hover:bg-amber-400 hover:text-slate-950 text-amber-400 border border-slate-700/60 hover:border-amber-400 active:scale-90 transition-all cursor-pointer shadow-sm" 
+                                        class="p-1.5 rounded-lg text-slate-400 hover:text-amber-400 hover:bg-slate-800 transition-all cursor-pointer" 
                                         title="Edit"
                                     >
-                                        <span class="material-symbols-outlined text-sm">edit</span>
+                                        <span class="material-symbols-outlined text-base">edit</span>
                                     </button>
                                     <form action="{{ route('job-orders.destroy', $tJob->id) }}" method="POST" onsubmit="return confirm('Hapus job order ini?');" class="inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="p-2 rounded-xl bg-rose-950/40 hover:bg-rose-500 hover:text-white text-rose-400 border border-rose-500/30 hover:border-rose-400 active:scale-90 transition-all cursor-pointer shadow-sm" title="Hapus">
-                                            <span class="material-symbols-outlined text-sm">delete</span>
+                                        <button type="submit" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-all cursor-pointer" title="Hapus">
+                                            <span class="material-symbols-outlined text-base">delete</span>
                                         </button>
                                     </form>
                                 </div>
@@ -698,9 +624,9 @@
                     @endforeach
                 </div>
             @else
-                <div class="py-6 px-4 text-center rounded-2xl bg-slate-950/60 border border-slate-800/60">
-                    <span class="material-symbols-outlined text-slate-600 text-3xl mb-1">note_alt</span>
-                    <p class="text-xs text-slate-400 font-medium">Belum ada job order yang dicatat hari ini.</p>
+                <div class="py-6 px-4 text-center rounded-xl bg-slate-950 border border-slate-800">
+                    <span class="material-symbols-outlined text-slate-600 text-2xl mb-1">note_alt</span>
+                    <p class="text-xs text-slate-300 font-medium">Belum ada job order yang dicatat hari ini.</p>
                     <p class="text-[11px] text-slate-500 mt-0.5">Gunakan formulir di atas untuk mulai mencatat pekerjaan harian Anda.</p>
                 </div>
             @endif
@@ -714,22 +640,21 @@
     <!-- ========================================================================= -->
     <div id="tabPanel_rekap" class="dashboard-tab-panel space-y-4 hidden">
         
-        <div class="rounded-3xl bg-slate-900/70 backdrop-blur-xl border border-slate-800/80 p-4 sm:p-6 shadow-2xl space-y-4">
+        <div class="rounded-2xl bg-slate-900/80 backdrop-blur-md border border-slate-800/80 p-4 sm:p-5 shadow-sm space-y-4">
             
             <!-- Header & Export Action -->
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-3">
                 <div>
-                    <h3 class="text-sm sm:text-base font-black uppercase text-white tracking-wider flex items-center gap-2">
-                        <span class="material-symbols-outlined text-amber-400 text-lg">calendar_month</span>
-                        <span>Rekap Harian ({{ $periodLabel }})</span>
+                    <h3 class="text-sm sm:text-base font-semibold text-white">
+                        Rekap Harian ({{ $periodLabel }})
                     </h3>
-                    <p class="text-[11px] text-slate-400">Total job dan akumulasi pendapatan per tanggal.</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Total job dan akumulasi pendapatan per tanggal.</p>
                 </div>
 
                 <div class="flex items-center gap-2 w-full sm:w-auto">
                     <a 
                         href="{{ route('export.csv', ['bulan' => $selectedBulan, 'start_date' => $startDate, 'end_date' => $endDate, 'teknisi_id' => request('teknisi_id')]) }}" 
-                        class="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-emerald-950/80 hover:bg-emerald-900/80 border border-emerald-500/40 text-emerald-300 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all shadow-sm"
+                        class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700/80 text-slate-200 hover:text-white font-medium text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm"
                     >
                         <span class="material-symbols-outlined text-base">download</span>
                         <span>CSV</span>
@@ -738,7 +663,7 @@
                     <a 
                         href="{{ route('export.pdf', ['bulan' => $selectedBulan, 'start_date' => $startDate, 'end_date' => $endDate, 'teknisi_id' => request('teknisi_id')]) }}" 
                         target="_blank"
-                        class="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-cyan-950/80 hover:bg-cyan-900/80 border border-cyan-500/40 text-cyan-300 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all shadow-sm"
+                        class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg bg-amber-400/10 hover:bg-amber-400/20 border border-amber-400/30 text-amber-300 font-medium text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm"
                     >
                         <span class="material-symbols-outlined text-base">print</span>
                         <span>PDF</span>
@@ -747,13 +672,13 @@
             </div>
 
             <!-- Filter Controls (Bulan vs Rentang Tanggal) -->
-            <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3 sm:p-4 space-y-3">
+            <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 sm:p-4 space-y-3">
                 <div class="flex items-center gap-2 border-b border-slate-800/80 pb-2.5">
                     <button 
                         type="button"
                         onclick="switchFilterMode('bulan')"
                         id="tabBulan"
-                        class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer {{ (!$startDate && !$endDate) ? 'bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 font-black shadow' : 'bg-slate-800/80 text-slate-400 hover:text-slate-200' }}"
+                        class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer {{ (!$startDate && !$endDate) ? 'bg-slate-800 text-amber-400 border border-amber-400/30 shadow-sm' : 'text-slate-400 hover:text-slate-200' }}"
                     >
                         Per Bulan
                     </button>
@@ -761,13 +686,13 @@
                         type="button"
                         onclick="switchFilterMode('rentang')"
                         id="tabRentang"
-                        class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer {{ ($startDate || $endDate) ? 'bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 font-black shadow' : 'bg-slate-800/80 text-slate-400 hover:text-slate-200' }}"
+                        class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer {{ ($startDate || $endDate) ? 'bg-slate-800 text-amber-400 border border-amber-400/30 shadow-sm' : 'text-slate-400 hover:text-slate-200' }}"
                     >
                         Rentang Tanggal
                     </button>
                     
                     @if($startDate || $endDate || $selectedBulan !== \Carbon\Carbon::now()->format('Y-m'))
-                        <a href="{{ route('dashboard') }}" class="ml-auto text-[11px] text-rose-400 hover:underline font-bold uppercase tracking-wider">
+                        <a href="{{ route('dashboard') }}" class="ml-auto text-xs text-rose-400 hover:underline font-medium">
                             Reset Filter
                         </a>
                     @endif
@@ -777,17 +702,17 @@
                 <form id="formFilterBulan" method="GET" action="{{ route('dashboard') }}" class="{{ ($startDate || $endDate) ? 'hidden' : 'block' }}">
                     <div class="flex flex-col sm:flex-row items-end gap-2.5">
                         <div class="w-full sm:w-60 space-y-1">
-                            <label for="bulan" class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Bulan &amp; Tahun</label>
+                            <label for="bulan" class="block text-xs font-medium text-slate-400">Bulan &amp; Tahun</label>
                             <input 
                                 type="month" 
                                 name="bulan" 
                                 id="bulan" 
                                 value="{{ $selectedBulan }}" 
                                 onchange="this.form.submit()"
-                                class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700/80 text-white font-mono font-bold text-xs focus:border-amber-400 focus:outline-none"
+                                class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 font-mono font-medium text-xs focus:border-amber-400/80 focus:outline-none"
                             >
                         </div>
-                        <button type="submit" class="w-full sm:w-auto px-5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider transition-all">
+                        <button type="submit" class="w-full sm:w-auto px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-semibold text-xs transition-all">
                             Tampilkan
                         </button>
                     </div>
@@ -798,33 +723,33 @@
                     <input type="hidden" name="bulan" value="{{ $selectedBulan }}">
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 items-end">
                         <div class="space-y-1">
-                            <label for="start_date" class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Dari Tanggal</label>
+                            <label for="start_date" class="block text-xs font-medium text-slate-400">Dari Tanggal</label>
                             <input 
                                 type="date" 
                                 name="start_date" 
                                 id="start_date" 
                                 value="{{ $startDate }}" 
                                 required
-                                class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700/80 text-white font-mono font-bold text-xs focus:border-amber-400 focus:outline-none"
+                                class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 font-mono font-medium text-xs focus:border-amber-400/80 focus:outline-none"
                             >
                         </div>
 
                         <div class="space-y-1">
-                            <label for="end_date" class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Sampai Tanggal</label>
+                            <label for="end_date" class="block text-xs font-medium text-slate-400">Sampai Tanggal</label>
                             <input 
                                 type="date" 
                                 name="end_date" 
                                 id="end_date" 
                                 value="{{ $endDate }}" 
                                 required
-                                class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700/80 text-white font-mono font-bold text-xs focus:border-amber-400 focus:outline-none"
+                                class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 font-mono font-medium text-xs focus:border-amber-400/80 focus:outline-none"
                             >
                         </div>
 
                         <div>
                             <button 
                                 type="submit" 
-                                class="w-full py-2 px-5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider transition-all"
+                                class="w-full py-2 px-4 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-semibold text-xs transition-all"
                             >
                                 Terapkan Rentang
                             </button>
@@ -834,54 +759,51 @@
             </div>
 
             <!-- Table Desktop -->
-            <div class="hidden sm:block overflow-x-auto rounded-2xl border border-slate-800/80 shadow-inner">
+            <div class="hidden sm:block overflow-x-auto rounded-xl border border-slate-800 shadow-inner">
                 <table class="w-full text-left text-xs">
-                    <thead class="bg-slate-950/80 text-slate-400 font-extrabold uppercase tracking-wider border-b border-slate-800">
+                    <thead class="bg-slate-950 text-slate-400 font-medium text-[11px] uppercase tracking-wider border-b border-slate-800">
                         <tr>
-                            <th class="py-3 px-4">Tanggal Pekerjaan</th>
-                            <th class="py-3 px-4 text-center">Volume JO</th>
-                            <th class="py-3 px-4 text-right">Pendapatan Harian</th>
+                            <th class="py-3 px-4 font-semibold">Tanggal Pekerjaan</th>
+                            <th class="py-3 px-4 text-center font-semibold">Volume JO</th>
+                            <th class="py-3 px-4 text-right font-semibold">Pendapatan Harian</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-800/80 font-medium">
+                    <tbody class="divide-y divide-slate-800 font-normal">
                         @forelse($rekapHarian as $rekap)
                             <tr class="hover:bg-slate-800/40 transition-colors">
-                                <td class="py-3 px-4 font-bold text-slate-200">
-                                    <span class="flex items-center gap-2">
-                                        <span class="material-symbols-outlined text-amber-400/80 text-sm">event</span>
-                                        <span>{{ \Carbon\Carbon::parse($rekap->tanggal)->translatedFormat('d F Y') }}</span>
-                                    </span>
+                                <td class="py-3 px-4 font-medium text-slate-200">
+                                    {{ \Carbon\Carbon::parse($rekap->tanggal)->translatedFormat('d F Y') }}
                                 </td>
-                                <td class="py-3 px-4 text-center font-mono-num font-bold text-amber-300">
+                                <td class="py-3 px-4 text-center font-mono-num font-semibold text-amber-300">
                                     {{ $rekap->total_job }} JO
                                     @if(($rekap->total_piket ?? 0) > 0)
                                         <span class="text-cyan-400 text-[11px] ml-1">(+{{ $rekap->total_piket }} Piket)</span>
                                     @endif
                                 </td>
-                                <td class="py-3 px-4 text-right font-mono-num font-black text-emerald-400">
+                                <td class="py-3 px-4 text-right font-mono-num font-semibold text-emerald-400">
                                     Rp {{ number_format($rekap->total_pendapatan, 0, ',', '.') }}
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="3" class="py-8 text-center text-slate-500 uppercase tracking-widest font-bold text-xs">
+                                <td colspan="3" class="py-8 text-center text-slate-500 font-medium text-xs">
                                     Belum ada transaksi job order di periode ini.
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
-                    <tfoot class="bg-slate-950/90 border-t-2 border-amber-400/50 font-black text-xs text-slate-100">
+                    <tfoot class="bg-slate-950/90 border-t border-slate-800 font-semibold text-xs text-slate-100">
                         <tr>
-                            <td class="py-3.5 px-4 uppercase tracking-wider text-amber-400">
+                            <td class="py-3.5 px-4 text-amber-400">
                                 TOTAL AKUMULASI
                             </td>
-                            <td class="py-3.5 px-4 text-center font-mono-num text-amber-300 font-black">
+                            <td class="py-3.5 px-4 text-center font-mono-num text-amber-300">
                                 {{ $rekapHarian->sum('total_job') }} JO
                                 @if($rekapHarian->sum('total_piket') > 0)
                                     <span class="text-cyan-400 text-[11px] block">+ {{ $rekapHarian->sum('total_piket') }} Piket</span>
                                 @endif
                             </td>
-                            <td class="py-3.5 px-4 text-right font-mono-num text-emerald-400 text-sm sm:text-base font-black">
+                            <td class="py-3.5 px-4 text-right font-mono-num text-emerald-400 text-sm sm:text-base font-bold">
                                 Rp {{ number_format($rekapHarian->sum('total_pendapatan'), 0, ',', '.') }}
                             </td>
                         </tr>
@@ -892,19 +814,18 @@
             <!-- Cards Mobile -->
             <div class="block sm:hidden space-y-2">
                 @forelse($rekapHarian as $rekap)
-                    <div class="p-3 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1.5">
+                    <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
                         <div class="flex items-center justify-between border-b border-slate-800/80 pb-1.5">
-                            <span class="font-bold text-slate-200 text-xs flex items-center gap-1">
-                                <span class="material-symbols-outlined text-amber-400 text-xs">event</span>
-                                <span>{{ \Carbon\Carbon::parse($rekap->tanggal)->translatedFormat('d M Y') }}</span>
+                            <span class="font-medium text-slate-200 text-xs">
+                                {{ \Carbon\Carbon::parse($rekap->tanggal)->translatedFormat('d M Y') }}
                             </span>
-                            <span class="text-xs font-mono-num font-black text-emerald-400">
+                            <span class="text-xs font-mono-num font-semibold text-emerald-400">
                                 Rp {{ number_format($rekap->total_pendapatan, 0, ',', '.') }}
                             </span>
                         </div>
                         <div class="flex items-center justify-between text-[11px]">
-                            <span class="text-slate-400 font-medium">Volume:</span>
-                            <span class="font-mono-num font-bold text-amber-400">
+                            <span class="text-slate-400">Volume:</span>
+                            <span class="font-mono-num font-semibold text-amber-400">
                                 {{ $rekap->total_job }} JO
                                 @if(($rekap->total_piket ?? 0) > 0)
                                     <span class="text-cyan-300 ml-1">+ {{ $rekap->total_piket }} Piket</span>
@@ -913,24 +834,24 @@
                         </div>
                     </div>
                 @empty
-                    <div class="p-5 text-center text-slate-500 font-bold uppercase tracking-widest text-xs rounded-xl bg-slate-950/80 border border-slate-800">
+                    <div class="p-5 text-center text-slate-500 font-medium text-xs rounded-xl bg-slate-950 border border-slate-800">
                         Belum ada transaksi di periode ini.
                     </div>
                 @endforelse
 
                 @if($rekapHarian->count() > 0)
-                    <div class="p-3.5 rounded-xl bg-slate-950/90 border border-amber-400/50 space-y-1.5 shadow-lg">
-                        <div class="text-[11px] font-black uppercase text-amber-400 tracking-wider">
+                    <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
+                        <div class="text-xs font-semibold text-amber-400">
                             Total Akumulasi Periode
                         </div>
                         <div class="flex items-center justify-between border-t border-slate-800/80 pt-1.5">
-                            <span class="font-mono-num text-xs font-bold text-amber-300">
+                            <span class="font-mono-num text-xs font-semibold text-amber-300">
                                 {{ $rekapHarian->sum('total_job') }} JO
                                 @if($rekapHarian->sum('total_piket') > 0)
                                     <span class="text-cyan-400 text-[10px] block">+ {{ $rekapHarian->sum('total_piket') }} Piket</span>
                                 @endif
                             </span>
-                            <span class="text-base font-black font-mono-num text-emerald-400">
+                            <span class="text-base font-bold font-mono-num text-emerald-400">
                                 Rp {{ number_format($rekapHarian->sum('total_pendapatan'), 0, ',', '.') }}
                             </span>
                         </div>
@@ -948,25 +869,24 @@
     <!-- ========================================================================= -->
     <div id="tabPanel_riwayat" class="dashboard-tab-panel space-y-4 hidden">
         
-        <div class="rounded-3xl bg-slate-900/70 backdrop-blur-xl border border-slate-800/80 p-4 sm:p-6 shadow-2xl space-y-4">
+        <div class="rounded-2xl bg-slate-900/80 backdrop-blur-md border border-slate-800/80 p-4 sm:p-5 shadow-sm space-y-4">
             
             <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
                 <div>
-                    <h3 class="text-sm sm:text-base font-black uppercase text-white tracking-wider flex items-center gap-2">
-                        <span class="material-symbols-outlined text-amber-400 text-lg">receipt_long</span>
-                        <span>Detail Riwayat Job Order</span>
+                    <h3 class="text-sm sm:text-base font-semibold text-white">
+                        Detail Riwayat Job Order
                     </h3>
-                    <p class="text-[11px] text-slate-400">Rincian seluruh transaksi dengan tombol edit &amp; hapus.</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Rincian seluruh transaksi dengan tombol edit &amp; hapus.</p>
                 </div>
-                <span class="px-2.5 py-1 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 text-xs font-mono font-bold">
+                <span class="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 text-xs font-mono font-medium">
                     Total: {{ $detailJobOrders->total() }} Data
                 </span>
             </div>
 
             <!-- Desktop View Table -->
-            <div class="hidden sm:block overflow-x-auto rounded-2xl border border-slate-800/80 shadow-inner">
+            <div class="hidden sm:block overflow-x-auto rounded-xl border border-slate-800 shadow-inner">
                 <table class="w-full text-left text-xs">
-                    <thead class="bg-slate-950/80 text-slate-400 font-extrabold uppercase tracking-wider border-b border-slate-800">
+                    <thead class="bg-slate-950 text-slate-400 font-semibold text-[11px] uppercase tracking-wider border-b border-slate-800">
                         <tr>
                             <th class="py-3 px-3.5">#</th>
                             <th class="py-3 px-3.5">Tanggal</th>
@@ -977,50 +897,50 @@
                             <th class="py-3 px-3.5 text-center">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-800/80 font-medium">
+                    <tbody class="divide-y divide-slate-800 font-normal">
                         @forelse($detailJobOrders as $index => $job)
                             <tr class="hover:bg-slate-800/40 transition-colors">
                                 <td class="py-3 px-3.5 text-slate-500 font-mono-num">
                                     {{ $detailJobOrders->firstItem() + $index }}
                                 </td>
-                                <td class="py-3 px-3.5 font-mono-num text-slate-300 font-bold whitespace-nowrap">
+                                <td class="py-3 px-3.5 font-mono-num text-slate-300 font-medium whitespace-nowrap">
                                     {{ $job->tanggal->format('d/m/Y') }}
                                 </td>
-                                <td class="py-3 px-3.5 font-bold text-white">
+                                <td class="py-3 px-3.5 font-medium text-slate-200">
                                     {{ $job->kategori }}
                                 </td>
                                 <td class="py-3 px-3.5 text-center">
                                     @if($job->status === 'berhasil')
-                                        <span class="px-2.5 py-0.5 rounded-lg bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 font-black text-[9px] uppercase tracking-wider">
-                                            BERHASIL
+                                        <span class="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-medium text-[10px] capitalize">
+                                            Berhasil
                                         </span>
                                     @else
-                                        <span class="px-2.5 py-0.5 rounded-lg bg-rose-950/80 border border-rose-500/40 text-rose-300 font-black text-[9px] uppercase tracking-wider">
-                                            GAGAL
+                                        <span class="px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/20 text-rose-300 font-medium text-[10px] capitalize">
+                                            Gagal
                                         </span>
                                     @endif
                                 </td>
-                                <td class="py-3 px-3.5 text-right font-mono-num font-black text-amber-400 whitespace-nowrap">
+                                <td class="py-3 px-3.5 text-right font-mono-num font-semibold text-amber-400 whitespace-nowrap">
                                     Rp {{ number_format($job->tarif, 0, ',', '.') }}
                                 </td>
                                 <td class="py-3 px-3.5 text-slate-400 max-w-xs truncate">
                                     {{ $job->catatan ?? '-' }}
                                 </td>
                                 <td class="py-3 px-3.5 text-center whitespace-nowrap">
-                                    <div class="flex items-center justify-center gap-1.5">
+                                    <div class="flex items-center justify-center gap-1">
                                         <button 
                                             onclick="openEditModal({{ json_encode($job) }})" 
-                                            class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 transition-all" 
+                                            class="p-1.5 rounded-lg text-slate-400 hover:text-amber-400 hover:bg-slate-800 transition-all cursor-pointer" 
                                             title="Edit"
                                         >
-                                            <span class="material-symbols-outlined text-sm">edit</span>
+                                            <span class="material-symbols-outlined text-base">edit</span>
                                         </button>
 
                                         <form action="{{ route('job-orders.destroy', $job->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus job order ini?');" class="inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="p-1.5 rounded-lg bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 transition-all" title="Hapus">
-                                                <span class="material-symbols-outlined text-sm">delete</span>
+                                            <button type="submit" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-all cursor-pointer" title="Hapus">
+                                                <span class="material-symbols-outlined text-base">delete</span>
                                             </button>
                                         </form>
                                     </div>
@@ -1028,7 +948,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="py-8 text-center text-slate-500 uppercase tracking-widest font-bold text-xs">
+                                <td colspan="7" class="py-8 text-center text-slate-500 font-medium text-xs">
                                     Tidak ada data job order ditemukan.
                                 </td>
                             </tr>
@@ -1038,58 +958,55 @@
             </div>
 
             <!-- Mobile Card List View -->
-            <div class="block sm:hidden space-y-2.5">
+            <div class="block sm:hidden space-y-2">
                 @forelse($detailJobOrders as $index => $job)
-                    <div class="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
+                    <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
                         <div class="flex items-center justify-between border-b border-slate-800/80 pb-1.5">
                             <div class="flex items-center gap-1.5">
-                                <span class="text-[10px] font-mono-num text-slate-500 font-bold">#{{ $detailJobOrders->firstItem() + $index }}</span>
-                                <span class="font-mono-num font-bold text-slate-300 text-xs flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-xs text-slate-500">calendar_today</span>
-                                    <span>{{ $job->tanggal->format('d/m/Y') }}</span>
+                                <span class="text-[10px] font-mono-num text-slate-500">#{{ $detailJobOrders->firstItem() + $index }}</span>
+                                <span class="font-mono-num font-medium text-slate-300 text-xs">
+                                    {{ $job->tanggal->format('d/m/Y') }}
                                 </span>
                             </div>
-                            <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider {{ $job->status === 'berhasil' ? 'bg-emerald-950/80 border border-emerald-500/40 text-emerald-400' : 'bg-rose-950/80 border border-rose-500/40 text-rose-300' }}">
+                            <span class="px-1.5 py-0.2 rounded text-[10px] font-medium capitalize {{ $job->status === 'berhasil' ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400' : 'bg-rose-500/10 border border-rose-500/20 text-rose-300' }}">
                                 {{ $job->status }}
                             </span>
                         </div>
 
                         <div>
-                            <h4 class="font-bold text-white text-xs">{{ $job->kategori }}</h4>
+                            <h4 class="font-medium text-slate-200 text-xs">{{ $job->kategori }}</h4>
                             @if($job->catatan)
-                                <p class="text-[11px] text-slate-400 bg-slate-900/60 p-2 rounded-xl border border-slate-800 mt-1">
+                                <p class="text-[11px] text-slate-400 bg-slate-900/60 p-2 rounded-lg border border-slate-800 mt-1">
                                     {{ $job->catatan }}
                                 </p>
                             @endif
                         </div>
 
                         <div class="flex items-center justify-between pt-1.5 border-t border-slate-800/80">
-                            <span class="font-mono-num font-black text-amber-400 text-sm">
+                            <span class="font-mono-num font-semibold text-amber-400 text-xs sm:text-sm">
                                 Rp {{ number_format($job->tarif, 0, ',', '.') }}
                             </span>
 
-                            <div class="flex items-center gap-1.5">
+                            <div class="flex items-center gap-1">
                                 <button 
                                     onclick="openEditModal({{ json_encode($job) }})" 
-                                    class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1"
+                                    class="px-2 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white text-[11px] font-medium"
                                 >
-                                    <span class="material-symbols-outlined text-xs">edit</span>
-                                    <span>Edit</span>
+                                    Edit
                                 </button>
 
                                 <form action="{{ route('job-orders.destroy', $job->id) }}" method="POST" onsubmit="return confirm('Hapus job order ini?');" class="inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="px-2.5 py-1 rounded-lg bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
-                                        <span class="material-symbols-outlined text-xs">delete</span>
-                                        <span>Hapus</span>
+                                    <button type="submit" class="px-2 py-1 rounded-lg bg-rose-500/10 text-rose-400 hover:text-rose-200 text-[11px] font-medium">
+                                        Hapus
                                     </button>
                                 </form>
                             </div>
                         </div>
                     </div>
                 @empty
-                    <div class="p-6 text-center text-slate-500 font-bold uppercase tracking-widest text-xs rounded-2xl bg-slate-950/80 border border-slate-800">
+                    <div class="p-6 text-center text-slate-500 font-medium text-xs rounded-xl bg-slate-950 border border-slate-800">
                         Tidak ada data job order.
                     </div>
                 @endforelse
@@ -1114,35 +1031,29 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
             
             <!-- Goal Meter Card (5 Col) -->
-            <div class="lg:col-span-5 rounded-3xl bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 p-5 shadow-2xl flex flex-col justify-between space-y-4 relative overflow-hidden">
+            <div class="lg:col-span-5 rounded-2xl bg-slate-900/80 backdrop-blur-md border border-slate-800/80 p-5 shadow-sm flex flex-col justify-between space-y-4 relative">
                 <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-400 to-cyan-500 text-slate-950 flex items-center justify-center font-black shadow-md shadow-emerald-500/20">
-                            <span class="material-symbols-outlined text-lg">workspace_premium</span>
-                        </div>
-                        <div>
-                            <h3 class="text-xs sm:text-sm font-black uppercase tracking-wider text-white">Target Gaji Bulanan</h3>
-                            <p class="text-[11px] text-slate-400">Personal Goal Meter</p>
-                        </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-white">Target Gaji Bulanan</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Personal Goal Meter</p>
                     </div>
                     
-                    <button type="button" onclick="openTargetModal()" class="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 text-xs font-extrabold flex items-center gap-1 border border-emerald-500/30 transition-all">
-                        <span class="material-symbols-outlined text-sm">edit</span>
-                        <span>Ubah</span>
+                    <button type="button" onclick="openTargetModal()" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-400 text-xs font-medium border border-emerald-500/20 transition-all">
+                        Ubah Target
                     </button>
                 </div>
 
                 <!-- Main Target Numbers -->
                 <div class="flex items-baseline justify-between">
                     <div>
-                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Tercapai</span>
-                        <div class="text-xl sm:text-2xl font-black font-mono-num text-emerald-400">
+                        <span class="text-xs text-slate-400 block">Tercapai</span>
+                        <div class="text-xl sm:text-2xl font-bold font-mono-num text-emerald-400">
                             Rp {{ number_format($tercapaiPendapatan, 0, ',', '.') }}
                         </div>
                     </div>
                     <div class="text-right">
-                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Target</span>
-                        <div class="text-base sm:text-lg font-extrabold font-mono-num text-slate-300">
+                        <span class="text-xs text-slate-400 block">Target</span>
+                        <div class="text-base sm:text-lg font-semibold font-mono-num text-slate-300">
                             Rp {{ number_format($targetPendapatan, 0, ',', '.') }}
                         </div>
                     </div>
@@ -1150,45 +1061,45 @@
 
                 <!-- Progress Bar -->
                 <div class="space-y-1">
-                    <div class="flex justify-between items-center text-xs font-black">
-                        <span class="text-slate-400 text-[11px]">Pencapaian:</span>
-                        <span class="{{ $persenTarget >= 100 ? 'text-emerald-400' : 'text-cyan-400' }} font-mono-num font-extrabold">{{ $persenTarget }}%</span>
+                    <div class="flex justify-between items-center text-xs font-medium">
+                        <span class="text-slate-400">Pencapaian:</span>
+                        <span class="{{ $persenTarget >= 100 ? 'text-emerald-400' : 'text-cyan-400' }} font-mono-num font-semibold">{{ $persenTarget }}%</span>
                     </div>
-                    <div class="w-full h-2.5 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-slate-800">
-                        <div class="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 rounded-full transition-all duration-1000" style="width: {{ min(100, $persenTarget) }}%"></div>
+                    <div class="w-full h-2 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-slate-800">
+                        <div class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: {{ min(100, $persenTarget) }}%"></div>
                     </div>
                 </div>
 
                 <!-- Stats Summary -->
                 <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800/60">
-                    <div class="p-2.5 rounded-xl bg-slate-950/60 border border-slate-800/60">
-                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Sisa Target</span>
-                        <span class="text-xs sm:text-sm font-black font-mono-num {{ $sisaTarget > 0 ? 'text-amber-400' : 'text-emerald-400' }}">
+                    <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+                        <span class="text-[11px] text-slate-400 block">Sisa Target</span>
+                        <span class="text-xs sm:text-sm font-semibold font-mono-num {{ $sisaTarget > 0 ? 'text-amber-400' : 'text-emerald-400' }}">
                             {{ $sisaTarget > 0 ? 'Rp ' . number_format($sisaTarget, 0, ',', '.') : 'Tercapai! 🎉' }}
                         </span>
                     </div>
-                    <div class="p-2.5 rounded-xl bg-slate-950/60 border border-slate-800/60">
-                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
+                    <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+                        <span class="text-[11px] text-slate-400 block">
                             {{ $sisaHari > 0 ? "Perlu/Hari ({$sisaHari} Hari)" : "Perlu/Hari" }}
                         </span>
-                        <span class="text-xs sm:text-sm font-black font-mono-num text-cyan-300">
+                        <span class="text-xs sm:text-sm font-semibold font-mono-num text-cyan-300">
                             {{ ($sisaTarget > 0 && $sisaHari > 0) ? 'Rp ' . number_format($rataRataHarianDibutuhkan, 0, ',', '.') : 'Rp 0' }}
                         </span>
                     </div>
                 </div>
 
                 <!-- 330 JO Box -->
-                <div class="p-3 rounded-2xl bg-slate-950/80 border border-emerald-500/30 flex items-center justify-between gap-2 shadow-inner">
+                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-2">
                     <div>
-                        <span class="text-[10px] font-black uppercase tracking-wider text-emerald-400 block">
+                        <span class="text-xs font-medium text-emerald-400 block">
                             Target Produktivitas: 330 JO
                         </span>
-                        <span class="text-[10px] font-bold text-slate-400 block mt-0.5">
-                            Tercapai <span class="text-white font-extrabold">{{ $tercapaiJoVolume }} JO</span> ({{ $persenJoVolume }}%)
+                        <span class="text-[11px] text-slate-400 block mt-0.5">
+                            Tercapai <span class="text-slate-200 font-semibold">{{ $tercapaiJoVolume }} JO</span> ({{ $persenJoVolume }}%)
                         </span>
                     </div>
                     <div class="text-right shrink-0">
-                        <span class="text-xs font-black font-mono-num text-emerald-300 block">
+                        <span class="text-xs font-semibold font-mono-num text-emerald-300 block">
                             {{ ($sisaJoVolume > 0 && $sisaHari > 0) ? $targetJoQtyPerHari . ' JO/Hari' : 'Tercapai! 🎉' }}
                         </span>
                     </div>
@@ -1196,16 +1107,11 @@
             </div>
 
             <!-- Trend Line Chart Card (7 Col) -->
-            <div class="lg:col-span-7 rounded-3xl bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 p-5 shadow-2xl flex flex-col justify-between">
+            <div class="lg:col-span-7 rounded-2xl bg-slate-900/80 backdrop-blur-md border border-slate-800/80 p-5 shadow-sm flex flex-col justify-between">
                 <div class="flex items-center justify-between border-b border-slate-800/80 pb-3 mb-3">
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-500 text-slate-950 flex items-center justify-center font-black shadow-md shadow-indigo-500/20">
-                            <span class="material-symbols-outlined text-base">show_chart</span>
-                        </div>
-                        <div>
-                            <h3 class="text-xs sm:text-sm font-black uppercase tracking-wider text-white">Trend Pendapatan Harian</h3>
-                            <p class="text-[11px] text-slate-400">Grafik perolehan ({{ $periodLabel }})</p>
-                        </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-white">Trend Pendapatan Harian</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Grafik perolehan ({{ $periodLabel }})</p>
                     </div>
                 </div>
 
@@ -1222,17 +1128,17 @@
 
 
 <!-- MODAL EDIT TARGET PENDAPATAN -->
-<div id="targetModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 transition-all duration-300">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 w-full max-w-md shadow-2xl relative">
-        <button type="button" onclick="closeTargetModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">
-            <span class="material-symbols-outlined">close</span>
+<div id="targetModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 transition-all duration-200">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
+        <button type="button" onclick="closeTargetModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+            <span class="material-symbols-outlined text-lg">close</span>
         </button>
         <div class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center">
-                <span class="material-symbols-outlined text-xl">flag</span>
+            <div class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center font-semibold">
+                <span class="material-symbols-outlined text-lg">flag</span>
             </div>
             <div>
-                <h3 class="text-base font-black text-white">Set Target Pendapatan</h3>
+                <h3 class="text-sm sm:text-base font-semibold text-white">Set Target Pendapatan</h3>
                 <p class="text-xs text-slate-400">Atur target pencapaian gaji bulanan Anda</p>
             </div>
         </div>
@@ -1240,28 +1146,28 @@
         <form action="{{ route('user.target.update') }}" method="POST" class="space-y-4">
             @csrf
             <div>
-                <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-400 mb-2">Target Pendapatan (Rp)</label>
+                <label class="block text-xs font-medium text-slate-300 mb-1.5">Target Pendapatan (Rp)</label>
                 <div class="relative">
-                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">Rp</span>
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-medium text-sm">Rp</span>
                     <input type="number" step="500000" min="0" name="target_pendapatan" id="targetInput" value="{{ auth()->user()->target_pendapatan ?? 5000000 }}" required
-                        class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-3 text-white font-mono-num font-bold text-lg focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none">
+                        class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-white font-mono-num font-semibold text-base focus:border-emerald-500/80 focus:ring-1 focus:ring-emerald-500/30 outline-none">
                 </div>
             </div>
 
             <!-- Quick presets -->
             <div>
-                <span class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1.5">Pilihan Cepat:</span>
+                <span class="block text-xs text-slate-400 mb-1.5">Pilihan Cepat:</span>
                 <div class="grid grid-cols-4 gap-2">
-                    <button type="button" onclick="setPresetTarget(3000000)" class="py-2 px-2 bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 hover:border-emerald-500/50 rounded-xl text-xs font-bold text-slate-300 hover:text-emerald-400 hover:scale-105 active:scale-95 transition-all">3 Jt</button>
-                    <button type="button" onclick="setPresetTarget(5000000)" class="py-2 px-2 bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 hover:border-emerald-500/50 rounded-xl text-xs font-bold text-slate-300 hover:text-emerald-400 hover:scale-105 active:scale-95 transition-all">5 Jt</button>
-                    <button type="button" onclick="setPresetTarget(7500000)" class="py-2 px-2 bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 hover:border-emerald-500/50 rounded-xl text-xs font-bold text-slate-300 hover:text-emerald-400 hover:scale-105 active:scale-95 transition-all">7.5 Jt</button>
-                    <button type="button" onclick="setPresetTarget(10000000)" class="py-2 px-2 bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 hover:border-emerald-500/50 rounded-xl text-xs font-bold text-slate-300 hover:text-emerald-400 hover:scale-105 active:scale-95 transition-all">10 Jt</button>
+                    <button type="button" onclick="setPresetTarget(3000000)" class="py-1.5 px-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-xs font-medium text-slate-300 hover:text-white transition-all">3 Jt</button>
+                    <button type="button" onclick="setPresetTarget(5000000)" class="py-1.5 px-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-xs font-medium text-slate-300 hover:text-white transition-all">5 Jt</button>
+                    <button type="button" onclick="setPresetTarget(7500000)" class="py-1.5 px-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-xs font-medium text-slate-300 hover:text-white transition-all">7.5 Jt</button>
+                    <button type="button" onclick="setPresetTarget(10000000)" class="py-1.5 px-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-xs font-medium text-slate-300 hover:text-white transition-all">10 Jt</button>
                 </div>
             </div>
 
             <div class="flex justify-end gap-2 pt-2">
-                <button type="button" onclick="closeTargetModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-bold text-xs uppercase tracking-wider active:scale-95 transition-all">Batal</button>
-                <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/20 transition-all">Simpan Target</button>
+                <button type="button" onclick="closeTargetModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-medium text-xs transition-all">Batal</button>
+                <button type="submit" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-xs shadow-sm transition-all">Simpan Target</button>
             </div>
         </form>
     </div>
@@ -1269,15 +1175,14 @@
 
 
 <!-- MODAL EDIT JOB ORDER -->
-<div id="editModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
-    <div class="bg-slate-900/95 border border-amber-400/60 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+<div id="editModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
-            <h3 class="text-sm sm:text-base font-black uppercase text-white tracking-wider flex items-center gap-2">
-                <span class="material-symbols-outlined text-amber-400 text-lg">edit</span>
-                <span>Edit Job Order</span>
+            <h3 class="text-sm sm:text-base font-semibold text-white">
+                Edit Job Order
             </h3>
-            <button onclick="closeEditModal()" class="text-slate-400 hover:text-white font-bold text-xs uppercase tracking-wider p-1 cursor-pointer">
-                Tutup
+            <button onclick="closeEditModal()" class="text-slate-400 hover:text-white p-1 cursor-pointer">
+                <span class="material-symbols-outlined text-lg">close</span>
             </button>
         </div>
 
@@ -1286,42 +1191,42 @@
             @method('PUT')
 
             <div class="space-y-1">
-                <label for="edit_kategori_info" class="block text-xs font-extrabold text-slate-400 uppercase tracking-wider">
+                <label for="edit_kategori_info" class="block text-xs font-medium text-slate-400">
                     Kategori Tugas
                 </label>
-                <input type="text" id="edit_kategori_info" readonly class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-300 font-bold text-xs cursor-not-allowed" />
+                <input type="text" id="edit_kategori_info" readonly class="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-300 font-medium text-xs cursor-not-allowed" />
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div class="space-y-1">
-                    <label class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider">Status</label>
-                    <select name="status" id="edit_status" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700/80 text-white font-bold text-xs focus:border-amber-400 focus:outline-none min-h-[42px]">
-                        <option value="berhasil">BERHASIL</option>
-                        <option value="gagal">GAGAL</option>
+                    <label class="block text-xs font-medium text-slate-300">Status</label>
+                    <select name="status" id="edit_status" required class="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-medium text-xs focus:border-amber-400/80 focus:outline-none min-h-[40px]">
+                        <option value="berhasil">Berhasil</option>
+                        <option value="gagal">Gagal</option>
                     </select>
                 </div>
 
                 <div class="space-y-1">
-                    <label for="edit_tanggal" class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider">Tanggal</label>
-                    <input type="date" name="tanggal" id="edit_tanggal" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700/80 text-white font-mono font-bold text-xs focus:border-amber-400 focus:outline-none min-h-[42px]" />
+                    <label for="edit_tanggal" class="block text-xs font-medium text-slate-300">Tanggal</label>
+                    <input type="date" name="tanggal" id="edit_tanggal" required class="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono font-medium text-xs focus:border-amber-400/80 focus:outline-none min-h-[40px]" />
                 </div>
             </div>
 
             <div class="space-y-1">
-                <label for="edit_tarif" class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider">Nominal Tarif (Rp)</label>
-                <input type="number" name="tarif" id="edit_tarif" required min="0" step="500" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700/80 text-white font-mono font-bold text-xs focus:border-amber-400 focus:outline-none min-h-[42px]" />
+                <label for="edit_tarif" class="block text-xs font-medium text-slate-300">Nominal Tarif (Rp)</label>
+                <input type="number" name="tarif" id="edit_tarif" required min="0" step="500" class="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono font-medium text-xs focus:border-amber-400/80 focus:outline-none min-h-[40px]" />
             </div>
 
             <div class="space-y-1">
-                <label for="edit_catatan" class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider">Catatan</label>
-                <input type="text" name="catatan" id="edit_catatan" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700/80 text-white text-xs focus:border-amber-400 focus:outline-none min-h-[42px]" />
+                <label for="edit_catatan" class="block text-xs font-medium text-slate-300">Catatan</label>
+                <input type="text" name="catatan" id="edit_catatan" class="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:border-amber-400/80 focus:outline-none min-h-[40px]" />
             </div>
 
             <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
-                <button type="button" onclick="closeEditModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs uppercase tracking-wider hover:bg-slate-700 active:scale-95 transition-all cursor-pointer">
+                <button type="button" onclick="closeEditModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-medium text-xs hover:bg-slate-700 transition-all cursor-pointer">
                     Batal
                 </button>
-                <button type="submit" class="px-5 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 font-black text-xs uppercase tracking-wider hover:from-amber-300 hover:to-orange-300 active:scale-95 transition-all cursor-pointer shadow-lg shadow-amber-500/20">
+                <button type="submit" class="px-5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-semibold text-xs transition-all cursor-pointer shadow-sm">
                     Simpan Perubahan
                 </button>
             </div>
@@ -1342,8 +1247,8 @@
 
         const buttons = document.querySelectorAll('.dashboard-tab-btn');
         buttons.forEach(btn => {
-            btn.classList.remove('bg-gradient-to-r', 'from-amber-400', 'to-orange-400', 'text-slate-950', 'font-black', 'shadow-lg', 'shadow-amber-500/20');
-            btn.classList.add('text-slate-400', 'hover:text-slate-200', 'hover:bg-slate-800/60', 'font-bold');
+            btn.classList.remove('bg-slate-800', 'text-amber-400', 'border-amber-400/30', 'shadow-sm', 'font-semibold', 'bg-gradient-to-r', 'from-amber-400', 'to-orange-400', 'text-slate-950', 'font-black', 'shadow-lg', 'shadow-amber-500/20');
+            btn.classList.add('text-slate-400', 'hover:text-slate-200', 'hover:bg-slate-800/50', 'border-transparent', 'font-medium');
         });
 
         const activePanel = document.getElementById('tabPanel_' + tabId);
@@ -1356,8 +1261,8 @@
             activePanel.classList.add('animate-tab-fade');
         }
         if (activeBtn) {
-            activeBtn.classList.remove('text-slate-400', 'hover:text-slate-200', 'hover:bg-slate-800/60', 'font-bold');
-            activeBtn.classList.add('bg-gradient-to-r', 'from-amber-400', 'to-orange-400', 'text-slate-950', 'font-black', 'shadow-lg', 'shadow-amber-500/20');
+            activeBtn.classList.remove('text-slate-400', 'hover:text-slate-200', 'hover:bg-slate-800/50', 'border-transparent', 'font-medium');
+            activeBtn.classList.add('bg-slate-800', 'text-amber-400', 'border-amber-400/30', 'shadow-sm', 'font-semibold');
         }
 
         localStorage.setItem('active_technician_tab', tabId);
@@ -1389,22 +1294,25 @@
         const tabBulan = document.getElementById('tabBulan');
         const tabRentang = document.getElementById('tabRentang');
 
+        const activeClass = "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer bg-slate-800 text-amber-400 border border-amber-400/30 shadow-sm";
+        const inactiveClass = "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer text-slate-400 hover:text-slate-200";
+
         if (mode === 'bulan') {
             formBulan.classList.remove('hidden');
             formBulan.classList.add('block');
             formRentang.classList.remove('block');
             formRentang.classList.add('hidden');
 
-            tabBulan.className = "px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 shadow";
-            tabRentang.className = "px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-800/80 text-slate-400 hover:text-slate-200";
+            tabBulan.className = activeClass;
+            tabRentang.className = inactiveClass;
         } else {
             formRentang.classList.remove('hidden');
             formRentang.classList.add('block');
             formBulan.classList.remove('block');
             formBulan.classList.add('hidden');
 
-            tabRentang.className = "px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 shadow";
-            tabBulan.className = "px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-800/80 text-slate-400 hover:text-slate-200";
+            tabRentang.className = activeClass;
+            tabBulan.className = inactiveClass;
         }
     }
 
@@ -1577,7 +1485,7 @@
                     submitBtn.innerHTML = `
                         <span class="inline-flex items-center gap-2">
                             <span class="material-symbols-outlined text-xl">check_circle</span>
-                            <span>TERSIMPAN!</span>
+                            <span>Tersimpan!</span>
                         </span>`;
                 }
 
@@ -1638,8 +1546,8 @@
                 <span class="material-symbols-outlined text-lg">${iconName}</span>
             </div>
             <div>
-                <p class="text-[11px] font-black uppercase tracking-wider text-white">${isSuccess ? 'Sukses' : 'Perhatian'}</p>
-                <p class="text-xs text-slate-300 font-medium">${message}</p>
+                <p class="text-xs font-semibold text-white">${isSuccess ? 'Sukses' : 'Perhatian'}</p>
+                <p class="text-xs text-slate-300 font-normal">${message}</p>
             </div>
         `;
         document.body.appendChild(toast);
